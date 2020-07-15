@@ -173,7 +173,7 @@ class PrintAnalysis extends BasePrint {
     double f = 1.5;
     double f1 = 2.5;
 
-    DayData totalDay = DayData(null, ProfileGlucData(ProfileStoreData("Intern")), repData.status);
+    DayData totalDay = DayData(null, ProfileGlucData(ProfileStoreData("Intern")));
     totalDay.entries.addAll(data.entries);
     totalDay.init();
 
