@@ -1464,23 +1464,21 @@ class AppComponent implements OnInit {
           });
 */
 //*
-        if (doc != null) docList.add(doc);
+      if (doc != null) docList.add(doc);
 
-        if (docList.length > 1) {
-          pdfList.clear();
-          pdfDoc = null;
+      if (docList.length > 1) {
+        pdfList.clear();
+        pdfDoc = null;
 
-          for (var doc in docList) {
-            var dst = jsonEncode(doc);
-            if (g.isDebug) {
-              pdfUrl = 'http://pdf.zreptil.de/playground.php';
-              dst = dst.replaceAll('],', '],\n');
-              dst = dst.replaceAll(',\"', ',\n\"');
-              dst = dst.replaceAll(':[', ':\n[');
-            } else {
-              pdfUrl = 'https://nightscout-reporter.zreptil.de/pdfmake/pdfmake.php';
-            }
-            pdfList.add(PdfData(pdfString(dst)));
+        for (var doc in docList) {
+          var dst = jsonEncode(doc);
+          if (g.isDebug) {
+            pdfUrl = "https://devubuntu.home.local/NightScoutReporter/pdfmake/playground.php";
+            dst = dst.replaceAll('],', '],\n');
+            dst = dst.replaceAll(',\"', ',\n\"');
+            dst = dst.replaceAll(':[', ':\n[');
+          } else {
+            pdfUrl = "https://devubuntu.home.local/NightScoutReporter/pdfmake/pdfmake.php";
           }
 
           currPage = 'pdfList';
