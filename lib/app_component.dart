@@ -1551,27 +1551,29 @@ class AppComponent implements OnInit {
           });
 */
 //*
-      if (doc != null) docList.add(doc);
+        if (doc != null) docList.add(doc);
 
-      if (docList.length > 1) {
-        pdfList.clear();
-        pdfDoc = null;
+        if (docList.length > 1) {
+          pdfList.clear();
+          pdfDoc = null;
 
-        for (var doc in docList) {
-          var dst = jsonEncode(doc);
-          if (g.isDebug) {
-            pdfUrl = "https://devubuntu.home.local/NightScoutReporter/pdfmake/playground.php";
-            dst = dst.replaceAll('],', '],\n');
-            dst = dst.replaceAll(',\"', ',\n\"');
-            dst = dst.replaceAll(':[', ':\n[');
-          } else {
-            pdfUrl = "https://devubuntu.home.local/NightScoutReporter/pdfmake/pdfmake.php";
+          for (var doc in docList) {
+            var dst = jsonEncode(doc);
+            if (g.isDebug) {
+              pdfUrl = "https://devubuntu.home.local/NightScoutReporter/pdfmake/playground.php";
+              dst = dst.replaceAll('],', '],\n');
+              dst = dst.replaceAll(',\"', ',\n\"');
+              dst = dst.replaceAll(':[', ':\n[');
+            } else {
+              pdfUrl = "https://devubuntu.home.local/NightScoutReporter/pdfmake/pdfmake.php";
+            }
+            pdfList.add(PdfData(pdfString(dst)));
           }
 
-          currPage = 'pdfList';
-          sendIcon = 'close';
-          progressText = null;
-          return;
+            currPage = 'pdfList';
+            sendIcon = 'close';
+            progressText = null;
+            return;
         } else {
           pdfDoc = jsonEncode(docList[0]);
         }
@@ -1590,7 +1592,7 @@ class AppComponent implements OnInit {
           displayLink('playground', 'showPlayground', btnClass: 'action', icon: 'description');
           displayLink('pdf', 'showPdf', btnClass: 'action', icon: 'description');
         }
-// */
+  // */
         sendIcon = 'send';
         progressText = null;
       } finally {
