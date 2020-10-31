@@ -101,9 +101,9 @@ class LangData {
     }
   }
 
-  String get dateformat => Intl.message('dd.MM.yyyy');
-
-  String get imgPath => 'packages/nightscout_reporter/assets/img/lang-${img}.png';
+  String get dateformat => Intl.message("dd.MM.yyyy");
+  String get dateShortFormat => Intl.message("dd.MM.");
+  String get imgPath => "packages/nightscout_reporter/assets/img/lang-${img}.png";
 
   LangData(this.code, this.name, this.img);
 }
