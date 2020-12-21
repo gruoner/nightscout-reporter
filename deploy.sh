@@ -15,7 +15,7 @@ then
   echo "refreshing build stack"
   echo "======================"
   $PUB get
-  $PUB global activate webdev
+  $PUB global activate webdev 2.5.9
 fi
 
 if [[ "$1" =~ "all" || "$1" =~ "build" ]]
