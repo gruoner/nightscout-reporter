@@ -35,7 +35,6 @@ class MaterialInputShowPasswordDirective {
   styleUrls: ['settings_component.css'],
   templateUrl: 'settings_component.html',
   directives: [
-    ModalComponent,
     MaterialDialogComponent,
     MaterialInputComponent,
     MaterialFabComponent,
@@ -65,8 +64,6 @@ class SettingsComponent implements OnInit {
   @Output('settingsresult')
   Stream<html.UIEvent> get trigger => _trigger.stream;
   final _trigger = StreamController<html.UIEvent>.broadcast(sync: true);
-
-  bool isVisible = true;
 
   SettingsComponent();
 
@@ -128,6 +125,11 @@ class SettingsComponent implements OnInit {
       case 1:
         try {
           g.userList.removeAt(g.userIdx);
+          g.isConfigured &= g.userList.isNotEmpty;
+          if (!g.isConfigured) {
+            g.saveWebData();
+            fire('ok');
+          }
           // ignore: empty_catches
         } catch (e) {}
         break;
@@ -193,7 +195,7 @@ class SettingsComponent implements OnInit {
   }
 
   Future<void> checkUser([String event]) async {
-    g.user.listApiUrl.sort((a, b) => a.startDate.compareTo(b.startDate));
+    g.user.listApiUrl.sort((a, b) => g.compareDate(a.endDate, b.endDate));
     progressText = msgCheckUser(g.user.apiUrl(null, '', noApi: true));
     var ret = await g.user.isValid;
     progressText = null;
