@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2020-10-18T06:51:49.600399",
+  "@@last_modified": "2021-06-09T15:58:13.572115",
   "Überprüfe Zugriff auf Nightscout ...": "Überprüfe Zugriff auf Nightscout ...",
   "@Überprüfe Zugriff auf Nightscout ...": {
     "type": "text",
@@ -145,6 +145,7 @@
   },
   "dd.MM.yyyy": "dd.MM.yyyy",
   "@dd.MM.yyyy": {
+    "description": "this is the dateformat, please use dd for days, MM for months and yyyy for year. It has to be the english formatstring.",
     "type": "text",
     "placeholders": {}
   },
@@ -274,6 +275,26 @@
     "type": "text",
     "placeholders": {}
   },
+  "Erstes Quartal": "Erstes Quartal",
+  "@Erstes Quartal": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Zweites Quartal": "Zweites Quartal",
+  "@Zweites Quartal": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Drittes Quartal": "Drittes Quartal",
+  "@Drittes Quartal": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Viertes Quartal": "Viertes Quartal",
+  "@Viertes Quartal": {
+    "type": "text",
+    "placeholders": {}
+  },
   "Ausgewählter Zeitraum": "Ausgewählter Zeitraum",
   "@Ausgewählter Zeitraum": {
     "type": "text",
@@ -351,6 +372,11 @@
   },
   "Mo|Di|Mi|Do|Fr|Sa|So": "Mo|Di|Mi|Do|Fr|Sa|So",
   "@Mo|Di|Mi|Do|Fr|Sa|So": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Bis heute|Bis gestern|Bis Wochenende": "Bis heute|Bis gestern|Bis Wochenende",
+  "@Bis heute|Bis gestern|Bis Wochenende": {
     "type": "text",
     "placeholders": {}
   },
@@ -819,6 +845,11 @@
     "type": "text",
     "placeholders": {}
   },
+  "Ø KH pro Mahlzeit": "Ø KH pro Mahlzeit",
+  "@Ø KH pro Mahlzeit": {
+    "type": "text",
+    "placeholders": {}
+  },
   "Ø Insulin pro Tag": "Ø Insulin pro Tag",
   "@Ø Insulin pro Tag": {
     "type": "text",
@@ -1207,6 +1238,11 @@
       "value": {}
     }
   },
+  "Durchschnitt": "Durchschnitt",
+  "@Durchschnitt": {
+    "type": "text",
+    "placeholders": {}
+  },
   "Standardabweichung": "Standardabweichung",
   "@Standardabweichung": {
     "type": "text",
@@ -1339,8 +1375,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "Dieses Formular zeigt die Auswertung der Werte des ausgewählten Zeitraums. Dabei wird auch\nder durchscnittliche Verbrauch an Materialien rechnerisch ermittelt und angezeigt. Dieses Formular beinhaltet\ndie meisten Informationen, die Diabetologen gerne wissen wollen.\n\nDer HbA1c wird rechnerisch aus den vorhandenen Daten ermittelt und weicht normalerweise nicht unerheblich von\ndem tatsächlich gemessenen Wert ab. Der Wert, der aus der Blutprobe ermittelt wird, gibt die tatsächliche\nBindung von Glukose im Blut wieder. Da diese von zusätzlichen Faktoren abhängig ist und nicht nur von den hier\nverwendeten Messdaten, ergeben sich Unterschiede zum errechneten Wert. Vor allem, wenn es sich bei den gemessenen\nWerten nicht um Blutzucker, sondern um Gewebszucker handelt, wie er von CGM-Systemen verwendet wird.\n\nTrotzdem ist dieser Wert ein grober Anhaltspunkt für die Qualität der Glukoseeinstellung und wird in der vom Labor\nermittelten Form gerne von Diabetologen als Richtwert verwendet, weshalb er hier angezeigt wird. Er wird aber in\nschwächerer Schrift ausgegeben, damit seine zweifelhafte Natur auch erkennbar ist.": "Dieses Formular zeigt die Auswertung der Werte des ausgewählten Zeitraums. Dabei wird auch\nder durchscnittliche Verbrauch an Materialien rechnerisch ermittelt und angezeigt. Dieses Formular beinhaltet\ndie meisten Informationen, die Diabetologen gerne wissen wollen.\n\nDer HbA1c wird rechnerisch aus den vorhandenen Daten ermittelt und weicht normalerweise nicht unerheblich von\ndem tatsächlich gemessenen Wert ab. Der Wert, der aus der Blutprobe ermittelt wird, gibt die tatsächliche\nBindung von Glukose im Blut wieder. Da diese von zusätzlichen Faktoren abhängig ist und nicht nur von den hier\nverwendeten Messdaten, ergeben sich Unterschiede zum errechneten Wert. Vor allem, wenn es sich bei den gemessenen\nWerten nicht um Blutzucker, sondern um Gewebszucker handelt, wie er von CGM-Systemen verwendet wird.\n\nTrotzdem ist dieser Wert ein grober Anhaltspunkt für die Qualität der Glukoseeinstellung und wird in der vom Labor\nermittelten Form gerne von Diabetologen als Richtwert verwendet, weshalb er hier angezeigt wird. Er wird aber in\nschwächerer Schrift ausgegeben, damit seine zweifelhafte Natur auch erkennbar ist.",
-  "@Dieses Formular zeigt die Auswertung der Werte des ausgewählten Zeitraums. Dabei wird auch\nder durchscnittliche Verbrauch an Materialien rechnerisch ermittelt und angezeigt. Dieses Formular beinhaltet\ndie meisten Informationen, die Diabetologen gerne wissen wollen.\n\nDer HbA1c wird rechnerisch aus den vorhandenen Daten ermittelt und weicht normalerweise nicht unerheblich von\ndem tatsächlich gemessenen Wert ab. Der Wert, der aus der Blutprobe ermittelt wird, gibt die tatsächliche\nBindung von Glukose im Blut wieder. Da diese von zusätzlichen Faktoren abhängig ist und nicht nur von den hier\nverwendeten Messdaten, ergeben sich Unterschiede zum errechneten Wert. Vor allem, wenn es sich bei den gemessenen\nWerten nicht um Blutzucker, sondern um Gewebszucker handelt, wie er von CGM-Systemen verwendet wird.\n\nTrotzdem ist dieser Wert ein grober Anhaltspunkt für die Qualität der Glukoseeinstellung und wird in der vom Labor\nermittelten Form gerne von Diabetologen als Richtwert verwendet, weshalb er hier angezeigt wird. Er wird aber in\nschwächerer Schrift ausgegeben, damit seine zweifelhafte Natur auch erkennbar ist.": {
+  "Dieses Formular zeigt die Auswertung der Werte des ausgewählten\nZeitraums. Dabei wird auch der durchscnittliche Verbrauch an Materialien\nrechnerisch ermittelt und angezeigt. Dieses Formular beinhaltet die meisten\nInformationen, die Diabetologen gerne wissen wollen.\n\nDer HbA1c wird rechnerisch aus den vorhandenen Daten ermittelt und weicht\nnormalerweise nicht unerheblich von dem tatsächlich gemessenen Wert ab. Der\nWert, der aus der Blutprobe ermittelt wird, gibt die tatsächliche Bindung\nvon Glukose im Blut wieder. Da diese von zusätzlichen Faktoren abhängig ist\nund nicht nur von den hier verwendeten Messdaten, ergeben sich Unterschiede\nzum errechneten Wert. Vor allem, wenn es sich bei den gemessenen Werten nicht\num Blutzucker, sondern um Gewebszucker handelt, wie er von CGM-Systemen\nverwendet wird.\n\nTrotzdem ist dieser Wert ein grober Anhaltspunkt für die Qualität der\nGlukoseeinstellung und wird in der vom Labor ermittelten Form gerne von\nDiabetologen als Richtwert verwendet, weshalb er hier angezeigt wird. Er wird\naber in schwächerer Schrift ausgegeben, damit seine zweifelhafte Natur auch\nerkennbar ist.": "Dieses Formular zeigt die Auswertung der Werte des ausgewählten\nZeitraums. Dabei wird auch der durchscnittliche Verbrauch an Materialien\nrechnerisch ermittelt und angezeigt. Dieses Formular beinhaltet die meisten\nInformationen, die Diabetologen gerne wissen wollen.\n\nDer HbA1c wird rechnerisch aus den vorhandenen Daten ermittelt und weicht\nnormalerweise nicht unerheblich von dem tatsächlich gemessenen Wert ab. Der\nWert, der aus der Blutprobe ermittelt wird, gibt die tatsächliche Bindung\nvon Glukose im Blut wieder. Da diese von zusätzlichen Faktoren abhängig ist\nund nicht nur von den hier verwendeten Messdaten, ergeben sich Unterschiede\nzum errechneten Wert. Vor allem, wenn es sich bei den gemessenen Werten nicht\num Blutzucker, sondern um Gewebszucker handelt, wie er von CGM-Systemen\nverwendet wird.\n\nTrotzdem ist dieser Wert ein grober Anhaltspunkt für die Qualität der\nGlukoseeinstellung und wird in der vom Labor ermittelten Form gerne von\nDiabetologen als Richtwert verwendet, weshalb er hier angezeigt wird. Er wird\naber in schwächerer Schrift ausgegeben, damit seine zweifelhafte Natur auch\nerkennbar ist.",
+  "@Dieses Formular zeigt die Auswertung der Werte des ausgewählten\nZeitraums. Dabei wird auch der durchscnittliche Verbrauch an Materialien\nrechnerisch ermittelt und angezeigt. Dieses Formular beinhaltet die meisten\nInformationen, die Diabetologen gerne wissen wollen.\n\nDer HbA1c wird rechnerisch aus den vorhandenen Daten ermittelt und weicht\nnormalerweise nicht unerheblich von dem tatsächlich gemessenen Wert ab. Der\nWert, der aus der Blutprobe ermittelt wird, gibt die tatsächliche Bindung\nvon Glukose im Blut wieder. Da diese von zusätzlichen Faktoren abhängig ist\nund nicht nur von den hier verwendeten Messdaten, ergeben sich Unterschiede\nzum errechneten Wert. Vor allem, wenn es sich bei den gemessenen Werten nicht\num Blutzucker, sondern um Gewebszucker handelt, wie er von CGM-Systemen\nverwendet wird.\n\nTrotzdem ist dieser Wert ein grober Anhaltspunkt für die Qualität der\nGlukoseeinstellung und wird in der vom Labor ermittelten Form gerne von\nDiabetologen als Richtwert verwendet, weshalb er hier angezeigt wird. Er wird\naber in schwächerer Schrift ausgegeben, damit seine zweifelhafte Natur auch\nerkennbar ist.": {
     "description": "help for analysis",
     "type": "text",
     "placeholders": {}
@@ -1576,13 +1612,19 @@
     "type": "text",
     "placeholders": {}
   },
+  "Dieses Formular zeigt eine Übersicht für einen Tag. Hier \n  werden die Tagesgrafik, die Basalrate, die Basalratenanpassungen, Insulin On \n  Board und Carbs On Board angezeigt.": "Dieses Formular zeigt eine Übersicht für einen Tag. Hier \n  werden die Tagesgrafik, die Basalrate, die Basalratenanpassungen, Insulin On \n  Board und Carbs On Board angezeigt.",
+  "@Dieses Formular zeigt eine Übersicht für einen Tag. Hier \n  werden die Tagesgrafik, die Basalrate, die Basalratenanpassungen, Insulin On \n  Board und Carbs On Board angezeigt.": {
+    "description": "help for dailyanalysis",
+    "type": "text",
+    "placeholders": {}
+  },
   "Tagesanalyse": "Tagesanalyse",
   "@Tagesanalyse": {
     "type": "text",
     "placeholders": {}
   },
-  "Dieses Formular zeigt den Trend der Glukosewerte über den Tag hinweg an. Dabei wird in der Spalte Trend immer\nangezeigt, um wieviel Prozent sich der Wert von einer vollen Stunde zur nächsten verändert hat. Dieser Trend\nist ganz hilfreich, wenn man bei einem Basalratentest erkennen will, wie sich der Glukosewert nur anhand der\nBasalrate entwickelt. Es kann auch eine Spalte für die Boluswerte und die Kohlenhydrate angezeigt werden.\nDiese sollten aber bei einem Basalratentest natürlich leer sein. Ebenso muss ein eventuell vorhandener Loop \nim Zeitraum des Tests abgeschaltet sein. Es geht dabei nur um den Diabetiker und seine Basalrate.\n\nEs wird auch eine Spalte mit der Basalrate angezeigt, wenn die Option \"Alle Werte für einen Tag anzeigen\"\nnicht markiert wurde. Wenn die Option markiert wurde, dann fehlt der Platz (und auch der Sinn), diese\ndarzustellen.": "Dieses Formular zeigt den Trend der Glukosewerte über den Tag hinweg an. Dabei wird in der Spalte Trend immer\nangezeigt, um wieviel Prozent sich der Wert von einer vollen Stunde zur nächsten verändert hat. Dieser Trend\nist ganz hilfreich, wenn man bei einem Basalratentest erkennen will, wie sich der Glukosewert nur anhand der\nBasalrate entwickelt. Es kann auch eine Spalte für die Boluswerte und die Kohlenhydrate angezeigt werden.\nDiese sollten aber bei einem Basalratentest natürlich leer sein. Ebenso muss ein eventuell vorhandener Loop \nim Zeitraum des Tests abgeschaltet sein. Es geht dabei nur um den Diabetiker und seine Basalrate.\n\nEs wird auch eine Spalte mit der Basalrate angezeigt, wenn die Option \"Alle Werte für einen Tag anzeigen\"\nnicht markiert wurde. Wenn die Option markiert wurde, dann fehlt der Platz (und auch der Sinn), diese\ndarzustellen.",
-  "@Dieses Formular zeigt den Trend der Glukosewerte über den Tag hinweg an. Dabei wird in der Spalte Trend immer\nangezeigt, um wieviel Prozent sich der Wert von einer vollen Stunde zur nächsten verändert hat. Dieser Trend\nist ganz hilfreich, wenn man bei einem Basalratentest erkennen will, wie sich der Glukosewert nur anhand der\nBasalrate entwickelt. Es kann auch eine Spalte für die Boluswerte und die Kohlenhydrate angezeigt werden.\nDiese sollten aber bei einem Basalratentest natürlich leer sein. Ebenso muss ein eventuell vorhandener Loop \nim Zeitraum des Tests abgeschaltet sein. Es geht dabei nur um den Diabetiker und seine Basalrate.\n\nEs wird auch eine Spalte mit der Basalrate angezeigt, wenn die Option \"Alle Werte für einen Tag anzeigen\"\nnicht markiert wurde. Wenn die Option markiert wurde, dann fehlt der Platz (und auch der Sinn), diese\ndarzustellen.": {
+  "Dieses Formular zeigt den Trend der Glukosewerte über den Tag hinweg \nan. Dabei wird in der Spalte Trend immer angezeigt, um wieviel Prozent sich \nder Wert von einer vollen Stunde zur nächsten verändert hat. Dieser Trend ist\nganz hilfreich, wenn man bei einem Basalratentest erkennen will, wie sich der\nGlukosewert nur anhand der Basalrate entwickelt. Es kann auch eine Spalte für\ndie Boluswerte und die Kohlenhydrate angezeigt werden. Diese sollten aber bei\neinem Basalratentest natürlich leer sein. Ebenso muss ein eventuell\nvorhandener Loop im Zeitraum des Tests abgeschaltet sein. Es geht dabei nur\num den Diabetiker und seine Basalrate.\nEs wird auch eine Spalte mit der\nBasalrate angezeigt, wenn die Option \"Alle Werte für einen Tag anzeigen\"\nnicht markiert wurde. Wenn die Option markiert wurde, dann fehlt der Platz\n(und auch der Sinn), diese darzustellen.": "Dieses Formular zeigt den Trend der Glukosewerte über den Tag hinweg \nan. Dabei wird in der Spalte Trend immer angezeigt, um wieviel Prozent sich \nder Wert von einer vollen Stunde zur nächsten verändert hat. Dieser Trend ist\nganz hilfreich, wenn man bei einem Basalratentest erkennen will, wie sich der\nGlukosewert nur anhand der Basalrate entwickelt. Es kann auch eine Spalte für\ndie Boluswerte und die Kohlenhydrate angezeigt werden. Diese sollten aber bei\neinem Basalratentest natürlich leer sein. Ebenso muss ein eventuell\nvorhandener Loop im Zeitraum des Tests abgeschaltet sein. Es geht dabei nur\num den Diabetiker und seine Basalrate.\nEs wird auch eine Spalte mit der\nBasalrate angezeigt, wenn die Option \"Alle Werte für einen Tag anzeigen\"\nnicht markiert wurde. Wenn die Option markiert wurde, dann fehlt der Platz\n(und auch der Sinn), diese darzustellen.",
+  "@Dieses Formular zeigt den Trend der Glukosewerte über den Tag hinweg \nan. Dabei wird in der Spalte Trend immer angezeigt, um wieviel Prozent sich \nder Wert von einer vollen Stunde zur nächsten verändert hat. Dieser Trend ist\nganz hilfreich, wenn man bei einem Basalratentest erkennen will, wie sich der\nGlukosewert nur anhand der Basalrate entwickelt. Es kann auch eine Spalte für\ndie Boluswerte und die Kohlenhydrate angezeigt werden. Diese sollten aber bei\neinem Basalratentest natürlich leer sein. Ebenso muss ein eventuell\nvorhandener Loop im Zeitraum des Tests abgeschaltet sein. Es geht dabei nur\num den Diabetiker und seine Basalrate.\nEs wird auch eine Spalte mit der\nBasalrate angezeigt, wenn die Option \"Alle Werte für einen Tag anzeigen\"\nnicht markiert wurde. Wenn die Option markiert wurde, dann fehlt der Platz\n(und auch der Sinn), diese darzustellen.": {
     "description": "help for daygluc",
     "type": "text",
     "placeholders": {}
@@ -1745,6 +1787,11 @@
     "type": "text",
     "placeholders": {}
   },
+  "Zielwert anzeigen": "Zielwert anzeigen",
+  "@Zielwert anzeigen": {
+    "type": "text",
+    "placeholders": {}
+  },
   "Basal ges.": "Basal ges.",
   "@Basal ges.": {
     "type": "text",
@@ -1770,8 +1817,8 @@
     "type": "text",
     "placeholders": {}
   },
-  "Dieses Formular zeigt eine Übersicht über die Stunden der Tage des ausgewählten \nZeitraums an. Die angezeigten Werte sind die Mittelwerte der innerhalb der entsprechenden Stunde gemessenen Werte.\nSie werden anhand des ausgewählten Zielbereichs eingefärbt. In den Formularoptionen kann man die Startstunde festlegen.\nDie Datumsspalte befindet sich immer links von 0 Uhr und zeigt an, wo ein neuer Tag beginnt.": "Dieses Formular zeigt eine Übersicht über die Stunden der Tage des ausgewählten \nZeitraums an. Die angezeigten Werte sind die Mittelwerte der innerhalb der entsprechenden Stunde gemessenen Werte.\nSie werden anhand des ausgewählten Zielbereichs eingefärbt. In den Formularoptionen kann man die Startstunde festlegen.\nDie Datumsspalte befindet sich immer links von 0 Uhr und zeigt an, wo ein neuer Tag beginnt.",
-  "@Dieses Formular zeigt eine Übersicht über die Stunden der Tage des ausgewählten \nZeitraums an. Die angezeigten Werte sind die Mittelwerte der innerhalb der entsprechenden Stunde gemessenen Werte.\nSie werden anhand des ausgewählten Zielbereichs eingefärbt. In den Formularoptionen kann man die Startstunde festlegen.\nDie Datumsspalte befindet sich immer links von 0 Uhr und zeigt an, wo ein neuer Tag beginnt.": {
+  "Dieses Formular zeigt eine Übersicht über die \nStunden der Tage des ausgewählten Zeitraums an. Die angezeigten Werte sind die\nMittelwerte der innerhalb der entsprechenden Stunde gemessenen Werte. Sie\nwerden anhand des ausgewählten Zielbereichs eingefärbt. In den Formularoptionen\nkann man die Startstunde festlegen. Die Datumsspalte befindet sich immer links\nvon 0 Uhr und zeigt an, wo ein neuer Tag beginnt.": "Dieses Formular zeigt eine Übersicht über die \nStunden der Tage des ausgewählten Zeitraums an. Die angezeigten Werte sind die\nMittelwerte der innerhalb der entsprechenden Stunde gemessenen Werte. Sie\nwerden anhand des ausgewählten Zielbereichs eingefärbt. In den Formularoptionen\nkann man die Startstunde festlegen. Die Datumsspalte befindet sich immer links\nvon 0 Uhr und zeigt an, wo ein neuer Tag beginnt.",
+  "@Dieses Formular zeigt eine Übersicht über die \nStunden der Tage des ausgewählten Zeitraums an. Die angezeigten Werte sind die\nMittelwerte der innerhalb der entsprechenden Stunde gemessenen Werte. Sie\nwerden anhand des ausgewählten Zielbereichs eingefärbt. In den Formularoptionen\nkann man die Startstunde festlegen. Die Datumsspalte befindet sich immer links\nvon 0 Uhr und zeigt an, wo ein neuer Tag beginnt.": {
     "description": "help for dayhours",
     "type": "text",
     "placeholders": {}
@@ -2053,6 +2100,26 @@
     "type": "text",
     "placeholders": {}
   },
+  "Basal anzeigen": "Basal anzeigen",
+  "@Basal anzeigen": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Kohlenhydrate anzeigen": "Kohlenhydrate anzeigen",
+  "@Kohlenhydrate anzeigen": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Min / Max Werte anzeigen": "Min / Max Werte anzeigen",
+  "@Min / Max Werte anzeigen": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Bolus anzeigen": "Bolus anzeigen",
+  "@Bolus anzeigen": {
+    "type": "text",
+    "placeholders": {}
+  },
   "TDD anzeigen": "TDD anzeigen",
   "@TDD anzeigen": {
     "type": "text",
@@ -2060,6 +2127,27 @@
   },
   "Tagesstatistik": "Tagesstatistik",
   "@Tagesstatistik": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Dieses Formular zeig die Verteilung der Glukosewerte\nim ausgewählten Zeitraum an.": "Dieses Formular zeig die Verteilung der Glukosewerte\nim ausgewählten Zeitraum an.",
+  "@Dieses Formular zeig die Verteilung der Glukosewerte\nim ausgewählten Zeitraum an.": {
+    "description": "help for template",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Verteilung der Glukosewerte": "Verteilung der Glukosewerte",
+  "@Verteilung der Glukosewerte": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Bei 0 beginnen": "Bei 0 beginnen",
+  "@Bei 0 beginnen": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Schritte": "Schritte",
+  "@Schritte": {
     "type": "text",
     "placeholders": {}
   },
@@ -2104,6 +2192,22 @@
   },
   "Nur letztes Profil ausgeben": "Nur letztes Profil ausgeben",
   "@Nur letztes Profil ausgeben": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Dieses Formular ...": "Dieses Formular ...",
+  "@Dieses Formular ...": {
+    "description": "help for template",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Template": "Template",
+  "@Template": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Irgendwas zum Einstellen": "Irgendwas zum Einstellen",
+  "@Irgendwas zum Einstellen": {
     "type": "text",
     "placeholders": {}
   },
@@ -2322,6 +2426,48 @@
     "type": "text",
     "placeholders": {}
   },
+  "Optionen": "Optionen",
+  "@Optionen": {
+    "description": "title for parameters",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Spenden": "Spenden",
+  "@Spenden": {
+    "description": "title of donate button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Zur Listenansicht": "Zur Listenansicht",
+  "@Zur Listenansicht": {
+    "description": "title of listview",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Zur Kachelansicht": "Zur Kachelansicht",
+  "@Zur Kachelansicht": {
+    "description": "title of tileview",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Google Assistant": "Google Assistant",
+  "@Google Assistant": {
+    "description": "title of nightscout status",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Nightscout Seite": "Nightscout Seite",
+  "@Nightscout Seite": {
+    "description": "title of nightscout page",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Nightscout Berichte": "Nightscout Berichte",
+  "@Nightscout Berichte": {
+    "description": "title of nightscout reports",
+    "type": "text",
+    "placeholders": {}
+  },
   "Anmeldung bei Google...": "Anmeldung bei Google...",
   "@Anmeldung bei Google...": {
     "description": "signin to google",
@@ -2361,42 +2507,6 @@
   "Gross": "Gross",
   "@Gross": {
     "description": "big",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Optionen": "Optionen",
-  "@Optionen": {
-    "description": "title for parameters",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Zur Listenansicht": "Zur Listenansicht",
-  "@Zur Listenansicht": {
-    "description": "title of listview",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Zur Kachelansicht": "Zur Kachelansicht",
-  "@Zur Kachelansicht": {
-    "description": "title of tileview",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Google Assistant": "Google Assistant",
-  "@Google Assistant": {
-    "description": "title of nightscout status",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Nightscout Seite": "Nightscout Seite",
-  "@Nightscout Seite": {
-    "description": "title of nightscout page",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Nightscout Berichte": "Nightscout Berichte",
-  "@Nightscout Berichte": {
-    "description": "title of nightscout reports",
     "type": "text",
     "placeholders": {}
   },
@@ -2502,6 +2612,12 @@
     "type": "text",
     "placeholders": {}
   },
+  "Loopdaten verbergen (die auf diese Art markierten Optionen ignorieren)": "Loopdaten verbergen (die auf diese Art markierten Optionen ignorieren)",
+  "@Loopdaten verbergen (die auf diese Art markierten Optionen ignorieren)": {
+    "description": "label for checkbox to hide loop data",
+    "type": "text",
+    "placeholders": {}
+  },
   "Nightscout Url in der Fusszeile des PDFs anzeigen": "Nightscout Url in der Fusszeile des PDFs anzeigen",
   "@Nightscout Url in der Fusszeile des PDFs anzeigen": {
     "description": "label for checkbox to show nightscout url in footer",
@@ -2523,12 +2639,6 @@
   "PDF erzeugen": "PDF erzeugen",
   "@PDF erzeugen": {
     "description": "buttonlabel for saving data",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Loopdaten verbergen (die auf diese Art markierten Optionen ignorieren)": "Loopdaten verbergen (die auf diese Art markierten Optionen ignorieren)",
-  "@Loopdaten verbergen (die auf diese Art markierten Optionen ignorieren)": {
-    "description": "label for checkbox to hide loop data",
     "type": "text",
     "placeholders": {}
   },
@@ -2736,9 +2846,141 @@
     "type": "text",
     "placeholders": {}
   },
+  "Einstiegsvideo": "Einstiegsvideo",
+  "@Einstiegsvideo": {
+    "description": "label for button to open settings on welcome screen",
+    "type": "text",
+    "placeholders": {}
+  },
   "Version": "Version",
   "@Version": {
     "description": "version",
+    "type": "text",
+    "placeholders": {}
+  },
+  "2.0.8 - 09.06.2021": "2.0.8 - 09.06.2021",
+  "@2.0.8 - 09.06.2021": {
+    "description": "v208",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Es gibt ein neues Formular namens \"Verteilung der Glucosewerte\". Das zeigt die prozentuale Verteilung der Glukosewerte für den ausgewählen Zeitraum an.": "Es gibt ein neues Formular namens \"Verteilung der Glucosewerte\". Das zeigt die prozentuale Verteilung der Glukosewerte für den ausgewählen Zeitraum an.",
+  "@Es gibt ein neues Formular namens \"Verteilung der Glucosewerte\". Das zeigt die prozentuale Verteilung der Glukosewerte für den ausgewählen Zeitraum an.": {
+    "description": "v208a1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "In der Tagesstatistik werden nun in der Summenzeile die Durchschnittswerte für einige Werte zusätzlich angezeigt.": "In der Tagesstatistik werden nun in der Summenzeile die Durchschnittswerte für einige Werte zusätzlich angezeigt.",
+  "@In der Tagesstatistik werden nun in der Summenzeile die Durchschnittswerte für einige Werte zusätzlich angezeigt.": {
+    "description": "v208a2",
+    "type": "text",
+    "placeholders": {}
+  },
+  "2.0.7 - 17.04.2021": "2.0.7 - 17.04.2021",
+  "@2.0.7 - 17.04.2021": {
+    "description": "v207",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Bei der Festlegung des Zeitraums kann man jetzt angeben, bis zu welchem Tag der Zeitraum ermittelt werden soll. Voreingestellt ist so wie bisher auch der aktuelle Tag. Man kann aber auch den gestrigen Tag einstellen, um Tage mit vollständigen Daten zu haben, oder das letzte Wochenende, wenn man an vollständigen Wochen interessiert ist.": "Bei der Festlegung des Zeitraums kann man jetzt angeben, bis zu welchem Tag der Zeitraum ermittelt werden soll. Voreingestellt ist so wie bisher auch der aktuelle Tag. Man kann aber auch den gestrigen Tag einstellen, um Tage mit vollständigen Daten zu haben, oder das letzte Wochenende, wenn man an vollständigen Wochen interessiert ist.",
+  "@Bei der Festlegung des Zeitraums kann man jetzt angeben, bis zu welchem Tag der Zeitraum ermittelt werden soll. Voreingestellt ist so wie bisher auch der aktuelle Tag. Man kann aber auch den gestrigen Tag einstellen, um Tage mit vollständigen Daten zu haben, oder das letzte Wochenende, wenn man an vollständigen Wochen interessiert ist.": {
+    "description": "v207a1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Dialoge und die Anzeige des Fortschritts werden nun technisch etwas anders umgesetzt. Deswegen wird der Anwendungshintergrund nun in den Fällen dunkler dargestellt und es ist nicht möglich darauf etwas anzuklicken.": "Dialoge und die Anzeige des Fortschritts werden nun technisch etwas anders umgesetzt. Deswegen wird der Anwendungshintergrund nun in den Fällen dunkler dargestellt und es ist nicht möglich darauf etwas anzuklicken.",
+  "@Dialoge und die Anzeige des Fortschritts werden nun technisch etwas anders umgesetzt. Deswegen wird der Anwendungshintergrund nun in den Fällen dunkler dargestellt und es ist nicht möglich darauf etwas anzuklicken.": {
+    "description": "v207c1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Ein Fehler wurde behoben, der dazu führte, dass Dialoge mit Escape geschlossen werden konnten, was die Anwendung in einem unbrauchbaren Zustand zurückliess.": "Ein Fehler wurde behoben, der dazu führte, dass Dialoge mit Escape geschlossen werden konnten, was die Anwendung in einem unbrauchbaren Zustand zurückliess.",
+  "@Ein Fehler wurde behoben, der dazu führte, dass Dialoge mit Escape geschlossen werden konnten, was die Anwendung in einem unbrauchbaren Zustand zurückliess.": {
+    "description": "v207f1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Ein Fehler wurde behoben, der bei der Auswahl des Zeitraums die Benutzung verhinderte, wenn man ein leeres Eingabefeld fokussierte.": "Ein Fehler wurde behoben, der bei der Auswahl des Zeitraums die Benutzung verhinderte, wenn man ein leeres Eingabefeld fokussierte.",
+  "@Ein Fehler wurde behoben, der bei der Auswahl des Zeitraums die Benutzung verhinderte, wenn man ein leeres Eingabefeld fokussierte.": {
+    "description": "v207f2",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Ein Fehler wurde behoben, der dafür sorgte, dass die Anwendung in einem undefinierten Zustand war, wenn man den letzten Benutzer gelöscht hat.": "Ein Fehler wurde behoben, der dafür sorgte, dass die Anwendung in einem undefinierten Zustand war, wenn man den letzten Benutzer gelöscht hat.",
+  "@Ein Fehler wurde behoben, der dafür sorgte, dass die Anwendung in einem undefinierten Zustand war, wenn man den letzten Benutzer gelöscht hat.": {
+    "description": "v207f3",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Die falsche Bezeichnung für durchschnittliche Kohlenhydrate pro Tag in der Tagesstatistik wurde durch die korrekte Bezeichnung für durchschnittliche Kohlenhydrate pro Mahlzeit ersetzt.": "Die falsche Bezeichnung für durchschnittliche Kohlenhydrate pro Tag in der Tagesstatistik wurde durch die korrekte Bezeichnung für durchschnittliche Kohlenhydrate pro Mahlzeit ersetzt.",
+  "@Die falsche Bezeichnung für durchschnittliche Kohlenhydrate pro Tag in der Tagesstatistik wurde durch die korrekte Bezeichnung für durchschnittliche Kohlenhydrate pro Mahlzeit ersetzt.": {
+    "description": "v207f4",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Die Ausgabe des Zielwertes und der blutigen Werte in der Tagesgrafik wurde korrigiert. Da gab es Probleme, wenn man eine andere Blutzucker Einheit als die auf dem Server eingestellte zur Ausgabe verwendet hat.": "Die Ausgabe des Zielwertes und der blutigen Werte in der Tagesgrafik wurde korrigiert. Da gab es Probleme, wenn man eine andere Blutzucker Einheit als die auf dem Server eingestellte zur Ausgabe verwendet hat.",
+  "@Die Ausgabe des Zielwertes und der blutigen Werte in der Tagesgrafik wurde korrigiert. Da gab es Probleme, wenn man eine andere Blutzucker Einheit als die auf dem Server eingestellte zur Ausgabe verwendet hat.": {
+    "description": "v207f5",
+    "type": "text",
+    "placeholders": {}
+  },
+  "2.0.6 - 17.03.2021": "2.0.6 - 17.03.2021",
+  "@2.0.6 - 17.03.2021": {
+    "description": "v206",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Das Logo von Nightscout Reporter wurde geändert. Es ist nach wie vor die bekannte und beliebte Eule, aber sie hat nun eine Mütze auf wie die Zeitungsausträger und teilweise auch Journalisten in uralten Filmen. Das Logo ist nur im Programm vorhanden und erscheint nicht auf den PDFs. Dort ist nach wie vor das normale Nightscout Logo, weil es dort platziert wurde, um auf Nightscout selbst hinzuweisen.": "Das Logo von Nightscout Reporter wurde geändert. Es ist nach wie vor die bekannte und beliebte Eule, aber sie hat nun eine Mütze auf wie die Zeitungsausträger und teilweise auch Journalisten in uralten Filmen. Das Logo ist nur im Programm vorhanden und erscheint nicht auf den PDFs. Dort ist nach wie vor das normale Nightscout Logo, weil es dort platziert wurde, um auf Nightscout selbst hinzuweisen.",
+  "@Das Logo von Nightscout Reporter wurde geändert. Es ist nach wie vor die bekannte und beliebte Eule, aber sie hat nun eine Mütze auf wie die Zeitungsausträger und teilweise auch Journalisten in uralten Filmen. Das Logo ist nur im Programm vorhanden und erscheint nicht auf den PDFs. Dort ist nach wie vor das normale Nightscout Logo, weil es dort platziert wurde, um auf Nightscout selbst hinzuweisen.": {
+    "description": "v206c1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Ein Fehler bei der Ausgabe der temporären Ziele in der Tagesgrafik wurde behoben.": "Ein Fehler bei der Ausgabe der temporären Ziele in der Tagesgrafik wurde behoben.",
+  "@Ein Fehler bei der Ausgabe der temporären Ziele in der Tagesgrafik wurde behoben.": {
+    "description": "v206f1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "2.0.5 - 07.03.2021": "2.0.5 - 07.03.2021",
+  "@2.0.5 - 07.03.2021": {
+    "description": "v205",
+    "type": "text",
+    "placeholders": {}
+  },
+  "In der Tagesstatistik können nun Spalten für TDD und Kohlenhydrate angezeigt werden.": "In der Tagesstatistik können nun Spalten für TDD und Kohlenhydrate angezeigt werden.",
+  "@In der Tagesstatistik können nun Spalten für TDD und Kohlenhydrate angezeigt werden.": {
+    "description": "v205a1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Die URLs der Benutzer werden nun nach dem Enddatum sortiert.": "Die URLs der Benutzer werden nun nach dem Enddatum sortiert.",
+  "@Die URLs der Benutzer werden nun nach dem Enddatum sortiert.": {
+    "description": "v205c1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Der Titel vom Glucose Percentil Diagramm wird nun auch bei Ausdruck im Hochformat nicht mehr falsch in den Optionen Formularauswahl dargestellt.": "Der Titel vom Glucose Percentil Diagramm wird nun auch bei Ausdruck im Hochformat nicht mehr falsch in den Optionen Formularauswahl dargestellt.",
+  "@Der Titel vom Glucose Percentil Diagramm wird nun auch bei Ausdruck im Hochformat nicht mehr falsch in den Optionen Formularauswahl dargestellt.": {
+    "description": "v205f1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "2.0.4 - 18.02.2021": "2.0.4 - 18.02.2021",
+  "@2.0.4 - 18.02.2021": {
+    "description": "v204",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Es gibt eine neue Option in der Tagesgrafik mit der man den Zielwert ein- und ausblenden kann.": "Es gibt eine neue Option in der Tagesgrafik mit der man den Zielwert ein- und ausblenden kann.",
+  "@Es gibt eine neue Option in der Tagesgrafik mit der man den Zielwert ein- und ausblenden kann.": {
+    "description": "v204a1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Ein Fehler wurde behoben, der dazu führte, dass bei fehlenden Daten wie z.B. Treatments gar kein PDF mehr erstellt werden konnte.": "Ein Fehler wurde behoben, der dazu führte, dass bei fehlenden Daten wie z.B. Treatments gar kein PDF mehr erstellt werden konnte.",
+  "@Ein Fehler wurde behoben, der dazu führte, dass bei fehlenden Daten wie z.B. Treatments gar kein PDF mehr erstellt werden konnte.": {
+    "description": "v204f1",
     "type": "text",
     "placeholders": {}
   },
@@ -4415,5 +4657,18 @@
     "description": "v100a1",
     "type": "text",
     "placeholders": {}
+  },
+  "ViewWhatsnewComponent0__message_14": "Nachdem ich immer wieder gefragt wurde, ob man mir eine Spende zukommen lassen kann, habe ich mich jetzt dann doch dazu entschlossen, so eine Möglichkeit zur Verfügung zu stellen. Nightscout Reporter ist aber nach wie vor komplett kostenlos und wird das auch bleiben. Wer dennoch seiner Zuneigung zum Programm Ausdruck verleihen will, dem will ich mich nicht länger in den Weg stellen. Der Spenden-Button ist nicht sichtbar. Aber wer etwas in den {startTag0}Hut{endTag0} werfen will, der wird ihn finden :)",
+  "@ViewWhatsnewComponent0__message_14": {
+    "description": "v206a1",
+    "type": "text",
+    "placeholders": {
+      "startTag0": {
+        "example": "<b>"
+      },
+      "endTag0": {
+        "example": "</b>"
+      }
+    }
   }
 }

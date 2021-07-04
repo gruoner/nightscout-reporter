@@ -27,7 +27,9 @@ class LegendData {
   int maxLines;
 
   List current(bool forceNew) {
-    if (columns.isEmpty || (columns.last['stack'] as List).length >= maxLines || forceNew) {
+    if (columns.isEmpty ||
+        (columns.last['stack'] as List).length >= maxLines ||
+        forceNew) {
       x += columns.isNotEmpty ? colWidth : 0.0;
       columns.add({
         'relativePosition': {'x': x, 'y': y},
@@ -57,26 +59,45 @@ class ParamInfo {
   String _stringValue;
   int _intValue;
   bool isForThumbs = false;
+  Function checkValue;
 
-  bool get boolValue => isForThumbs ? thumbValue : (isLoopValue && Globals().hideLoopData ? false : _boolValue);
+  bool get boolValue => isForThumbs
+      ? thumbValue
+      : (isLoopValue && Globals().hideLoopData ? false : _boolValue);
 
   String get stringValue => isForThumbs ? thumbValue : _stringValue;
 
   int get intValue => isForThumbs ? thumbValue : _intValue;
 
-  set boolValue(value) => _boolValue = value;
+  void handleValueChange(dynamic value) {
+    if (checkValue != null) checkValue(this, value);
+  }
 
-  set intValue(value) => _intValue = value;
+  set boolValue(value) {
+    _boolValue = value;
+    handleValueChange(value);
+  }
 
-  set stringValue(value) => _stringValue = value;
+  set intValue(value) {
+    _intValue = value;
+    handleValueChange(value);
+  }
+
+  set stringValue(value) {
+    _stringValue = value;
+    handleValueChange(value);
+  }
+
   var thumbValue;
   bool isDeprecated;
   bool isLoopValue;
+  bool isDisabled = false;
 
   int get sliderValue => intValue >= min && intValue <= max ? intValue : min;
 
   set sliderValue(int value) {
     _intValue = value;
+    handleValueChange(value);
   }
 
   List<String> list;
@@ -84,7 +105,9 @@ class ParamInfo {
 
   String get listValue {
     if (list == null || list.isEmpty) return '';
-    if (intValue == null || intValue < 0 || intValue >= list.length) return list[0];
+    if (intValue == null || intValue < 0 || intValue >= list.length) {
+      return list[0];
+    }
     return list[intValue];
   }
 
@@ -132,35 +155,51 @@ class ParamInfo {
     return {'b': boolValue, 's': stringValue, 'i': intValue, 'sp': sp};
   }
 
-  fill(ParamInfo src) {
+  fill(ParamInfo src, Function checkValue) {
     _boolValue = src.boolValue;
     _stringValue = src.stringValue;
     _intValue = src.intValue;
     subParams = src.subParams;
+    if (checkValue != null) {
+      checkValue(this, null);
+    }
+    this.checkValue = checkValue;
   }
 
-  void fillFromJson(dynamic value) {
+  void fillFromJson(dynamic value, Function checkValue) {
     try {
       switch (type) {
         case ParamType.bool:
           _boolValue = value['b'] ?? false;
+          if (checkValue != null) {
+            checkValue(this, _boolValue);
+          }
           break;
         case ParamType.string:
           _stringValue = value['s'] ?? '';
+          if (checkValue != null) {
+            checkValue(this, _stringValue);
+          }
           break;
         case ParamType.int:
         case ParamType.list:
           _intValue = value['i'] ?? 0;
+          if (checkValue != null) {
+            checkValue(this, _intValue);
+          }
           break;
         default:
           break;
       }
       if (subParams != null) {
         for (int i = 0; i < subParams.length; i++) {
-          if (i < value['sp'].length) subParams[i].fillFromJson(value['sp'][i]);
+          if (i < value['sp'].length) {
+            subParams[i].fillFromJson(value['sp'][i], checkValue);
+          }
         }
       }
     } catch (ex) {}
+    this.checkValue = checkValue;
   }
 }
 
@@ -197,7 +236,7 @@ class FormConfig {
   void fill(FormConfig src) {
     for (var i = 0; i < src.form.params.length; i++) {
       if (i >= form.params.length) form.params.add(src.form.params[i]);
-      form.params[i].fill(src.form.params[i]);
+      form.params[i].fill(src.form.params[i], form.checkValue);
     }
     form.extractParams();
   }
@@ -206,7 +245,7 @@ class FormConfig {
     try {
       checked = value['c'];
       for (var i = 0; i < value['p'].length && i < form.params.length; i++) {
-        form.params[i].fillFromJson(value['p'][i]);
+        form.params[i].fillFromJson(value['p'][i], form.checkValue);
       }
       // ignore: empty_catches
     } catch (ex) {}
@@ -267,7 +306,11 @@ class DataNeeded {
   SubNeeded status = SubNeeded(false, false);
   SubNeeded data = SubNeeded(true, false);
 
-  DataNeeded({statusCurr = false, statusAny = false, dataCurr = true, dataAny = false}) {
+  DataNeeded(
+      {statusCurr = false,
+      statusAny = false,
+      dataCurr = true,
+      dataAny = false}) {
     status.current = statusCurr;
     status.anybody = statusAny;
     data.current = dataCurr;
@@ -309,9 +352,11 @@ abstract class BasePrint {
     var links = <String>[];
     for (var match in list) {
       var part = match.group(1);
-      var cfg = g.listConfig.firstWhere((cfg) => cfg.idx == part, orElse: () => null);
+      var cfg =
+          g.listConfig.firstWhere((cfg) => cfg.idx == part, orElse: () => null);
       if (cfg != null) {
-        links.add('</span><material-button (trigger)="g.show(\'Oleole\')">${cfg.form.title}</material-button><span>');
+        links.add(
+            '</span><material-button (trigger)="g.show(\'Oleole\')">${cfg.form.title}</material-button><span>');
       }
     }
     ret += links.toString();
@@ -336,7 +381,8 @@ abstract class BasePrint {
       pos = text.indexOf('@');
       if (pos >= 0) {
         var id = text.substring(0, pos);
-        var cfg = g.listConfig.firstWhere((cfg) => cfg.idx == id, orElse: () => null);
+        var cfg =
+            g.listConfig.firstWhere((cfg) => cfg.idx == id, orElse: () => null);
         if (cfg != null) {
           ret.add(HelpItem()
             ..type = 'btn'
@@ -356,7 +402,8 @@ abstract class BasePrint {
   }
 
   String get display {
-    var ret = title; //g.canDebug && pageCount > 0 ? '$title [ $pageCount ]' : title;
+    var ret =
+        title; //g.canDebug && pageCount > 0 ? '$title [ $pageCount ]' : title;
     if (isLocalOnly) ret = '$ret (local)';
     return ret;
   }
@@ -391,9 +438,11 @@ abstract class BasePrint {
   //String _hba1c(double avgGluc)
   //=> g.fmtNumber((avgGluc + 86) / 33.3, 1, false);
 
-  String hba1c(double avgGluc) => avgGluc == null ? '' : g.fmtNumber(hba1cValue(avgGluc), 1);
+  String hba1c(double avgGluc) =>
+      avgGluc == null ? '' : g.fmtNumber(hba1cValue(avgGluc), 1);
 
-  double hba1cValue(double avgGluc) => avgGluc == null ? null : (avgGluc + 46.7) / 28.7;
+  double hba1cValue(double avgGluc) =>
+      avgGluc == null ? null : (avgGluc + 46.7) / 28.7;
 
   //(avgGluc / 18.02 + 2.645) / 1.649;
 
@@ -426,8 +475,24 @@ abstract class BasePrint {
   String colGlucValues = '#000000';
   String colBloodValues = '#ff0000';
   String colHbA1c = '#505050';
-  List<String> colWeekDays = ['#1b9e77', '#d95f02', '#7570b3', '#e7298a', '#66a61e', '#e6ab02', '#a6761d'];
-  List<String> colWeekDaysText = ['#ffffff', '#ffffff', '#000000', '#ffffff', '#ffffff', '#000000', '#ffffff'];
+  List<String> colWeekDays = [
+    '#1b9e77',
+    '#d95f02',
+    '#7570b3',
+    '#e7298a',
+    '#66a61e',
+    '#e6ab02',
+    '#a6761d'
+  ];
+  List<String> colWeekDaysText = [
+    '#ffffff',
+    '#ffffff',
+    '#000000',
+    '#ffffff',
+    '#ffffff',
+    '#000000',
+    '#ffffff'
+  ];
   String colExercises = '#c0c0c0';
   String colExerciseText = '#000000';
   String colCGPLine = '#a0a0a0';
@@ -480,19 +545,31 @@ abstract class BasePrint {
   }
 
   String _msgPageCountEst(count) => Intl.plural(count,
-      zero: '', one: '1 Seite oder mehr', other: '$count Seiten oder mehr', args: [count], name: '_msgPageCountEst');
+      zero: '',
+      one: '1 Seite oder mehr',
+      other: '$count Seiten oder mehr',
+      args: [count],
+      name: '_msgPageCountEst');
 
-  String _msgPageCount(count) =>
-      Intl.plural(count, zero: '', one: '1 Seite', other: '$count Seiten', args: [count], name: '_msgPageCount');
+  String _msgPageCount(count) => Intl.plural(count,
+      zero: '',
+      one: '1 Seite',
+      other: '$count Seiten',
+      args: [count],
+      name: '_msgPageCount');
 
-  dynamic msgPageCount(count, isEstimated) => isEstimated ? _msgPageCountEst(count) : _msgPageCount(count);
+  dynamic msgPageCount(count, isEstimated) =>
+      isEstimated ? _msgPageCountEst(count) : _msgPageCount(count);
 
   String msgValidRange(begDate, endDate) =>
-      Intl.message('gültig von $begDate bis $endDate', args: [begDate, endDate], name: 'msgValidRange');
+      Intl.message('gültig von $begDate bis $endDate',
+          args: [begDate, endDate], name: 'msgValidRange');
 
-  String msgValidFrom(begDate) => Intl.message('gültig ab $begDate', args: [begDate], name: 'msgValidFrom');
+  String msgValidFrom(begDate) =>
+      Intl.message('gültig ab $begDate', args: [begDate], name: 'msgValidFrom');
 
-  String msgValidTo(endDate) => Intl.message('gültig bis $endDate', args: [endDate], name: 'msgValidTo');
+  String msgValidTo(endDate) =>
+      Intl.message('gültig bis $endDate', args: [endDate], name: 'msgValidTo');
 
   String get msgInsulinUnit => Intl.message('IE');
 
@@ -501,11 +578,13 @@ abstract class BasePrint {
   String get msgUntil => Intl.message('bis');
 
   String msgDuration(int hours, int minutes) {
-    return Intl.message('$hours Std $minutes Min', args: [hours, minutes], name: 'msgDuration');
+    return Intl.message('$hours Std $minutes Min',
+        args: [hours, minutes], name: 'msgDuration');
   }
 
   String msgTargetArea(String min, String max, String units) {
-    return Intl.message('Zielbereich ($min - $max $units)', args: [min, max, units], name: 'msgTargetArea');
+    return Intl.message('Zielbereich ($min - $max $units)',
+        args: [min, max, units], name: 'msgTargetArea');
   }
 
   String msgTargetValue(String value) {
@@ -514,40 +593,51 @@ abstract class BasePrint {
 
   String get msgGlucosekurve => Intl.message('Glukosekurve');
 
-  String msgCarbs(String value) => Intl.message('Kohlenhydrate (${value}g)', args: [value], name: 'msgCarbs');
+  String msgCarbs(String value) => Intl.message('Kohlenhydrate (${value}g)',
+      args: [value], name: 'msgCarbs');
 
-  String msgBolusInsulin(String value) =>
-      Intl.message('Bolus Insulin ($value)', args: [value], name: 'msgBolusInsulin');
+  String msgBolusInsulin(String value) => Intl.message('Bolus Insulin ($value)',
+      args: [value], name: 'msgBolusInsulin');
 
-  String get msgMealBolus => Intl.message('Mahlzeitenbolus', meaning: 'bolus to handle a meal');
+  String get msgMealBolus =>
+      Intl.message('Mahlzeitenbolus', meaning: 'bolus to handle a meal');
 
-  String get msgBolusWizard => Intl.message('Bolus Rechner', meaning: 'bolus calculated by the bolus wizard');
+  String get msgBolusWizard => Intl.message('Bolus Rechner',
+      meaning: 'bolus calculated by the bolus wizard');
 
   String get msgBolusExtInsulin => Intl.message('Verzögerter Bolus');
 
   String msgCorrectBolusInsulin(String value) =>
-      Intl.message('Korrektur Bolus ($value)', args: [value], name: 'msgCorrectBolusInsulin');
+      Intl.message('Korrektur Bolus ($value)',
+          args: [value], name: 'msgCorrectBolusInsulin');
 
   String msgCarbBolusInsulin(String value) =>
-      Intl.message('Mahlzeiten Bolus ($value)', args: [value], name: 'msgCarbBolusInsulin');
+      Intl.message('Mahlzeiten Bolus ($value)',
+          args: [value], name: 'msgCarbBolusInsulin');
 
-  String msgSMBInsulin(String value) => Intl.message('SMB ($value)', args: [value], name: 'msgSMBInsulin');
+  String msgSMBInsulin(String value) =>
+      Intl.message('SMB ($value)', args: [value], name: 'msgSMBInsulin');
 
   String get msgBasalrate => Intl.message('Basalrate');
 
   String msgBasalrateDay(String value) =>
-      Intl.message('Basalrate für den Tag ($value)', args: [value], name: 'msgBasalrateDay');
+      Intl.message('Basalrate für den Tag ($value)',
+          args: [value], name: 'msgBasalrateDay');
 
   String msgBasalrateProfile(String value) =>
-      Intl.message('Basalrate aus dem Profil ($value)', args: [value], name: 'msgBasalrateProfile');
+      Intl.message('Basalrate aus dem Profil ($value)',
+          args: [value], name: 'msgBasalrateProfile');
 
-  String msgLegendTDD(String value) => Intl.message('Gesamtinsulin ($value)', args: [value], name: 'msgLegendTDD');
+  String msgLegendTDD(String value) => Intl.message('Gesamtinsulin ($value)',
+      args: [value], name: 'msgLegendTDD');
 
   String get msgTDD => Intl.message('TDD');
 
-  String get msgMissingData => Intl.message('Es sind keine Daten für den Ausdruck vorhanden');
+  String get msgMissingData =>
+      Intl.message('Es sind keine Daten für den Ausdruck vorhanden');
 
-  String get msgServerNotReachable => g.msgUrlFailure('').replaceAll('<br>', '\n');
+  String get msgServerNotReachable =>
+      g.msgUrlFailure('').replaceAll('<br>', '\n');
 
   String get msgCatheterChange => Intl.message('Katheterwechsel');
 
@@ -561,7 +651,8 @@ abstract class BasePrint {
 
   String get msgKHTitle => Intl.message('KH');
 
-  String msgKH(value) => Intl.message('${value}g', args: [value], name: 'msgKH');
+  String msgKH(value) =>
+      Intl.message('${value}g', args: [value], name: 'msgKH');
 
   String msgReadingsPerDay(howMany, fmt) => Intl.plural(howMany,
       zero: 'Keine Messwerte vorhanden',
@@ -585,27 +676,37 @@ abstract class BasePrint {
       name: 'msgReadingsInMinutes');
 
   String msgValuesIn(low, high) =>
-      Intl.message('Werte zwischen ${low} und ${high}', args: [low, high], name: 'msgValuesIn');
+      Intl.message('Werte zwischen ${low} und ${high}',
+          args: [low, high], name: 'msgValuesIn');
 
-  String msgValuesBelow(low) => Intl.message('Werte unter ${low}', args: [low], name: 'msgValuesBelow');
+  String msgValuesBelow(low) =>
+      Intl.message('Werte unter ${low}', args: [low], name: 'msgValuesBelow');
 
-  String msgValuesAbove(high) => Intl.message('Werte über ${high}', args: [high], name: 'msgValuesAbove');
+  String msgValuesAbove(high) =>
+      Intl.message('Werte über ${high}', args: [high], name: 'msgValuesAbove');
 
   String msgValuesVeryHigh(value) =>
-      Intl.message('Sehr hohe Werte ( > ${value})', args: [value], name: 'msgValuesVeryHigh');
+      Intl.message('Sehr hohe Werte ( > ${value})',
+          args: [value], name: 'msgValuesVeryHigh');
 
-  String msgValuesNormHigh(value) => Intl.message('Hohe Werte (${value})', args: [value], name: 'msgValuesNormHigh');
+  String msgValuesNormHigh(value) => Intl.message('Hohe Werte (${value})',
+      args: [value], name: 'msgValuesNormHigh');
 
   String msgValuesNorm(low, high) =>
-      Intl.message('Zielbereich (${low} - ${high})', args: [low, high], name: 'msgValuesNorm');
+      Intl.message('Zielbereich (${low} - ${high})',
+          args: [low, high], name: 'msgValuesNorm');
 
-  String msgValuesNormLow(value) => Intl.message('Niedrige Werte (${value})', args: [value], name: 'msgValuesNormLow');
+  String msgValuesNormLow(value) => Intl.message('Niedrige Werte (${value})',
+      args: [value], name: 'msgValuesNormLow');
 
   String msgValuesVeryLow(value) =>
-      Intl.message('Sehr niedrige Werte (< ${value})', args: [value], name: 'msgValuesVeryLow');
+      Intl.message('Sehr niedrige Werte (< ${value})',
+          args: [value], name: 'msgValuesVeryLow');
 
   String msgKHBE(value) => Intl.message('g KH ($value BE)',
-      args: [value], name: 'msgKHBE', meaning: 'gram Carbohydrates displayed at analysis page');
+      args: [value],
+      name: 'msgKHBE',
+      meaning: 'gram Carbohydrates displayed at analysis page');
 
   String msgReservoirDays(count, txt) => Intl.plural(count,
       one: '($txt Tag pro Ampulle)',
@@ -654,11 +755,14 @@ abstract class BasePrint {
 
   String get msgGlucoseValue => Intl.message('Ø Zuckerwert');
 
-  String get msgGVIFull => Intl.message('Glykämischer Variabilitäts Index (GVI)');
+  String get msgGVIFull =>
+      Intl.message('Glykämischer Variabilitäts Index (GVI)');
 
   String get msgPGSFull => Intl.message('Patient Glykämischer Status (PGS)');
 
   String get msgKHPerDay => Intl.message('Ø KH pro Tag');
+
+  String get msgKHPerMeal => Intl.message('Ø KH pro Mahlzeit');
 
   String get msgInsulinPerDay => Intl.message('Ø Insulin pro Tag');
 
@@ -712,7 +816,8 @@ abstract class BasePrint {
 
   static String get msgHourlyStats => Intl.message('Stündliche Statistik');
 
-  static String get msgUseDailyBasalrate => Intl.message('Tagesbasalrate verwenden');
+  static String get msgUseDailyBasalrate =>
+      Intl.message('Tagesbasalrate verwenden');
 
   String get msgNote => Intl.message('Notiz');
 
@@ -724,11 +829,11 @@ abstract class BasePrint {
 
   String get msgGlucNorm => Intl.message('Glukose im Zielbereich');
 
-  String get msgSource =>
-      Intl.message('Quelle: Vigersky, R. A., Shin, J., Jiang, B., Siegmund, T., McMahon, C., & Thomas, A. (2018). '
-          'The Comprehensive Glucose Pentagon: A Glucose-Centric Composite Metric for Assessing Glycemic '
-          'Control in Persons With Diabetes. Journal of Diabetes Science and Technology, 12(1), 114–123. '
-          '(https://doi.org/10.1177/1932296817718561)');
+  String get msgSource => Intl.message(
+      'Quelle: Vigersky, R. A., Shin, J., Jiang, B., Siegmund, T., McMahon, C., & Thomas, A. (2018). '
+      'The Comprehensive Glucose Pentagon: A Glucose-Centric Composite Metric for Assessing Glycemic '
+      'Control in Persons With Diabetes. Journal of Diabetes Science and Technology, 12(1), 114–123. '
+      '(https://doi.org/10.1177/1932296817718561)');
 
   String get msgGlucHigh => Intl.message('Glukose zu hoch');
 
@@ -738,7 +843,12 @@ abstract class BasePrint {
   }
 
   String msgCount(int value) {
-    return Intl.plural(value, zero: 'Kein Wert', one: '1 Wert', other: '$value Werte', args: [value], name: 'msgCount');
+    return Intl.plural(value,
+        zero: 'Kein Wert',
+        one: '1 Wert',
+        other: '$value Werte',
+        args: [value],
+        name: 'msgCount');
   }
 
   String msgStdAbw(value) {
@@ -746,13 +856,17 @@ abstract class BasePrint {
     return Intl.message('(StdAbw ${value})', args: [value], name: 'msgStdAbw');
   }
 
-  static String msgTimeOfDay24(time) => Intl.message('${time} Uhr', args: [time], name: 'msgTimeOfDay24');
+  static String msgTimeOfDay24(time) =>
+      Intl.message('${time} Uhr', args: [time], name: 'msgTimeOfDay24');
 
-  static String msgTimeOfDayAM(time) => Intl.message('${time} am', args: [time], name: 'msgTimeOfDayAM');
+  static String msgTimeOfDayAM(time) =>
+      Intl.message('${time} am', args: [time], name: 'msgTimeOfDayAM');
 
-  static String msgTimeOfDayPM(time) => Intl.message('${time} pm', args: [time], name: 'msgTimeOfDayPM');
+  static String msgTimeOfDayPM(time) =>
+      Intl.message('${time} pm', args: [time], name: 'msgTimeOfDayPM');
 
-  String get msgNormal => '${Intl.message('Normal')}\n${g.getGlucInfo()['unit']}';
+  String get msgNormal =>
+      '${Intl.message('Normal')}\n${g.getGlucInfo()['unit']}';
 
   String msgHigh(value) {
     value = '\n>=${g.glucFromData(value)}';
@@ -763,9 +877,11 @@ abstract class BasePrint {
 
   String get msgPercentile2575 => Intl.message('25% - 75% der Werte');
 
-  String get msgICRTitle => Intl.message('Insulin Kohlenhydrate Verhältnis (ICR)');
+  String get msgICRTitle =>
+      Intl.message('Insulin Kohlenhydrate Verhältnis (ICR)');
 
-  String get msgISFTitle => Intl.message('Insulin Sensitivitäts Faktoren (ISF)');
+  String get msgISFTitle =>
+      Intl.message('Insulin Sensitivitäts Faktoren (ISF)');
 
   String get msgBasalTitle => Intl.message('Basalrate');
 
@@ -777,12 +893,16 @@ abstract class BasePrint {
 
   String get msgISFSum => Intl.message('Ø ISF/Stunde');
 
-  String get msgICR => Intl.message('Insulin Kohlenhydrate Verhältnis (ICR)\nX g Kohlenhydrate für 1 IE');
+  String get msgICR => Intl.message(
+      'Insulin Kohlenhydrate Verhältnis (ICR)\nX g Kohlenhydrate für 1 IE');
 
-  String msgISF(String unit) =>
-      Intl.message('Insulin Sensitivitäts Faktoren (ISF)\n1 IE senkt BG um X ${unit}', args: [unit], name: 'msgISF');
+  String msgISF(String unit) => Intl.message(
+      'Insulin Sensitivitäts Faktoren (ISF)\n1 IE senkt BG um X ${unit}',
+      args: [unit],
+      name: 'msgISF');
 
-  String msgTarget(String unit) => Intl.message('Glukose-Zielbereich\n${unit}', args: [unit], name: 'msgTarget');
+  String msgTarget(String unit) => Intl.message('Glukose-Zielbereich\n${unit}',
+      args: [unit], name: 'msgTarget');
 
   String msgFactorEntry(String beg, String end) =>
       Intl.message('${beg} - ${end}', args: [beg, end], name: 'msgFactorEntry');
@@ -825,13 +945,17 @@ abstract class BasePrint {
 
   String get msg90 => Intl.message('90%');
 
-  String msgDaySum(int value) => Intl.message('$value Tage', args: [value], name: 'msgDaySum');
+  String msgDaySum(int value) =>
+      Intl.message('$value Tage', args: [value], name: 'msgDaySum');
+
+  String get msgDayAverage => Intl.message('Durchschnitt');
 
   String get msgStandardDeviation => Intl.message('Standardabweichung');
 
-  static String msgCalibration(scale, intercept, slope) =>
-      Intl.message('Kalibrierung (scale $scale / intercept $intercept / slope $slope)',
-          args: [scale, intercept, slope], name: 'msgCalibration');
+  static String msgCalibration(scale, intercept, slope) => Intl.message(
+      'Kalibrierung (scale $scale / intercept $intercept / slope $slope)',
+      args: [scale, intercept, slope],
+      name: 'msgCalibration');
 
   static String get msgChange => Intl.message('Wechsel');
 
@@ -848,24 +972,28 @@ abstract class BasePrint {
 
   String msgGVINone(min) {
     min = g.fmtNumber(min, 1);
-    return Intl.message('nicht vorhanden (kleiner ${min})', args: [min], name: 'msgGVINone');
+    return Intl.message('nicht vorhanden (kleiner ${min})',
+        args: [min], name: 'msgGVINone');
   }
 
   String msgGVIVeryGood(min, max) {
     min = g.fmtNumber(min, 1);
     max = g.fmtNumber(max, 1);
-    return Intl.message('sehr gut (${min} bis ${max})', args: [min, max], name: 'msgGVIVeryGood');
+    return Intl.message('sehr gut (${min} bis ${max})',
+        args: [min, max], name: 'msgGVIVeryGood');
   }
 
   String msgGVIGood(min, max) {
     min = g.fmtNumber(min, 1);
     max = g.fmtNumber(max, 1);
-    return Intl.message('gut (${min} bis ${max})', args: [min, max], name: 'msgGVIGood');
+    return Intl.message('gut (${min} bis ${max})',
+        args: [min, max], name: 'msgGVIGood');
   }
 
   String msgGVIBad(max) {
     max = g.fmtNumber(max, 1);
-    return Intl.message('schlecht (grösser ${max})', args: [max], name: 'msgGVIBad');
+    return Intl.message('schlecht (grösser ${max})',
+        args: [max], name: 'msgGVIBad');
   }
 
   String gviQuality(gvi) {
@@ -882,24 +1010,28 @@ abstract class BasePrint {
 
   String msgPGSVeryGood(min) {
     min = g.fmtNumber(min);
-    return Intl.message('exzellent (kleiner ${min})', args: [min], name: 'msgPGSVeryGood');
+    return Intl.message('exzellent (kleiner ${min})',
+        args: [min], name: 'msgPGSVeryGood');
   }
 
   String msgPGSGood(min, max) {
     min = g.fmtNumber(min);
     max = g.fmtNumber(max);
-    return Intl.message('gut (${min} bis ${max})', args: [min, max], name: 'msgPGSGood');
+    return Intl.message('gut (${min} bis ${max})',
+        args: [min, max], name: 'msgPGSGood');
   }
 
   String msgPGSBad(min, max) {
     min = g.fmtNumber(min);
     max = g.fmtNumber(max);
-    return Intl.message('schlecht (${min} bis ${max})', args: [min, max], name: 'msgPGSBad');
+    return Intl.message('schlecht (${min} bis ${max})',
+        args: [min, max], name: 'msgPGSBad');
   }
 
   String msgPGSVeryBad(max) {
     max = g.fmtNumber(max);
-    return Intl.message('sehr schlecht (grösser ${max})', args: [max], name: 'msgPGSVeryBad');
+    return Intl.message('sehr schlecht (grösser ${max})',
+        args: [max], name: 'msgPGSVeryBad');
   }
 
   String pgsQuality(pgs) {
@@ -913,7 +1045,8 @@ abstract class BasePrint {
     return msgPGSVeryBad(150);
   }
 
-  String msgHistorical(value) => Intl.message('Historisch ${value}', args: [value], name: 'msgHistorical');
+  String msgHistorical(value) =>
+      Intl.message('Historisch ${value}', args: [value], name: 'msgHistorical');
 
   String titleInfoForDates(DateTime startDate, DateTime endDate) {
     String ret;
@@ -931,7 +1064,8 @@ abstract class BasePrint {
 
   static String get msgDay => Intl.message('Tag (08:00 - 17:59)');
 
-  static String get msgDawn => Intl.message('Dämmerung (06:00 - 07:59, 18:00 - 20:59)');
+  static String get msgDawn =>
+      Intl.message('Dämmerung (06:00 - 07:59, 18:00 - 20:59)');
 
   static String get msgNight => Intl.message('Nacht (21:00 - 05:59)');
 
@@ -966,18 +1100,102 @@ abstract class BasePrint {
         stack.add({
           'relativePosition': {'x': cm(0), 'y': cm(0)},
           'canvas': [
-            {'type': 'rect', 'x': cm(0.0), 'y': cm(0), 'w': cm(1.6), 'h': cm(0.55), 'color': '#d69a2e'},
-            {'type': 'rect', 'x': cm(1.6), 'y': cm(0), 'w': cm(1.6), 'h': cm(0.55), 'color': '#2e4736'},
-            {'type': 'rect', 'x': cm(3.2), 'y': cm(0), 'w': cm(1.6), 'h': cm(0.55), 'color': '#662c40'},
-            {'type': 'rect', 'x': cm(4.8), 'y': cm(0), 'w': cm(1.6), 'h': cm(0.55), 'color': '#343a49'},
-            {'type': 'rect', 'x': cm(6.4), 'y': cm(0), 'w': cm(1.6), 'h': cm(0.55), 'color': '#528c8e'},
-            {'type': 'rect', 'x': cm(8.0), 'y': cm(0), 'w': cm(1.6), 'h': cm(0.55), 'color': '#362946'},
-            {'type': 'rect', 'x': cm(9.6), 'y': cm(0), 'w': cm(1.6), 'h': cm(0.55), 'color': '#6b8133'},
-            {'type': 'rect', 'x': cm(11.2), 'y': cm(0), 'w': cm(1.6), 'h': cm(0.55), 'color': '#2a3b56'},
-            {'type': 'rect', 'x': cm(12.8), 'y': cm(0), 'w': cm(1.6), 'h': cm(0.55), 'color': '#862d2e'},
-            {'type': 'rect', 'x': cm(14.4), 'y': cm(0), 'w': cm(1.6), 'h': cm(0.55), 'color': '#607f6e'},
-            {'type': 'rect', 'x': cm(16.0), 'y': cm(0), 'w': cm(1.6), 'h': cm(0.55), 'color': '#273d3f'},
-            {'type': 'rect', 'x': cm(17.6), 'y': cm(0), 'w': cm(1.6), 'h': cm(0.55), 'color': '#a5916d'}
+            {
+              'type': 'rect',
+              'x': cm(0.0),
+              'y': cm(0),
+              'w': cm(1.6),
+              'h': cm(0.55),
+              'color': '#d69a2e'
+            },
+            {
+              'type': 'rect',
+              'x': cm(1.6),
+              'y': cm(0),
+              'w': cm(1.6),
+              'h': cm(0.55),
+              'color': '#2e4736'
+            },
+            {
+              'type': 'rect',
+              'x': cm(3.2),
+              'y': cm(0),
+              'w': cm(1.6),
+              'h': cm(0.55),
+              'color': '#662c40'
+            },
+            {
+              'type': 'rect',
+              'x': cm(4.8),
+              'y': cm(0),
+              'w': cm(1.6),
+              'h': cm(0.55),
+              'color': '#343a49'
+            },
+            {
+              'type': 'rect',
+              'x': cm(6.4),
+              'y': cm(0),
+              'w': cm(1.6),
+              'h': cm(0.55),
+              'color': '#528c8e'
+            },
+            {
+              'type': 'rect',
+              'x': cm(8.0),
+              'y': cm(0),
+              'w': cm(1.6),
+              'h': cm(0.55),
+              'color': '#362946'
+            },
+            {
+              'type': 'rect',
+              'x': cm(9.6),
+              'y': cm(0),
+              'w': cm(1.6),
+              'h': cm(0.55),
+              'color': '#6b8133'
+            },
+            {
+              'type': 'rect',
+              'x': cm(11.2),
+              'y': cm(0),
+              'w': cm(1.6),
+              'h': cm(0.55),
+              'color': '#2a3b56'
+            },
+            {
+              'type': 'rect',
+              'x': cm(12.8),
+              'y': cm(0),
+              'w': cm(1.6),
+              'h': cm(0.55),
+              'color': '#862d2e'
+            },
+            {
+              'type': 'rect',
+              'x': cm(14.4),
+              'y': cm(0),
+              'w': cm(1.6),
+              'h': cm(0.55),
+              'color': '#607f6e'
+            },
+            {
+              'type': 'rect',
+              'x': cm(16.0),
+              'y': cm(0),
+              'w': cm(1.6),
+              'h': cm(0.55),
+              'color': '#273d3f'
+            },
+            {
+              'type': 'rect',
+              'x': cm(17.6),
+              'y': cm(0),
+              'w': cm(1.6),
+              'h': cm(0.55),
+              'color': '#a5916d'
+            }
           ]
         });
       }
@@ -986,18 +1204,102 @@ abstract class BasePrint {
         stack.add({
           'relativePosition': {'x': cm(0), 'y': cm(0)},
           'canvas': [
-            {'type': 'rect', 'x': cm(0.0), 'y': cm(0), 'w': cm(2.2), 'h': cm(0.55), 'color': '#d69a2e'},
-            {'type': 'rect', 'x': cm(2.2), 'y': cm(0), 'w': cm(2.3), 'h': cm(0.55), 'color': '#2e4736'},
-            {'type': 'rect', 'x': cm(4.5), 'y': cm(0), 'w': cm(2.3), 'h': cm(0.55), 'color': '#662c40'},
-            {'type': 'rect', 'x': cm(6.8), 'y': cm(0), 'w': cm(2.25), 'h': cm(0.55), 'color': '#343a49'},
-            {'type': 'rect', 'x': cm(9.05), 'y': cm(0), 'w': cm(2.3), 'h': cm(0.55), 'color': '#528c8e'},
-            {'type': 'rect', 'x': cm(11.35), 'y': cm(0), 'w': cm(2.25), 'h': cm(0.55), 'color': '#362946'},
-            {'type': 'rect', 'x': cm(13.6), 'y': cm(0), 'w': cm(2.3), 'h': cm(0.55), 'color': '#6b8133'},
-            {'type': 'rect', 'x': cm(15.9), 'y': cm(0), 'w': cm(2.25), 'h': cm(0.55), 'color': '#2a3b56'},
-            {'type': 'rect', 'x': cm(18.15), 'y': cm(0), 'w': cm(2.3), 'h': cm(0.55), 'color': '#862d2e'},
-            {'type': 'rect', 'x': cm(20.45), 'y': cm(0), 'w': cm(2.3), 'h': cm(0.55), 'color': '#607f6e'},
-            {'type': 'rect', 'x': cm(22.75), 'y': cm(0), 'w': cm(2.3), 'h': cm(0.55), 'color': '#273d3f'},
-            {'type': 'rect', 'x': cm(25.05), 'y': cm(0), 'w': cm(2.3), 'h': cm(0.55), 'color': '#a5916d'},
+            {
+              'type': 'rect',
+              'x': cm(0.0),
+              'y': cm(0),
+              'w': cm(2.2),
+              'h': cm(0.55),
+              'color': '#d69a2e'
+            },
+            {
+              'type': 'rect',
+              'x': cm(2.2),
+              'y': cm(0),
+              'w': cm(2.3),
+              'h': cm(0.55),
+              'color': '#2e4736'
+            },
+            {
+              'type': 'rect',
+              'x': cm(4.5),
+              'y': cm(0),
+              'w': cm(2.3),
+              'h': cm(0.55),
+              'color': '#662c40'
+            },
+            {
+              'type': 'rect',
+              'x': cm(6.8),
+              'y': cm(0),
+              'w': cm(2.25),
+              'h': cm(0.55),
+              'color': '#343a49'
+            },
+            {
+              'type': 'rect',
+              'x': cm(9.05),
+              'y': cm(0),
+              'w': cm(2.3),
+              'h': cm(0.55),
+              'color': '#528c8e'
+            },
+            {
+              'type': 'rect',
+              'x': cm(11.35),
+              'y': cm(0),
+              'w': cm(2.25),
+              'h': cm(0.55),
+              'color': '#362946'
+            },
+            {
+              'type': 'rect',
+              'x': cm(13.6),
+              'y': cm(0),
+              'w': cm(2.3),
+              'h': cm(0.55),
+              'color': '#6b8133'
+            },
+            {
+              'type': 'rect',
+              'x': cm(15.9),
+              'y': cm(0),
+              'w': cm(2.25),
+              'h': cm(0.55),
+              'color': '#2a3b56'
+            },
+            {
+              'type': 'rect',
+              'x': cm(18.15),
+              'y': cm(0),
+              'w': cm(2.3),
+              'h': cm(0.55),
+              'color': '#862d2e'
+            },
+            {
+              'type': 'rect',
+              'x': cm(20.45),
+              'y': cm(0),
+              'w': cm(2.3),
+              'h': cm(0.55),
+              'color': '#607f6e'
+            },
+            {
+              'type': 'rect',
+              'x': cm(22.75),
+              'y': cm(0),
+              'w': cm(2.3),
+              'h': cm(0.55),
+              'color': '#273d3f'
+            },
+            {
+              'type': 'rect',
+              'x': cm(25.05),
+              'y': cm(0),
+              'w': cm(2.3),
+              'h': cm(0.55),
+              'color': '#a5916d'
+            },
           ],
         });
       }
@@ -1005,7 +1307,13 @@ abstract class BasePrint {
     stack.add({
       'relativePosition': {'x': cm(xframe), 'y': cm(1.0)},
       'columns': [
-        {'width': 'auto', 'text': title, 'fontSize': fs(36), 'color': colText, 'bold': true},
+        {
+          'width': 'auto',
+          'text': title,
+          'fontSize': fs(36),
+          'color': colText,
+          'bold': true
+        },
         {
           'width': 'auto',
           'text': subtitle,
@@ -1086,7 +1394,8 @@ abstract class BasePrint {
     if (skipFooter) return ret;
     String rightText = '';
     if (repData.user.name.isEmpty) {
-      if (!repData.user.birthDate.isEmpty) rightText = '*${repData.user.birthDate}';
+      if (!repData.user.birthDate.isEmpty)
+        rightText = '*${repData.user.birthDate}';
     } else {
       if (!repData.user.birthDate.isEmpty)
         rightText = '${repData.user.name}, *${repData.user.birthDate}';
@@ -1124,7 +1433,10 @@ abstract class BasePrint {
                 }
               ]
             },
-      g.ppHideNightscoutInPDF ? null : _getFooterImage('nightscout', x: xframe, y: height - 1.7, width: 0.7),
+      g.ppHideNightscoutInPDF
+          ? null
+          : _getFooterImage('nightscout',
+              x: xframe, y: height - 1.7, width: 0.7),
       g.ppHideNightscoutInPDF
           ? null
           : {
@@ -1136,11 +1448,17 @@ abstract class BasePrint {
       footerText == null
           ? null
           : {
-              'relativePosition': {'x': cm(g.ppHideNightscoutInPDF ? xframe : 7.5), 'y': cm(height - 1.7)},
+              'relativePosition': {
+                'x': cm(g.ppHideNightscoutInPDF ? xframe : 7.5),
+                'y': cm(height - 1.7)
+              },
               'stack': footerText,
               'fontSize': fs(10)
             },
-      isInput ? _getFooterImage('input', x: width - 5.6, y: height - 3.3, width: 4.0) : {},
+      isInput
+          ? _getFooterImage('input',
+              x: width - 5.6, y: height - 3.3, width: 4.0)
+          : {},
       {
         'relativePosition': {'x': cm(xframe), 'y': cm(height - 1.7)},
         'columns': [
@@ -1148,7 +1466,13 @@ abstract class BasePrint {
             'width': cm(width - 2 * xframe),
             'stack': [
               {'text': rightText, 'color': colInfo, 'fontSize': fs(10)},
-              !g.ppShowUrlInPDF ? null : {'text': g.user.urlDataFor(date).url, 'color': colInfo, 'fontSize': fs(8)}
+              !g.ppShowUrlInPDF
+                  ? null
+                  : {
+                      'text': g.user.urlDataFor(date).url,
+                      'color': colInfo,
+                      'fontSize': fs(8)
+                    }
             ],
             'alignment': 'right'
           }
@@ -1163,7 +1487,8 @@ abstract class BasePrint {
   dynamic tableHeadLine = [];
   dynamic tableWidths = [];
 
-  void addTableRow(bool check, var width, dynamic dst, dynamic head, dynamic content) {
+  void addTableRow(
+      bool check, var width, dynamic dst, dynamic head, dynamic content) {
     if (!check) return;
     if (!tableHeadFilled) {
       tableHeadLine.add(head);
@@ -1202,8 +1527,10 @@ abstract class BasePrint {
   }
 
   Future<String> getBase64Image(String id) async {
-    var response =
-        await HttpRequest.request('packages/nightscout_reporter/assets/img/$id.png', responseType: 'arraybuffer');
+    // print('versuche Bild ${id} zu laden');
+    var response = await HttpRequest.request(
+        'packages/nightscout_reporter/assets/img/$id.png',
+        responseType: 'arraybuffer');
     if (response.response is ByteBuffer) {
       var ret = base64.encode((response.response as ByteBuffer).asUint8List());
       return 'data:image/png;base64,${ret}';
@@ -1233,7 +1560,8 @@ abstract class BasePrint {
 
   void extractParams() {}
 
-  Map<String, dynamic> _getFooterImage(String id, {double x, double y, double width, double height = 0.0}) {
+  Map<String, dynamic> _getFooterImage(String id,
+      {double x, double y, double width, double height = 0.0}) {
     var ret = {
       'relativePosition': {'x': cm(x), 'y': cm(y)},
       'image': id
@@ -1308,9 +1636,11 @@ abstract class BasePrint {
     if (page.content.last['pageBreak'] == '-') return;
     page.content.last['pageBreak'] = 'after';
     // int cnt = countObjects(page);
-    String text = json.encode(page.content);
+    // print(page.content);
+    var text = json.encode(page.content);
     _fileSize += text.length;
-    if (g.pdfCreationMaxSize != Globals.PDFUNLIMITED && _fileSize > g.pdfCreationMaxSize) {
+    if (g.pdfCreationMaxSize != Globals.PDFUNLIMITED &&
+        _fileSize > g.pdfCreationMaxSize) {
       page.content.last['pageBreak'] = 'newFile';
       _fileSize = 0;
     }
@@ -1462,20 +1792,24 @@ abstract class BasePrint {
   double offsetY = 0.0;
 
   double cm(pt) {
-    return pt / 0.035277 * scale;
+    return pt.isNaN ? 0 : pt / 0.035277 * scale;
   }
 
   double cmx(pt) {
-    return (offsetX + pt) / 0.035277 * scale;
+    return cm(offsetX + pt);
   }
 
   double cmy(pt) {
-    return (offsetY + pt) / 0.035277 * scale;
+    return cm(offsetY + pt);
   }
 
   double fs(double size) => size * scale;
 
-  String fmtTime(var date, {String def, bool withUnit = false, bool withMinutes = true, bool withSeconds = false}) {
+  String fmtTime(var date,
+      {String def,
+      bool withUnit = false,
+      bool withMinutes = true,
+      bool withSeconds = false}) {
     def ??= '';
     if (date == null) return def;
 
@@ -1484,7 +1818,8 @@ abstract class BasePrint {
     if (date is DateTime) {
       var hour = date.hour;
       if (!g.language.is24HourFormat) hour = hour > 12 ? hour - 12 : hour;
-      var m = withMinutes ? ':${(date.minute < 10 ? '0' : '')}${date.minute}' : '';
+      var m =
+          withMinutes ? ':${(date.minute < 10 ? '0' : '')}${date.minute}' : '';
       if (withSeconds) {
         m = '${m}:${(date.second < 10 ? '0' : '')}${date.second}';
       }
@@ -1522,7 +1857,8 @@ abstract class BasePrint {
     if (date == null) return def;
 
     if (date is DateTime) {
-      var ret = '${(date.day < 10 ? '0' : '')}${date.day}.${(date.month < 10 ? '0' : '')}'
+      var ret =
+          '${(date.day < 10 ? '0' : '')}${date.day}.${(date.month < 10 ? '0' : '')}'
           '${date.month}.${date.year}, ${(date.hour < 10 ? '0' : '')}${date.hour}:${(date.minute < 10 ? '0' : '')}'
           '${date.minute}';
       if (withSeconds) {
@@ -1534,7 +1870,8 @@ abstract class BasePrint {
     return date;
   }
 
-  String fmtDate(var date, [var def, bool withShortWeekday = false, bool withLongWeekday = false]) {
+  String fmtDate(var date,
+      [var def, bool withShortWeekday = false, bool withLongWeekday = false]) {
     def ??= '';
     if (date == null) return def;
 
@@ -1557,8 +1894,12 @@ abstract class BasePrint {
 
     var df = DateFormat(g.language.dateformat);
     var ret = df.format(dt);
-    if (withShortWeekday) ret = '${DatepickerPeriod.dowShortName(Date(dt.year, dt.month, dt.day))}, $ret';
-    if (withLongWeekday) ret = '${DatepickerPeriod.dowName(Date(dt.year, dt.month, dt.day))}, $ret';
+    if (withShortWeekday)
+      ret =
+          '${DatepickerPeriod.dowShortName(Date(dt.year, dt.month, dt.day))}, $ret';
+    if (withLongWeekday)
+      ret =
+          '${DatepickerPeriod.dowName(Date(dt.year, dt.month, dt.day))}, $ret';
     return ret;
   }
 
@@ -1610,13 +1951,26 @@ abstract class BasePrint {
   /// it uses [horzfs] as the fontsize of the horizontal scale and [vertfs] as the fontsize for the vertical
   /// scale.
   GridData drawGraphicGrid(
-      double glucMax, double graphHeight, double graphWidth, List vertCvs, List horzCvs, List horzStack, List vertStack,
-      {double glucScale: 0.0, double graphBottom: 0.0, double horzfs: null, double vertfs: null}) {
+      double glucMax,
+      double graphHeight,
+      double graphWidth,
+      List vertCvs,
+      List horzCvs,
+      List horzStack,
+      List vertStack,
+      {double glucScale: 0.0,
+      double graphBottom: 0.0,
+      double horzfs: null,
+      double vertfs: null}) {
     if (horzfs == null) horzfs = fs(8);
     if (vertfs == null) vertfs = fs(8);
     GridData ret = GridData();
     if (graphBottom == 0.0) graphBottom = graphHeight;
-    ret.glucScale = glucScale == 0.0 ? g.glucMGDL ? 50 : 18.02 * 1 : glucScale;
+    ret.glucScale = glucScale == 0.0
+        ? g.glucMGDL
+            ? 50
+            : 18.02 * 1
+        : glucScale;
     ret.gridLines = (glucMax / ret.glucScale).ceil();
 
     ret.lineHeight = ret.gridLines == 0 ? 0 : graphHeight / ret.gridLines;
@@ -1635,7 +1989,10 @@ abstract class BasePrint {
       });
       if (i < 24)
         horzStack.add({
-          'relativePosition': {'x': cm(xorg + i * ret.colWidth), 'y': cm(yorg + graphBottom + 0.05)},
+          'relativePosition': {
+            'x': cm(xorg + i * ret.colWidth),
+            'y': cm(yorg + graphBottom + 0.05)
+          },
           'text': fmtTime(i),
           'fontSize': horzfs
         });
@@ -1663,9 +2020,17 @@ abstract class BasePrint {
 //        String text = '${glucFromData(g.fmtNumber(i * glucScale, 0))}\n${getGlucInfo()['unit']}';
         String text = '${g.glucFromData(g.fmtNumber(i * ret.glucScale, 0))}';
         vertStack.add({
-          'relativePosition': {'x': cm(xorg - 1.5), 'y': cm(yorg + (ret.gridLines - i) * ret.lineHeight - 0.2)},
+          'relativePosition': {
+            'x': cm(xorg - 1.5),
+            'y': cm(yorg + (ret.gridLines - i) * ret.lineHeight - 0.2)
+          },
           'columns': [
-            {'width': cm(1.2), 'text': text, 'fontSize': fs(8), 'alignment': 'right'}
+            {
+              'width': cm(1.2),
+              'text': text,
+              'fontSize': fs(8),
+              'alignment': 'right'
+            }
           ]
         });
         vertStack.add({
@@ -1679,9 +2044,17 @@ abstract class BasePrint {
       } else {
         String text = '${g.getGlucInfo()['unit']}';
         vertStack.add({
-          'relativePosition': {'x': cm(xorg - 1.5), 'y': cm(yorg + (ret.gridLines - i) * ret.lineHeight - 0.2)},
+          'relativePosition': {
+            'x': cm(xorg - 1.5),
+            'y': cm(yorg + (ret.gridLines - i) * ret.lineHeight - 0.2)
+          },
           'columns': [
-            {'width': cm(1.2), 'text': text, 'fontSize': vertfs, 'alignment': 'right'}
+            {
+              'width': cm(1.2),
+              'text': text,
+              'fontSize': vertfs,
+              'alignment': 'right'
+            }
           ]
         });
         vertStack.add({
@@ -1712,25 +2085,32 @@ abstract class BasePrint {
     var ret = [
       headerFooter(),
       {
-        'relativePosition': {'x': cm(xorg) + cm(cgp.axisLength / cgp.scale), 'y': cm(y)},
+        'relativePosition': {
+          'x': cm(xorg) + cm(cgp.axisLength / cgp.scale),
+          'y': cm(y)
+        },
         'canvas': cgp.outputCvs
       },
       {
-        'relativePosition': {'x': cm(xorg) + cm(cgp.axisLength / cgp.scale), 'y': cm(y)},
+        'relativePosition': {
+          'x': cm(xorg) + cm(cgp.axisLength / cgp.scale),
+          'y': cm(y)
+        },
         'stack': cgp.outputText
       },
-      cgpPage.infoTable(cgpSrc, cgp.glucInfo['unit'], x, y, 2.5, width - x - xorg - 2.5)
+      cgpPage.infoTable(
+          cgpSrc, cgp.glucInfo['unit'], x, y, 2.5, width - x - xorg - 2.5)
     ];
     return Page(isPortrait, ret);
   }
 
-  addLegendEntry(LegendData legend, String color, String text,
+  dynamic addLegendEntry(LegendData legend, String color, String text,
       {bool isArea = true,
-      String image = null,
+      String image,
       double imgWidth = 0.6,
       double imgOffsetY = 0.0,
       double lineWidth = 0.0,
-      String graphText: null,
+      String graphText,
       newColumn: false,
       points: null,
       colGraphText: null,
@@ -1768,7 +2148,12 @@ abstract class BasePrint {
             'width': cm(0.8),
             'stack': [
               {
-                'margin': [cm(0.4 - imgWidth / 2), cm(imgOffsetY), cm(0), cm(0)],
+                'margin': [
+                  cm(0.4 - imgWidth / 2),
+                  cm(imgOffsetY),
+                  cm(0),
+                  cm(0)
+                ],
                 'image': image,
                 'width': cm(imgWidth)
               }
@@ -1777,7 +2162,7 @@ abstract class BasePrint {
           {'text': text, 'color': colLegendText, 'fontSize': fs(10)}
         ]
       });
-    } else if (isArea && graphText != null)
+    } else if (isArea && graphText != null) {
       dst.add({
         'columns': [
           {
@@ -1802,7 +2187,7 @@ abstract class BasePrint {
           {'text': text, 'color': colLegendText, 'fontSize': fs(10)}
         ]
       });
-    else if (isArea)
+    } else if (isArea) {
       dst.add({
         'columns': [
           {
@@ -1817,7 +2202,15 @@ abstract class BasePrint {
                 'color': color,
                 'fillOpacity': 0.3
               },
-              {'type': 'rect', 'x': 0, 'y': 0, 'w': 0, 'h': 0, 'color': colGraphText, 'fillOpacity': 1},
+              {
+                'type': 'rect',
+                'x': 0,
+                'y': 0,
+                'w': 0,
+                'h': 0,
+                'color': colGraphText,
+                'fillOpacity': 1
+              },
               {
                 'type': 'line',
                 'x1': cm(0),
@@ -1841,7 +2234,7 @@ abstract class BasePrint {
           {'text': text, 'color': colLegendText, 'fontSize': fs(10)}
         ]
       });
-    else
+    } else {
       dst.add({
         'columns': [
           {
@@ -1861,16 +2254,29 @@ abstract class BasePrint {
           {'text': text, 'color': colLegendText, 'fontSize': fs(10)}
         ]
       });
+    }
   }
 
-  double calcX(double width, DateTime time) => width / 1440 * (time.hour * 60 + time.minute);
+  double calcX(double width, DateTime time) =>
+      width / 1440 * (time.hour * 60 + time.minute);
 
-  double calcY(double height, double max, double value) => height / max * (max - value);
+  double calcY(double height, double max, double value) =>
+      height / max * (max - value);
 
   S(double min, double step) => StepData(min, step);
 
-  drawScaleIE(double xo, double yo, double graphHeight, double top, double min, double max, double colWidth,
-      dynamic horzCvs, dynamic vertStack, List<StepData> steps, Function display) {
+  drawScaleIE(
+      double xo,
+      double yo,
+      double graphHeight,
+      double top,
+      double min,
+      double max,
+      double colWidth,
+      dynamic horzCvs,
+      dynamic vertStack,
+      List<StepData> steps,
+      Function display) {
     double step = 0.1;
     for (StepData entry in steps) {
       if (max - min > entry.min) {
@@ -1901,11 +2307,19 @@ abstract class BasePrint {
       vertStack.add({
         'relativePosition': {'x': cm(xo - 3.0), 'y': cm(y + yo - 0.15)},
         'columns': [
-          {'width': cm(2.7), 'text': text, 'fontSize': fs(8), 'alignment': 'right'}
+          {
+            'width': cm(2.7),
+            'text': text,
+            'fontSize': fs(8),
+            'alignment': 'right'
+          }
         ]
       });
       vertStack.add({
-        'relativePosition': {'x': cm(xo + colWidth * 24 + 0.3), 'y': cm(y + yo - 0.15)},
+        'relativePosition': {
+          'x': cm(xo + colWidth * 24 + 0.3),
+          'y': cm(y + yo - 0.15)
+        },
         'text': text,
         'fontSize': fs(8)
       });
@@ -1913,10 +2327,10 @@ abstract class BasePrint {
     return (gridLines - 1) * lineHeight;
   }
 
-  dynamic getIobCob(
-      double xo, double yo, double graphWidth, double graphHeight, dynamic horzCvs, dynamic vertStack, DayData day,
+  dynamic getIobCob(double xo, double yo, double graphWidth, double graphHeight,
+      dynamic horzCvs, dynamic vertStack, DayData day,
       [double upperIob = 0, double upperCob = 0]) {
-    double colWidth = graphWidth / 24;
+    var colWidth = graphWidth / 24;
     // graphic for iob and cob
     dynamic ptsIob = [
       {'x': cm(calcX(graphWidth, DateTime(0, 1, 1, 0, 0))), 'y': cm(0)}
@@ -1924,23 +2338,29 @@ abstract class BasePrint {
     dynamic ptsCob = [
       {'x': cm(calcX(graphWidth, DateTime(0, 1, 1, 0, 0))), 'y': cm(0)}
     ];
-    DateTime time = DateTime(day.date.year, day.date.month, day.date.day);
-    int diff = 5;
-    double maxIob = -1000.0;
-    double minIob = 0.0;
-    double maxCob = -1000.0;
-    double lastX = 0;
-    int i = 0;
-    int currentDay = day.date.day;
-    while (i < 1440) {
+    var time = DateTime(day.date.year, day.date.month, day.date.day);
+    var diff = 5;
+    var maxIob = -1000.0;
+    var minIob = 0.0;
+    var maxCob = -1000.0;
+    var lastX = 0.0;
+    var i = 0;
+    var currentDay = day.date.day;
+    var maxTime = 1440;
+    if (day.date.year == Date.today().year &&
+        day.date.month == Date.today().month &&
+        day.date.day == Date.today().day) {
+      maxTime = DateTime.now().hour * 60 + DateTime.now().minute;
+    }
+    while (i < maxTime) {
       if (currentDay != time.day) {
         i += diff;
         continue;
       }
-      if (i + diff >= 1440 && i != 1439) diff = 1439 - i;
-      if (i < 1440) {
-        double x = calcX(graphWidth, time);
-        double y = day.iob(repData, time, day.prevDay).iob - 1.0;
+      if (i + diff >= maxTime && i != maxTime - 1) diff = maxTime - 1 - i;
+      if (i < maxTime) {
+        var x = calcX(graphWidth, time);
+        var y = day.iob(repData, time, day.prevDay).iob - 1.0;
         maxIob = max(maxIob, y);
         minIob = min(minIob, y);
         ptsIob.add({'x': cm(x), 'y': y});
@@ -1971,14 +2391,16 @@ abstract class BasePrint {
         horzCvs,
         vertStack,
         [S(10, 2.0), S(7, 1.0), S(3, 0.5), S(1.5, 0.2), S(0, 0.1)],
-        (i, step, {value: null}) => '${g.fmtNumber(value ?? minIob + i * step, 1)} ${msgInsulinUnit}');
-    for (int i = 0; i < ptsIob.length; i++) {
+        (i, step, {value}) =>
+            '${g.fmtNumber(value ?? minIob + i * step, 1)} ${msgInsulinUnit}');
+    for (var i = 0; i < ptsIob.length; i++) {
       if (maxIob - minIob > 0) {
         double y = ptsIob[i]['y'];
-        if (upperIob > 0)
+        if (upperIob > 0) {
           ptsIob[i]['y'] = cm(iobHeight / maxIob * (y + minIob));
-        else
+        } else {
           ptsIob[i]['y'] = cm(iobHeight / (maxIob - minIob) * (maxIob - y));
+        }
       } else {
         ptsIob[i]['y'] = cm(iobHeight);
       }
@@ -1995,27 +2417,34 @@ abstract class BasePrint {
         horzCvs,
         vertStack,
         [S(100, 20), S(50, 10), S(20, 5), S(0, 1)],
-        (i, step, {value: null}) => '${g.fmtNumber(value ?? i * step, 0)} g');
+        (i, step, {value}) => '${g.fmtNumber(value ?? i * step, 0)} g');
 
-    if (upperCob == 0)
+    if (upperCob == 0) {
       maxCob = maxCob * 1.1;
-    else
+    } else {
       maxCob = upperCob;
-    for (int i = 0; i < ptsCob.length; i++) {
-      if (maxCob > 0)
+    }
+    for (var i = 0; i < ptsCob.length; i++) {
+      if (maxCob > 0) {
         ptsCob[i]['y'] = cm(cobHeight / maxCob * (maxCob - ptsCob[i]['y']));
-      else
+      } else {
         ptsCob[i]['y'] = cm(cobHeight);
+      }
     }
 
     if (lastX != null) {
-      double y = 0;
-      if (upperIob > 0)
-        ptsIob.add({'x': cm(lastX), 'y': cm(iobHeight / maxIob * (y + minIob))});
-      else if (maxIob - minIob > 0)
-        ptsIob.add({'x': cm(lastX), 'y': cm(iobHeight / (maxIob - minIob) * (maxIob - y))});
-      else
+      var y = 0.0;
+      if (upperIob > 0) {
+        ptsIob
+            .add({'x': cm(lastX), 'y': cm(iobHeight / maxIob * (y + minIob))});
+      } else if (maxIob - minIob > 0) {
+        ptsIob.add({
+          'x': cm(lastX),
+          'y': cm(iobHeight / (maxIob - minIob) * (maxIob - y))
+        });
+      } else {
         ptsIob.add({'x': cm(lastX), 'y': cm(iobHeight)});
+      }
       ptsCob.add({'x': cm(lastX), 'y': cm(cobHeight)});
     }
 
@@ -2027,4 +2456,6 @@ abstract class BasePrint {
       'iobTop': iobHeight / maxIob * minIob
     };
   }
+
+  void checkValue(ParamInfo param, dynamic value) {}
 }
