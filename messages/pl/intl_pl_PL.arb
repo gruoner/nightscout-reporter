@@ -1,5 +1,5 @@
 {
-    "@@last_modified": "2021-08-11T19:09:35.440575",
+    "@@last_modified": "2022-05-01T09:49:41.692333",
     "Überprüfe Zugriff auf Nightscout ...": "Sprawdzam dostęp do Nightscout...",
     "@Überprüfe Zugriff auf Nightscout ...": {
         "type": "text",
@@ -232,6 +232,11 @@
     },
     "Português": "Português",
     "@Português": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "Dansk": "Dansk",
+    "@Dansk": {
         "type": "text",
         "placeholders": {}
     },
@@ -1334,6 +1339,13 @@
             "value": {}
         }
     },
+    "msgColumns": "{count,plural, one {} =0{Deselect a column@nl@to be able to activate another one}=1{One more column available}other{{count} columns still available}}",
+    "@msgColumns": {
+        "type": "text",
+        "placeholders": {
+            "count": {}
+        }
+    },
     "Tag (08:00 - 17:59)": "Dzień (08:00 - 17:59)",
     "@Tag (08:00 - 17:59)": {
         "type": "text",
@@ -1348,6 +1360,20 @@
     "@Nacht (21:00 - 05:59)": {
         "type": "text",
         "placeholders": {}
+    },
+    "msgNamedProfile": "Use profile \"{name}\"",
+    "@msgNamedProfile": {
+        "type": "text",
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "msgNoNameHelp": "The profile with the name \"{name}\" could not be found. This must be set up in the profile editor on the Nightscout page. A profile must be set up there with the name \"{name}\" in order to be able to generate this form. The link below opens the profile editor. Under certain circumstances, the authentication must then be carried out at the very bottom of the page in order to be able to change the values.",
+    "@msgNoNameHelp": {
+        "type": "text",
+        "placeholders": {
+            "name": {}
+        }
     },
     "msgProfileSwitch": "zmiana profilu - {oldName} => {newName}",
     "@msgProfileSwitch": {
@@ -1628,8 +1654,8 @@
         "type": "text",
         "placeholders": {}
     },
-    "Dieses Formular zeigt den Trend der Glukosewerte über den Tag hinweg \nan. Dabei wird in der Spalte Trend immer angezeigt, um wieviel Prozent sich \nder Wert von einer vollen Stunde zur nächsten verändert hat. Dieser Trend ist\nganz hilfreich, wenn man bei einem Basalratentest erkennen will, wie sich der\nGlukosewert nur anhand der Basalrate entwickelt. Es kann auch eine Spalte für\ndie Boluswerte und die Kohlenhydrate angezeigt werden. Diese sollten aber bei\neinem Basalratentest natürlich leer sein. Ebenso muss ein eventuell\nvorhandener Loop im Zeitraum des Tests abgeschaltet sein. Es geht dabei nur\num den Diabetiker und seine Basalrate.\nEs wird auch eine Spalte mit der\nBasalrate angezeigt, wenn die Option \"Alle Werte für einen Tag anzeigen\"\nnicht markiert wurde. Wenn die Option markiert wurde, dann fehlt der Platz\n(und auch der Sinn), diese darzustellen.": "This form shows the trend in glucose levels over the day. The Trend column always shows the percentage by which the value has changed from one full hour to the next. This trend is very helpful if you want to see in a basal rate test how the glucose value is developing based on the basal rate alone. A column for bolus values and carbohydrates can also be displayed. However, these should of course be empty in a basal rate test. Any existing loop must also be switched off during the test. It's all about the diabetic and his basal rate.\n\nA column with the basal rate is also displayed if the option \"Show all values for a day\" is not checked. If the option has been marked, then there is no space (and also the sense) to display it.",
-    "@Dieses Formular zeigt den Trend der Glukosewerte über den Tag hinweg \nan. Dabei wird in der Spalte Trend immer angezeigt, um wieviel Prozent sich \nder Wert von einer vollen Stunde zur nächsten verändert hat. Dieser Trend ist\nganz hilfreich, wenn man bei einem Basalratentest erkennen will, wie sich der\nGlukosewert nur anhand der Basalrate entwickelt. Es kann auch eine Spalte für\ndie Boluswerte und die Kohlenhydrate angezeigt werden. Diese sollten aber bei\neinem Basalratentest natürlich leer sein. Ebenso muss ein eventuell\nvorhandener Loop im Zeitraum des Tests abgeschaltet sein. Es geht dabei nur\num den Diabetiker und seine Basalrate.\nEs wird auch eine Spalte mit der\nBasalrate angezeigt, wenn die Option \"Alle Werte für einen Tag anzeigen\"\nnicht markiert wurde. Wenn die Option markiert wurde, dann fehlt der Platz\n(und auch der Sinn), diese darzustellen.": {
+    "Dieses Formular zeigt den Trend der Glukosewerte über den Tag hinweg \nan. Dabei wird in der Spalte Trend immer angezeigt, um wieviel Prozent sich \nder Wert von einer vollen Stunde zur nächsten verändert hat. Dieser Trend ist\nganz hilfreich, wenn man bei einem Basalratentest erkennen will, wie sich der\nGlukosewert nur anhand der Basalrate entwickelt. Es kann auch eine Spalte für\ndie Boluswerte und die Kohlenhydrate angezeigt werden. Diese sollten aber bei\neinem Basalratentest natürlich leer sein. Ebenso muss ein eventuell\nvorhandener Loop im Zeitraum des Tests abgeschaltet sein. Es geht dabei nur\num den Diabetiker und seine Basalrate.\nEs wird auch eine Spalte mit der\nBasalrate angezeigt, wenn die Option 'Alle Werte für einen Tag anzeigen'\nnicht markiert wurde. Wenn die Option markiert wurde, dann fehlt der Platz\n(und auch der Sinn), diese darzustellen.": "This form shows the trend in glucose levels over the day. The Trend column always shows the percentage by which the value has changed from one full hour to the next. This trend is very helpful if you want to see in a basal rate test how the glucose value is developing based on the basal rate alone. A column for bolus values and carbohydrates can also be displayed. However, these should of course be empty in a basal rate test. Any existing loop must also be switched off during the test. It's all about the diabetic and his basal rate.\n\nA column with the basal rate is also displayed if the option \"Show all values for a day\" is not checked. If the option has been marked, then there is no space (and also the sense) to display it.",
+    "@Dieses Formular zeigt den Trend der Glukosewerte über den Tag hinweg \nan. Dabei wird in der Spalte Trend immer angezeigt, um wieviel Prozent sich \nder Wert von einer vollen Stunde zur nächsten verändert hat. Dieser Trend ist\nganz hilfreich, wenn man bei einem Basalratentest erkennen will, wie sich der\nGlukosewert nur anhand der Basalrate entwickelt. Es kann auch eine Spalte für\ndie Boluswerte und die Kohlenhydrate angezeigt werden. Diese sollten aber bei\neinem Basalratentest natürlich leer sein. Ebenso muss ein eventuell\nvorhandener Loop im Zeitraum des Tests abgeschaltet sein. Es geht dabei nur\num den Diabetiker und seine Basalrate.\nEs wird auch eine Spalte mit der\nBasalrate angezeigt, wenn die Option 'Alle Werte für einen Tag anzeigen'\nnicht markiert wurde. Wenn die Option markiert wurde, dann fehlt der Platz\n(und auch der Sinn), diese darzustellen.": {
         "description": "help for daygluc",
         "type": "text",
         "placeholders": {}
@@ -1794,6 +1820,11 @@
     },
     "Zielwert anzeigen": "Pokaż wartości docelowe",
     "@Zielwert anzeigen": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "Maximalwert für Kohlenhydrate": "Maximum value for carbohydrates",
+    "@Maximalwert für Kohlenhydrate": {
         "type": "text",
         "placeholders": {}
     },
@@ -2100,23 +2131,23 @@
         "type": "text",
         "placeholders": {}
     },
-    "Basal anzeigen": "Uwzględnij dawki podstawowe",
-    "@Basal anzeigen": {
+    "Spalte Basal anzeigen": "Show column basal",
+    "@Spalte Basal anzeigen": {
         "type": "text",
         "placeholders": {}
     },
-    "Kohlenhydrate anzeigen": "Uwzględnij węglowodany",
-    "@Kohlenhydrate anzeigen": {
+    "Spalte Kohlenhydrate anzeigen": "Show column carbs",
+    "@Spalte Kohlenhydrate anzeigen": {
         "type": "text",
         "placeholders": {}
     },
-    "Min / Max Werte anzeigen": "Uwzględnij wartości minimalne / maksymalne",
-    "@Min / Max Werte anzeigen": {
+    "Spalten Min / Max anzeigen": "Show columns min / max",
+    "@Spalten Min / Max anzeigen": {
         "type": "text",
         "placeholders": {}
     },
-    "Bolus anzeigen": "Uwzględnij bolusy",
-    "@Bolus anzeigen": {
+    "Spalte Bolus anzeigen": "Show column bolus",
+    "@Spalte Bolus anzeigen": {
         "type": "text",
         "placeholders": {}
     },
@@ -2168,6 +2199,41 @@
         "placeholders": {
             "unit": {}
         }
+    },
+    "Spalte Messwerte anzeigen": "Show column valuecount",
+    "@Spalte Messwerte anzeigen": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "Spalte Mittelwert anzeigen": "Show column average",
+    "@Spalte Mittelwert anzeigen": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "Spalte Min anzeigen": "Show column min",
+    "@Spalte Min anzeigen": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "Spalte Max anzeigen": "Show column max",
+    "@Spalte Max anzeigen": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "Spalte Std.Abw. anzeigen": "Show column SDev",
+    "@Spalte Std.Abw. anzeigen": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "Spalte KH anzeigen": "Show column carbs",
+    "@Spalte KH anzeigen": {
+        "type": "text",
+        "placeholders": {}
+    },
+    "Spalte IE anzeigen": "Show column U",
+    "@Spalte IE anzeigen": {
+        "type": "text",
+        "placeholders": {}
     },
     "Spalten für 10% und 90% anzeigen": "Pokaż kolumny dla 10% i 90%",
     "@Spalten für 10% und 90% anzeigen": {
@@ -2645,6 +2711,12 @@
         "type": "text",
         "placeholders": {}
     },
+    "Korrektur für Datenänderungen in AAPS 3.0": "Correction for data changes in AAPS 3.0",
+    "@Korrektur für Datenänderungen in AAPS 3.0": {
+        "description": "label for fix for AAPS 3.0",
+        "type": "text",
+        "placeholders": {}
+    },
     "Historische Daten": "Dane historyczne",
     "@Historische Daten": {
         "description": "label of area for timeshift",
@@ -2870,6 +2942,102 @@
     "Einstiegsvideo": "Quickstartvideo",
     "@Einstiegsvideo": {
         "description": "label for button to open settings on welcome screen",
+        "type": "text",
+        "placeholders": {}
+    },
+    "2.2.1 - 01.05.2022": "2.2.1 - 01/05/2022",
+    "@2.2.1 - 01.05.2022": {
+        "description": "v221",
+        "type": "text",
+        "placeholders": {}
+    },
+    "Der Wert für die mittlere Glukose bei gesunden Menschen im CGM wurde auf die korrekten 90 mg/dl korrigiert.": "The mean glucose value in healthy people in the CGM has been adjusted to the correct value of 90 mg/dl.",
+    "@Der Wert für die mittlere Glukose bei gesunden Menschen im CGM wurde auf die korrekten 90 mg/dl korrigiert.": {
+        "description": "v221f1",
+        "type": "text",
+        "placeholders": {}
+    },
+    "2.2.0 - 03.03.2022": "2.2.0 - 03/03/2022",
+    "@2.2.0 - 03.03.2022": {
+        "description": "v220",
+        "type": "text",
+        "placeholders": {}
+    },
+    "Wenn in Nightscout die Daten für die täglich erzielten Schritte vorhanden sind, dann werden diese in der Tagesgrafik angezeigt, wenn dort die Option \"Bewegung anzeigen\" aktiviert ist.": "If the data for the daily steps taken is available in Nightscout, then these are displayed in the daily graph if the \"Show Exercises\" option is activated there.",
+    "@Wenn in Nightscout die Daten für die täglich erzielten Schritte vorhanden sind, dann werden diese in der Tagesgrafik angezeigt, wenn dort die Option \"Bewegung anzeigen\" aktiviert ist.": {
+        "description": "v220a1",
+        "type": "text",
+        "placeholders": {}
+    },
+    "2.1.0 - 09.12.2021": "2.1.0 - 09/12/2021",
+    "@2.1.0 - 09.12.2021": {
+        "description": "v210",
+        "type": "text",
+        "placeholders": {}
+    },
+    "In den Optionen zur Tagesgrafik gibt es jetzt die Möglichkeit, den oberen Wert für die Kohlenhydrate festzulegen. Das kann bei hohen COB-Werten die Skalierung verbessern.": "In the options for the daily graphic there is now the option to set the upper value for the carbohydrates. This can improve the scaling with high COB values.",
+    "@In den Optionen zur Tagesgrafik gibt es jetzt die Möglichkeit, den oberen Wert für die Kohlenhydrate festzulegen. Das kann bei hohen COB-Werten die Skalierung verbessern.": {
+        "description": "v210a1",
+        "type": "text",
+        "placeholders": {}
+    },
+    "2.0.12 - 07.12.2021": "2.0.12 - 07/12/2021",
+    "@2.0.12 - 07.12.2021": {
+        "description": "v2012",
+        "type": "text",
+        "placeholders": {}
+    },
+    "In AAPS 3.0 wird ändert sich einiges an den Datenstrukturen und Datenmengen, die gespeichert werrden. Das verursacht in Nightscout Reporter an einigen Stellen Probleme, die sich nicht generell lösen lassen, Deswegen gibt es jetzt bei den Ausgabe Parametern die Option \"Korrektur für Datenänderungen in AAPS 3.0\", mit der bei Erstellung der PDFs bestimmte Probleme korrigiert werden. Diese Änderungen werden hier mit FixAAPS30 markiert.": "AAPS 3.0 will change some of the data structures and amounts of data that are stored. This causes problems in some places in Nightscout Reporter that cannot be generally solved. That is why there is now the option \"Correction for data changes in AAPS 3.0\" in the output parameters, with which certain problems can be corrected when creating the PDFs. These changes are marked here with FixAAPS30.",
+    "@In AAPS 3.0 wird ändert sich einiges an den Datenstrukturen und Datenmengen, die gespeichert werrden. Das verursacht in Nightscout Reporter an einigen Stellen Probleme, die sich nicht generell lösen lassen, Deswegen gibt es jetzt bei den Ausgabe Parametern die Option \"Korrektur für Datenänderungen in AAPS 3.0\", mit der bei Erstellung der PDFs bestimmte Probleme korrigiert werden. Diese Änderungen werden hier mit FixAAPS30 markiert.": {
+        "description": "v2012a1",
+        "type": "text",
+        "placeholders": {}
+    },
+    "FixAAPS30: Die Erstellung der PDFs kann extrem lange dauern. Das liegt an einer Flut von Profil-Switches, die durch ein Plugin für die Automatisierung erstellt werden. Das verursacht einen Profil-Switch alle 4 Minuten mit Speicherung des kompletten Profils. Wenn die Option aktiv ist, dann werden diese Profil-Switches aussortiert und ermöglichen dadurch die Erstellung des PDFs. Diese Profil-Switches sind dann in den PDFs nicht mehr sichtbar.": "FixAAPS30: The creation of the PDFs can take an extremely long time. This is due to a flood of profile switches that are created by a plug-in for automation. This causes a profile switch every 4 minutes with storage of the complete profile. If the option is active, then these profile switches are sorted out and thus enable the creation of the PDF. These profile switches are then no longer visible in the PDFs.",
+    "@FixAAPS30: Die Erstellung der PDFs kann extrem lange dauern. Das liegt an einer Flut von Profil-Switches, die durch ein Plugin für die Automatisierung erstellt werden. Das verursacht einen Profil-Switch alle 4 Minuten mit Speicherung des kompletten Profils. Wenn die Option aktiv ist, dann werden diese Profil-Switches aussortiert und ermöglichen dadurch die Erstellung des PDFs. Diese Profil-Switches sind dann in den PDFs nicht mehr sichtbar.": {
+        "description": "v2012a2",
+        "type": "text",
+        "placeholders": {}
+    },
+    "2.0.11 - 26.11.2021": "2.0.11 - 26/11/2021",
+    "@2.0.11 - 26.11.2021": {
+        "description": "v2011",
+        "type": "text",
+        "placeholders": {}
+    },
+    "Es ist in der Kachelansicht jetzt möglich, Formulare zu duplizieren, um verschiedene Ansichten des gleichen Formulars auf einmal zu erzeugen. Dazu gibt es rechts unten auf den Kacheln ein Kopier-Icon. Wenn dieses ausgelöst wird, dann wird das aktuelle Formular kopiert und als neue Kachel hinter der aktuellen Kachel eingefügt. Diese kann dann genauso behandelt werden, wie jede andere Kachel. Auf dieser neuen Kachel gibt es rechts unten ein Mülleimer-Icon. Wenn dieses ausgelöst wird, dann wird die Kachel wieder entfernt. Von einem Formular können maximal 2 Kopien erstellt werden. Die Optionen der Formulare werden ebenso wie die Reihenfolge wie bisher auch gespeichert. Die kopierten Kacheln bleiben also erhalten. In der Listenansicht tauchen die kopierten Formulare auch auf. Allerdings gibt es dort nicht die Möglichkeit, sie zu kopieren oder zu löschen. Das muss in der Kachelansicht erfolgen.": "It is now possible to duplicate forms in the tile view in order to create different views of the same form at once. There is a copy icon on the bottom right of the tiles. When this is triggered, the current form is copied and inserted as a new tile behind the current tile. This can then be treated in the same way as any other tile. There is a trash can icon at the bottom right of this new tile. When this is triggered, the tile is removed. A maximum of 2 copies can be made of a form. The options for the forms, as well as the order, are saved as before. The copied tiles are therefore retained. The copied forms also appear in the list view. However, there is no possibility of copying or deleting them there. This must be done in the tile view.",
+    "@Es ist in der Kachelansicht jetzt möglich, Formulare zu duplizieren, um verschiedene Ansichten des gleichen Formulars auf einmal zu erzeugen. Dazu gibt es rechts unten auf den Kacheln ein Kopier-Icon. Wenn dieses ausgelöst wird, dann wird das aktuelle Formular kopiert und als neue Kachel hinter der aktuellen Kachel eingefügt. Diese kann dann genauso behandelt werden, wie jede andere Kachel. Auf dieser neuen Kachel gibt es rechts unten ein Mülleimer-Icon. Wenn dieses ausgelöst wird, dann wird die Kachel wieder entfernt. Von einem Formular können maximal 2 Kopien erstellt werden. Die Optionen der Formulare werden ebenso wie die Reihenfolge wie bisher auch gespeichert. Die kopierten Kacheln bleiben also erhalten. In der Listenansicht tauchen die kopierten Formulare auch auf. Allerdings gibt es dort nicht die Möglichkeit, sie zu kopieren oder zu löschen. Das muss in der Kachelansicht erfolgen.": {
+        "description": "v2011a1",
+        "type": "text",
+        "placeholders": {}
+    },
+    "In den Formularen Profil und Basalrate gibt es eine neue Option \"Profil 'NR Profil' verwenden\". Normalerweise wird das zu verwendende Profil automatisch anhand des angegebenen Zeitraums ermittelt. Hiermit kann das unterbunden werden und ein Profil mit dem Namen \"NR Profil\" wird gesucht. Wenn dieses gefunden wird, dann wird das ausgegeben. Wenn es nicht gefunden wird, wird ein Text ausgegeben, der erklärt, wo man das einstellen kann.": "In the profile and basal rate forms there is a new option \"Use profile 'NR profile'\". Normally, the profile to be used is determined automatically based on the specified time period. This option can be used to prevent this behavior and a profile with the name \"NR Profil\" is searched for. If this is found, it will be displayed. If it is not found, a text is shown that explains where this can be set.",
+    "@In den Formularen Profil und Basalrate gibt es eine neue Option \"Profil 'NR Profil' verwenden\". Normalerweise wird das zu verwendende Profil automatisch anhand des angegebenen Zeitraums ermittelt. Hiermit kann das unterbunden werden und ein Profil mit dem Namen \"NR Profil\" wird gesucht. Wenn dieses gefunden wird, dann wird das ausgegeben. Wenn es nicht gefunden wird, wird ein Text ausgegeben, der erklärt, wo man das einstellen kann.": {
+        "description": "v2011a2",
+        "type": "text",
+        "placeholders": {}
+    },
+    "2.0.10 - 07.11.2021": "2.0.10 - 07/11/2021",
+    "@2.0.10 - 07.11.2021": {
+        "description": "v2010",
+        "type": "text",
+        "placeholders": {}
+    },
+    "In der Tabelle im Glukose Perzentil Diagramm kann man nun zwei neue Spalten ausgeben lassen. Diese beinhalten die durchschnittlichen Kohlenhydrate und Insulineinheiten.": "The table in the glucose percentile diagram can now display two new columns. These include the average carbohydrates and units of insulin.",
+    "@In der Tabelle im Glukose Perzentil Diagramm kann man nun zwei neue Spalten ausgeben lassen. Diese beinhalten die durchschnittlichen Kohlenhydrate und Insulineinheiten.": {
+        "description": "v2010a1",
+        "type": "text",
+        "placeholders": {}
+    },
+    "In den Optionen von Formularen, in denen man Spalten ein- und ausblenden kann, wird nun angezeigt, wieviele Spalten noch verfügbar sind.": "In the options of forms in which you can show and hide columns, it is now shown how many columns are still available.",
+    "@In den Optionen von Formularen, in denen man Spalten ein- und ausblenden kann, wird nun angezeigt, wieviele Spalten noch verfügbar sind.": {
+        "description": "v2010c1",
+        "type": "text",
+        "placeholders": {}
+    },
+    "Die Farben für die Glukosebereiche werden jetzt dort, wo sie als Hintergrundfarbe mit Text verwendet werden heller dargestellt, um die Lesbarkeit zu erhöhen.": "The colors for the glucose areas are now displayed lighter where they are used as a background color with text to make them easier to read.",
+    "@Die Farben für die Glukosebereiche werden jetzt dort, wo sie als Hintergrundfarbe mit Text verwendet werden heller dargestellt, um die Lesbarkeit zu erhöhen.": {
+        "description": "v2010c2",
         "type": "text",
         "placeholders": {}
     },
@@ -4697,8 +4865,8 @@
         "type": "text",
         "placeholders": {}
     },
-    "ViewWhatsnewComponent0__message_18": "After I was asked again and again whether I could be donated, I decided to make such a possibility available. Nightscout Reporter is still completely free and will stay that way. If you still want to express your affection for the program, I don't want to stand in your way any longer. The donation button is not visible. But if you want to throw something in the {startTag0}hat{endTag0}, you will find it :)",
-    "@ViewWhatsnewComponent0__message_18": {
+    "ViewWhatsnewComponent0__message_34": "After I was asked again and again whether I could be donated, I decided to make such a possibility available. Nightscout Reporter is still completely free and will stay that way. If you still want to express your affection for the program, I don't want to stand in your way any longer. The donation button is not visible. But if you want to throw something in the {startTag0}hat{endTag0}, you will find it :)",
+    "@ViewWhatsnewComponent0__message_34": {
         "description": "v206a1",
         "type": "text",
         "placeholders": {
