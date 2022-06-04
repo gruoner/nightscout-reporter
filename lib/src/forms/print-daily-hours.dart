@@ -16,10 +16,10 @@ von 0 Uhr und zeigt an, wo ein neuer Tag beginnt.''',
       desc: 'help for dayhours');
 
   @override
-  String id = 'dayhours';
+  String baseId = 'dayhours';
 
   @override
-  String idx = '13';
+  String baseIdx = '13';
 
   int startHour = 0;
 
@@ -79,8 +79,8 @@ von 0 Uhr und zeigt an, wo ein neuer Tag beginnt.''',
   @override
   dynamic get footerText => footerTextDayTimes;
 
-  PrintDailyHours() {
-    init();
+  PrintDailyHours({suffix = null}) {
+    init(suffix);
   }
 
   void fillRow(
@@ -128,7 +128,7 @@ von 0 Uhr und zeigt an, wo ein neuer Tag beginnt.''',
         'text': '${g.glucFromData(gluc)}',
         'style': style,
         'alignment': 'right',
-        'fillColor': colForGluc(day, gluc)
+        'fillColor': colForGlucBack(day, gluc)
       });
       hour++;
       if (hour == 24) hour = 0;
