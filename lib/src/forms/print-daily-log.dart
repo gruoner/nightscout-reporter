@@ -22,10 +22,10 @@ erkannt wurden oder wo Notizen erfasst wurden.
       desc: 'help for daylog');
 
   @override
-  String id = 'daylog';
+  String baseId = 'daylog';
 
   @override
-  String idx = '07';
+  String baseIdx = '07';
 
   bool showNotes,
       showCarbs,
@@ -185,8 +185,8 @@ erkannt wurden oder wo Notizen erfasst wurden.
 
   num lineWidth;
 
-  PrintDailyLog() {
-    init();
+  PrintDailyLog({suffix = null}) {
+    init(suffix);
   }
 
   bool _isFirstLine = true;
@@ -404,7 +404,7 @@ erkannt wurden oder wo Notizen erfasst wurden.
               'style': style,
               'fontSize': size,
               'alignment': 'center',
-              'fillColor': colForGluc(day, gluc)
+              'fillColor': colForGlucBack(day, gluc)
             });
           } else {
             addRow(true, cm(1.3), row, {
@@ -428,7 +428,7 @@ erkannt wurden oder wo Notizen erfasst wurden.
                   'color': colBloodValues
                 },
               ],
-              'fillColor': colForGluc(day, gluc)
+              'fillColor': colForGlucBack(day, gluc)
             });
             _y += _lineHeight;
           }
