@@ -838,7 +838,7 @@ abstract class BasePrint {
 
   String get msgSensorCount => Intl.message('Anzahl Sensorenwechsel');
 
-  String get msgHbA1C => Intl.message('gesch. HbA1c');
+  String get msgHbA1C => Intl.message('HbA1c');
 
   String get msgHbA1CLong => Intl.message('Geschätzter HbA1c');
 
