@@ -22,6 +22,11 @@ schwächerer Schrift angezeigt wird.
   @override
   String baseIdx = '04';
 
+  String _titleGraphic = Intl.message("Tagesstatistik");
+
+  @override
+  String get title => _titleGraphic;
+
   bool showHbA1c,
       showStdabw,
       showCount,
@@ -32,12 +37,14 @@ schwächerer Schrift angezeigt wird.
       useDailyBasalrate,
       showCarbs,
       showBolus,
+      showExtendedInsulinStatictics,
       showTDD;
   double _maxTDD = 0.0;
   double _basalSum = 0.0;
 
   @override
   List<ParamInfo> params = [
+
     ParamInfo(4, msgParamColCount, boolValue: true),
     ParamInfo(7, msgParamColStdAbw, boolValue: true),
     ParamInfo(9, msgParamColPercentile, boolValue: true),
@@ -51,6 +58,7 @@ schwächerer Schrift angezeigt wird.
     ParamInfo(5, msgParamColMinMax, boolValue: false),
     ParamInfo(2, msgParamColBolus, boolValue: false),
     ParamInfo(3, msgParamColTDD, boolValue: false),
+    ParamInfo(11, msgParamExtInsulinStats, boolValue: false),
     ParamInfo(0, '', literalFormat: LiteralFormat(divider: true)),
   ];
 
@@ -78,9 +86,11 @@ schwächerer Schrift angezeigt wird.
 
   static String get msgParamColTDD => Intl.message('TDD anzeigen');
 
+  static String get msgParamExtInsulinStats => Intl.message('erweiterte Insulinstatistik');
+
   @override
   void checkValue(ParamInfo param, dynamic value) {
-    List<int> list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    List<int> list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     var count = 0;
     list.forEach((idx) {
       ParamInfo p = params[idx];
@@ -103,7 +113,7 @@ schwächerer Schrift angezeigt wird.
     if (count > 4 && !params[2].boolValue) {
       params[2].isDisabled = true;
     }
-    params[10].title = msgColumns(7 - count);
+    params[11].title = msgColumns(7 - count);
   }
 
   @override
@@ -113,12 +123,15 @@ schwächerer Schrift angezeigt wird.
     showPercentile = params[2].boolValue;
     showHbA1c = params[3].boolValue;
     showVarK = params[4].boolValue;
+    showExtendedInsulinStatictics = params[10].boolValue;
     showBasal = params[5].boolValue;
     useDailyBasalrate = params[5].subParams[0].boolValue;
     showCarbs = params[6].boolValue;
     showValueStats = params[7].boolValue;
     showBolus = params[8].boolValue;
     showTDD = params[9].boolValue;
+    showTDD = false;
+    useDailyBasalrate = true;
   }
 
   @override
@@ -128,8 +141,8 @@ schwächerer Schrift angezeigt wird.
     return {'count': count, 'isEstimated': false};
   }
 
-  @override
-  String get title => Intl.message('Tagesstatistik');
+//  @override
+//  String get title => Intl.message("Tagesstatistik");
 
   @override
   bool get isPortrait => false;
@@ -474,6 +487,7 @@ schwächerer Schrift angezeigt wird.
     tableHeadFilled = false;
     tableHeadLine = [];
     tableWidths = [];
+    title = Intl.message("Tagesstatistik");
     titleInfo = titleInfoBegEnd();
     var f = 3.3;
     var body = [];
@@ -507,6 +521,7 @@ schwächerer Schrift angezeigt wird.
     totalDay.basalData.targetHigh = 0;
     totalDay.basalData.targetLow = 1000;
     var totalDays = 0;
+    var oldLength = pages.length;
     _maxTDD = 0.0;
     _basalSum = 0.0;
 
@@ -578,5 +593,118 @@ schwächerer Schrift angezeigt wird.
       var test = pages.last.content.last as Map;
       test['columns'].last['table']['body'].add(body.last);
     }
+    if (repData.isForThumbs && pages.length - oldLength > 1) pages.removeRange(oldLength + 1, pages.length);
+    if (showExtendedInsulinStatictics)
+      pages.add(getInsulinPage(repData));
+  }
+
+  Page getInsulinPage(ReportData src)
+  {
+    String t = _titleGraphic;
+    _titleGraphic = Intl.message("Insulinstatistik");
+
+    List<String> xValuesDaily = null;
+    List<String> xValuesWeekly = null;
+    List<String> xValuesMonthly = null;
+    List<List<double>> valuesDaily = [];
+    List<List<double>> valuesWeekly = [];
+    List<List<double>> valuesMonthly = [];
+    List<String> valueColor = [];
+    List<String> valueLegend = [];
+
+    Map<String, InsulinInjectionList> dV = new Map();
+    Map<String, InsulinInjectionList> wV = new Map();
+    Map<String, int> wC = new Map();
+    Map<String, InsulinInjectionList> mV = new Map();
+    Map<String, int> mC = new Map();
+    Set<String> insulinProfiles = new Set();
+    for (DayData day in src.data.days) {
+      InsulinInjectionList sum = InsulinInjectionList();
+      for (TreatmentData t in day.treatments)
+        sum = sum.add2List(t.multipleInsulin);
+      String dayStr = fmtDateShort(day.date, "day");
+      String weekStr = fmtDateShort(day.date, "week");
+      String monthStr = fmtDateShort(day.date, "month");
+      dV.update(dayStr, (InsulinInjectionList v) => v.add2List(sum), ifAbsent: () => sum.copy);
+      wV.update(weekStr, (InsulinInjectionList v) => v.add2List(sum), ifAbsent: () => sum.copy);
+      wC.update(weekStr, (int v) => v + 1, ifAbsent: () => 1);
+      mV.update(monthStr, (InsulinInjectionList v) => v.add2List(sum), ifAbsent: () => sum.copy);
+      mC.update(monthStr, (int v) => v + 1, ifAbsent: () => 1);
+      insulinProfiles.addAll(sum.injections.keys);
+    }
+    if (xValuesDaily == null)
+      xValuesDaily = dV.keys.toList();
+    if (xValuesWeekly == null)
+      xValuesWeekly = wV.keys.toList();
+    if (xValuesMonthly == null)
+      xValuesMonthly = mV.keys.toList();
+    for (String insulin in insulinProfiles)
+    {
+      if (insulin == "sum") {
+        valueColor.add("#000000");
+        valueLegend.add(Intl.message("Gesamtinsulin pro Tag"));
+      } else
+      {
+        valueLegend.add(insulin + Intl.message(" pro Tag"));
+        if (insulin.toLowerCase() == "novorapid")
+          valueColor.add("#FF0000");
+        else if (insulin.toLowerCase() == "actrapid")
+          valueColor.add("#00FF00");
+        else if (insulin.toLowerCase() == "insulatard")
+          valueColor.add("#0000FF");
+      }
+      List<double> daily = [];
+      List<double> weekly = [];
+      List<double> monthly = [];
+      for (String s in xValuesDaily) {
+        if (dV[s].injections.containsKey(insulin))
+          daily.add(dV[s].injections[insulin]);
+        else daily.add(0);
+      }
+      for (String s in xValuesWeekly) {
+        if (wV[s].injections.containsKey(insulin))
+          weekly.add(wV[s].injections[insulin] / wC[s]);
+        else
+          weekly.add(0);
+      }
+      for (String s in xValuesMonthly) {
+        if (mV[s].injections.containsKey(insulin))
+          monthly.add(mV[s].injections[insulin] / mC[s]);
+        else
+          monthly.add(0);
+      }
+      valuesDaily.add(daily);
+      valuesWeekly.add(weekly);
+      valuesMonthly.add(monthly);
+    }
+
+    double contentWidth = new Page(false, null).width - 1.5*xorg; // 23.25 --> 29.7
+    double contentHeight = new Page(false, null).height - 1.5*yorg; // 13 --> 21
+    double weekly_monthly_distance = 1.5;
+    double legendHeight = 1 + valueLegend.length * 0.5;
+    double dailyWidth = contentWidth;
+    double weeklyWidth = (contentWidth - weekly_monthly_distance)/2;
+    double allGraphHeight = contentHeight / 2 - legendHeight;
+    double xo = xorg*0.75; // 3.35
+    double yo = yorg; // 3.9
+
+    List<dynamic> content = [ headerFooter(), ];
+    if (xValuesDaily.length > 1)
+      content.addAll(drawGraphicGridGeneric(allGraphHeight, dailyWidth,
+          xo, yo,
+          xValuesDaily, valuesDaily, valueColor, valueLegend, graphBottom: allGraphHeight));
+    if (xValuesWeekly.length > 1)
+      content.addAll(drawGraphicGridGeneric(allGraphHeight, weeklyWidth,
+          xo, yo + allGraphHeight + legendHeight,
+          xValuesWeekly, valuesWeekly, valueColor, valueLegend, graphBottom: allGraphHeight));
+    if (xValuesMonthly.length > 1)
+      content.addAll(drawGraphicGridGeneric(allGraphHeight, weeklyWidth,
+          xo + weeklyWidth + weekly_monthly_distance, yo + allGraphHeight + legendHeight,
+          xValuesMonthly, valuesMonthly, valueColor, valueLegend, graphBottom: allGraphHeight));
+
+    var ret = Page(isPortrait, content);
+
+    _titleGraphic = t;
+    return ret;
   }
 }
