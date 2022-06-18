@@ -90,7 +90,7 @@ schwächerer Schrift angezeigt wird.
 
   @override
   void checkValue(ParamInfo param, dynamic value) {
-    List<int> list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    List<int> list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     var count = 0;
     list.forEach((idx) {
       ParamInfo p = params[idx];
@@ -102,7 +102,7 @@ schwächerer Schrift angezeigt wird.
 
     list.forEach((idx) {
       ParamInfo p = params[idx];
-      if (count > 6) {
+      if (count > 7) {
         if (!p.boolValue) {
           p.isDisabled = true;
         }
@@ -110,7 +110,7 @@ schwächerer Schrift angezeigt wird.
         p.isDisabled = false;
       }
     });
-    if (count > 4 && !params[2].boolValue) {
+    if (count > 5 && !params[2].boolValue) {
       params[2].isDisabled = true;
     }
     params[11].title = msgColumns(7 - count);
@@ -400,7 +400,7 @@ schwächerer Schrift angezeigt wird.
       'style': style,
       'alignment': 'right'
     });
-    addTableRow(showPercentile, cm(1.5), row, {
+    addTableRow(showPercentile, 'auto', row, {
       'text': msg25,
       'style': 'total',
       'alignment': 'center'
@@ -409,7 +409,7 @@ schwächerer Schrift angezeigt wird.
       'style': style,
       'alignment': 'right'
     });
-    addTableRow(showPercentile, cm(1.5), row, {
+    addTableRow(showPercentile, 'auto', row, {
       'text': msgMedian,
       'style': 'total',
       'alignment': 'center'
@@ -418,7 +418,7 @@ schwächerer Schrift angezeigt wird.
       'style': style,
       'alignment': 'right'
     });
-    addTableRow(showPercentile, cm(1.5), row, {
+    addTableRow(showPercentile, 'auto', row, {
       'text': msg75,
       'style': 'total',
       'alignment': 'center'
@@ -427,7 +427,7 @@ schwächerer Schrift angezeigt wird.
       'style': style,
       'alignment': 'right'
     });
-    addTableRow(showHbA1c, cm(1.5), row, {
+    addTableRow(showHbA1c, 'auto', row, {
       'text': msgHbA1C,
       'style': 'total',
       'alignment': 'center',
