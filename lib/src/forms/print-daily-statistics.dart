@@ -169,9 +169,19 @@ schwächerer Schrift angezeigt wird.
         getContent(firstCol, 'total', 'center'));
     var text = msgDistribution;
     if (showTDD) text += '\n' + msgTDD;
-    double tdd = day.ieBasalSum(!useDailyBasalrate) + day.ieBolusSum;
-    addTableRow(true, cm(f * 100), row, {
-      'text': text,
+    var tdd = day.ieBasalSum(!useDailyBasalrate) + day.ieBolusSum;
+    addTableRow(true, cm(f * 100), row, {'text': text, 'style': 'total', 'alignment': 'center'}, {
+      'style': style,
+      'canvas': [
+        {'type': 'rect', 'color': colLow, 'x': cm(0), 'y': cm(0), 'w': cm(day.lowPrz(g) * f), 'h': cm(showTDD ? 0.25 : 0.5)},
+        {'type': 'rect', 'color': colNormLow, 'x': cm(day.lowPrz(g) * f), 'y': cm(0), 'w': cm(day.bottomPrz(g) * f), 'h': cm(showTDD ? 0.25 : 0.5)},
+        {'type': 'rect', 'color': colNorm, 'x': cm((day.lowPrz(g) + day.bottomPrz(g)) * f), 'y': cm(0), 'w': cm(day.normPrz(g) * f), 'h': cm(showTDD ? 0.25 : 0.5)},
+        {'type': 'rect', 'color': colNormHigh, 'x': cm((day.lowPrz(g) + day.bottomPrz(g) + day.normPrz(g)) * f), 'y': cm(0), 'w': cm(day.topPrz(g) * f), 'h': cm(showTDD ? 0.25 : 0.5)},
+        {'type': 'rect', 'color': colHigh, 'x': cm((day.lowPrz(g) + day.bottomPrz(g) + day.normPrz(g) + day.topPrz(g)) * f), 'y': cm(0), 'w': cm(day.highPrz(g) * f), 'h': cm(showTDD ? 0.25 : 0.5)}
+      ]
+    });
+    addTableRow(showTDD, cm(f * 100), row, {
+      'text': msgTDD,
       'style': 'total',
       'alignment': 'center'
     }, {
@@ -179,27 +189,19 @@ schwächerer Schrift angezeigt wird.
       'canvas': [
         {
           'type': 'rect',
-          'color': colLow,
+          'color': colBasalDay,
           'x': cm(0),
           'y': cm(0),
-          'w': cm(day.lowPrz(g) * f),
-          'h': cm(showTDD ? 0.25 : 0.5)
+          'w': cm(day.ieBasalSum(!useDailyBasalrate) * f * 100 / _maxTDD),
+          'h': cm(0.5)
         },
         {
           'type': 'rect',
-          'color': colNorm,
-          'x': cm(day.lowPrz(g) * f),
+          'color': colBolus,
+          'x': cm(day.ieBasalSum(!useDailyBasalrate) * f * 100 / _maxTDD),
           'y': cm(0),
-          'w': cm(day.normPrz(g) * f),
-          'h': cm(showTDD ? 0.25 : 0.5)
-        },
-        {
-          'type': 'rect',
-          'color': colHigh,
-          'x': cm((day.lowPrz(g) + day.normPrz(g)) * f),
-          'y': cm(0),
-          'w': cm(day.highPrz(g) * f),
-          'h': cm(showTDD ? 0.25 : 0.5)
+          'w': cm(day.ieBolusSum * f * 100 / _maxTDD),
+          'h': cm(0.5)
         },
         showTDD
             ? {
@@ -233,8 +235,9 @@ schwächerer Schrift angezeigt wird.
             : {},
       ]
     });
-    addTableRow(true, '*', row, {
-      'text': msgLow(targets(repData)['low']),
+
+    addTableRow(true, 'auto', row, {
+      'text': msgVeryLow(targets(repData)['verylow']),
       'style': 'total',
       'alignment': 'center',
       'fillColor': colLowBack
@@ -244,19 +247,36 @@ schwächerer Schrift angezeigt wird.
       'alignment': 'right',
       'fillColor': style == 'total' ? colLowBack : null
     });
-    addTableRow(true, '*', row, {
-      'text': msgNormal,
+    addTableRow(true, 'auto', row, {
+      'text': msgLow(targets(repData)['verylow'], targets(repData)['low']),
       'style': 'total',
       'alignment': 'center',
-      'fillColor': colNormBack
+      'fillColor': colNormLow
     }, {
+      'text': '${g.fmtNumber(day.bottomPrz(g), 0)} %',
+      'style': style,
+      'alignment': 'right',
+      'fillColor': style == 'total' ? colNormLow : null
+    });
+    addTableRow(true, 'auto', row, {'text': msgNormal, 'style': 'total', 'alignment': 'center', 'fillColor': colNorm}, {
       'text': '${g.fmtNumber(day.normPrz(g), 0)} %',
       'style': style,
       'alignment': 'right',
       'fillColor': style == 'total' ? colNormBack : null
     });
-    addTableRow(true, '*', row, {
-      'text': msgHigh(targets(repData)['high']),
+    addTableRow(true, 'auto', row, {
+      'text': msgHigh(targets(repData)['high'], targets(repData)['veryhigh']),
+      'style': 'total',
+      'alignment': 'center',
+      'fillColor': colNormHigh
+    }, {
+      'text': '${g.fmtNumber(day.topPrz(g), 0)} %',
+      'style': style,
+      'alignment': 'right',
+      'fillColor': style == 'total' ? colNormHigh : null
+    });
+    addTableRow(true, 'auto', row, {
+      'text': msgVeryHigh(targets(repData)['veryhigh']),
       'style': 'total',
       'alignment': 'center',
       'fillColor': colHighBack
@@ -482,7 +502,7 @@ schwächerer Schrift angezeigt wird.
     ProfileGlucData prevProfile;
     var lineCount = 0;
     var page = [];
-    var totalDay = DayData(null, ProfileGlucData(ProfileStoreData('Intern')));
+    var totalDay = DayData(null, ProfileGlucData(ProfileStoreData("Intern")), repData.status);
     totalDay.basalData.store.listBasal = [];
     totalDay.basalData.targetHigh = 0;
     totalDay.basalData.targetLow = 1000;
