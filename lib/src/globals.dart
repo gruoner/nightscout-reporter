@@ -18,14 +18,14 @@ import 'package:nightscout_reporter/src/controls/datepicker/datepicker_component
 import 'package:nightscout_reporter/src/forms/base-print.dart';
 import 'package:nightscout_reporter/src/json_data.dart';
 import 'package:timezone/browser.dart' as tz;
+import 'package:angular_components/utils/color/material.dart';
 
 class Informator {
   final List<String> _errors = [];
   final List<String> _warnings = [];
   final List<String> _infos = [];
 
-  bool get hasContent =>
-      _errors.isNotEmpty || _warnings.isNotEmpty || _infos.isNotEmpty;
+  bool get hasContent => _errors.isNotEmpty || _warnings.isNotEmpty || _infos.isNotEmpty;
 
   String _output(var list) => list.join('\n');
 
@@ -107,8 +107,12 @@ class LangData {
           'MM for months and yyyy for year. ' +
           'It has to be the english formatstring.');
 
-  String get imgPath =>
-      'packages/nightscout_reporter/assets/img/lang-${img}.png';
+  String get dateShortFormat => Intl.message('dd.MM.',
+      desc: 'this is the dateformat, please use dd for days, ' +
+          'MM for months and no year. ' +
+          'It has to be the english formatstring.');
+
+  String get imgPath => 'packages/nightscout_reporter/assets/img/lang-${img}.png';
 
   LangData(this.code, this.name, this.img);
 }
@@ -120,23 +124,28 @@ class PeriodShift {
   PeriodShift(this.title, {this.months = 0});
 }
 
-// 21.12.2021 - 11:20 Uhr Loop pausiert - Eintrag "OpenAPS Offline" mit duration 1 Std.
-// 21.12.2021 - 11:25 Uhr Loop wieder aktiviert - Eintrag "OpenAPS Offline" mit duration 0
+// 21.12.2021 - 11:20 Uhr Loop pausiert -
+// Eintrag "OpenAPS Offline" mit duration 1 Std.
+// 21.12.2021 - 11:25 Uhr Loop wieder aktiviert -
+// Eintrag "OpenAPS Offline" mit duration 0
 class Settings {
-  String version = '2.2.1';
+  String version = '3.0.2';
+  static String SharedData = 'sharedData';
+  static String DeviceData = 'deviceData';
+  static String WebData = 'webData';
+  static String DebugFlag = 'debug';
+  static bool skipStorageClear = false;
+  static bool showDebugInConsole = false;
 
   // subversion is used nowhere. It is just there to trigger an other signature
   // for the cache.
   String subVersion = '1';
 
-  static String get msgThemeAuto =>
-      Intl.message('Automatisch', meaning: 'theme selection - automatic');
+  static String get msgThemeAuto => Intl.message('Automatisch', meaning: 'theme selection - automatic');
 
-  static String get msgThemeStandard =>
-      Intl.message('Standard', meaning: 'theme selection - standard');
+  static String get msgThemeStandard => Intl.message('Standard', meaning: 'theme selection - standard');
 
-  static String get msgThemeXmas =>
-      Intl.message('Weihnachten', meaning: 'theme selection - christmas');
+  static String get msgThemeXmas => Intl.message('Weihnachten', meaning: 'theme selection - christmas');
 
   static String get msgUnitMGDL => Intl.message('mg/dL');
 
@@ -150,7 +159,7 @@ class Settings {
 
   int timestamp = 0;
 
-  static bool get hastiod => html.window.localStorage['debug'] != 'yes';
+  static bool get hastiod => html.window.localStorage[Settings.DebugFlag] != 'yes';
   String betaPrefix = '@';
   String lastVersion;
 
@@ -201,6 +210,17 @@ class Settings {
   List<FormConfig> listConfigOrg = <FormConfig>[];
   DateFormat fmtDateForDisplay;
   DatepickerPeriod _period = DatepickerPeriod();
+  bool isWatchColor = true;
+  List<WatchElement> _watchList = <WatchElement>[];
+
+  List<WatchElement> get watchList {
+    _watchList ??= [];
+    return _watchList;
+  }
+
+  set watchList(List<WatchElement> value) {
+    _watchList = value;
+  }
 
   DatepickerPeriod get period => _period;
 
@@ -227,8 +247,8 @@ class Settings {
 // */
 
   var onAfterLoad;
-  Map<String, String> themeList = Map<String, String>.unmodifiable(
-      {null: msgThemeAuto, 'standard': msgThemeStandard, 'xmas': msgThemeXmas});
+  Map<String, String> themeList =
+      Map<String, String>.unmodifiable({null: msgThemeAuto, 'standard': msgThemeStandard, 'xmas': msgThemeXmas});
 
   String _theme;
 
@@ -260,6 +280,7 @@ class Settings {
 
   void showDebug(String msg) {
     debugCache.add(msg);
+    if (showDebugInConsole) print(msg);
     if (canDebug && doShowDebug != null) doShowDebug();
   }
 
@@ -338,50 +359,43 @@ class Settings {
     }, (Date date) {
       return date;
     }));
-    period.list
-        .add(DatepickerEntry('2days', msgLast2Days, (DatepickerPeriod data) {
+    period.list.add(DatepickerEntry('2days', msgLast2Days, (DatepickerPeriod data) {
       data.start = period.baseDate.add(days: -1);
       data.end = period.baseDate;
     }, (Date date) {
       return date.add(days: -1);
     }));
-    period.list
-        .add(DatepickerEntry('3days', msgLast3Days, (DatepickerPeriod data) {
+    period.list.add(DatepickerEntry('3days', msgLast3Days, (DatepickerPeriod data) {
       data.start = period.baseDate.add(days: -2);
       data.end = period.baseDate;
     }, (Date date) {
       return date.add(days: -2);
     }));
-    period.list
-        .add(DatepickerEntry('1week', msgLastWeek, (DatepickerPeriod data) {
+    period.list.add(DatepickerEntry('1week', msgLastWeek, (DatepickerPeriod data) {
       data.start = period.baseDate.add(days: -6);
       data.end = period.baseDate;
     }, (Date date) {
       return date.add(days: -6);
     }));
-    period.list
-        .add(DatepickerEntry('2weeks', msgLast2Weeks, (DatepickerPeriod data) {
+    period.list.add(DatepickerEntry('2weeks', msgLast2Weeks, (DatepickerPeriod data) {
       data.start = period.baseDate.add(days: -13);
       data.end = period.baseDate;
     }, (Date date) {
       return date.add(days: -13);
     }));
-    period.list
-        .add(DatepickerEntry('3weeks', msgLast3Weeks, (DatepickerPeriod data) {
+    period.list.add(DatepickerEntry('3weeks', msgLast3Weeks, (DatepickerPeriod data) {
       data.start = period.baseDate.add(days: -20);
       data.end = period.baseDate;
     }, (Date date) {
       return date.add(days: -20);
     }));
-    period.list
-        .add(DatepickerEntry('1month', msgLastMonth, (DatepickerPeriod data) {
+    period.list.add(DatepickerEntry('1month', msgLastMonth, (DatepickerPeriod data) {
       data.start = period.baseDate.add(months: -1);
       data.end = period.baseDate;
     }, (Date date) {
       return date.add(months: -1);
     }));
-    period.list.add(
-        DatepickerEntry('3months', msgLast3Months, (DatepickerPeriod data) {
+    period.list.add(DatepickerEntry('3months', msgLast3Months, (DatepickerPeriod data) {
       data.start = period.baseDate.add(months: -3);
       data.end = period.baseDate;
     }, (Date date) {
@@ -434,8 +448,7 @@ class Settings {
     }
 //    var idList = _pdfOrder.split(",");
     for (var i = 0; i < idxList.length; i++) {
-      var cfg = srcList.firstWhere((cfg) => cfg.idx == idxList[i],
-          orElse: () => null);
+      var cfg = srcList.firstWhere((cfg) => cfg.idx == idxList[i], orElse: () => null);
       if (cfg != null) {
         srcList.remove(cfg);
         listConfig.add(cfg);
@@ -526,6 +539,11 @@ class Settings {
       shortcuts = '${shortcuts},${shortcutList[i].asJsonString}';
     }
     if (shortcuts.length > 1) shortcuts = shortcuts.substring(1);
+    var watchEntries = '';
+    for (var i = 0; i < watchList.length; i++) {
+      watchEntries = '${watchEntries},${watchList[i].asJsonString}';
+    }
+    if (watchEntries.length > 1) watchEntries = watchEntries.substring(1);
     timestamp = DateTime.now().millisecondsSinceEpoch;
     return '{'
         '"s1":"$version"'
@@ -541,6 +559,7 @@ class Settings {
         ',"s13":${showAllTileParams}'
         ',"s2":[${users}]'
         ',"s3":[${shortcuts}]'
+        ',"s14":[${watchEntries}]'
         '}';
   }
 
@@ -561,6 +580,7 @@ class Settings {
       timestamp = JsonData.toInt(json['s11']);
       tileShowImage = JsonData.toBool(json['s12'], ifEmpty: true);
       showAllTileParams = JsonData.toBool(json['s13']);
+      dynamic watchEntries = json['s14'];
       period.fmtDate = language.dateformat;
       userListLoaded = false;
       userList.clear();
@@ -570,9 +590,8 @@ class Settings {
             userList.add(UserData.fromJson(this, entry));
           }
         } catch (ex) {
-          Globals().info.addDevError(ex,
-              'Fehler beim laden der User in Settings.fromSharedJson: ${ex.toString()}');
-//            saveStorage("mu", null);
+          var msg = ex.toString();
+          Globals().info.addDevError(ex, 'Fehler beim laden der User in Settings.fromSharedJson: ${msg}');
         }
       } else {
 //          saveStorage("mu", null);
@@ -594,8 +613,8 @@ class Settings {
       userList.sort((a, b) => a.display.compareTo(b.display));
       userListLoaded = true;
       userIdx = JsonData.toInt(json['s4']);
-      shortcutList.clear();
       // get shortcuts if available
+      shortcutList.clear();
       if (shortcuts != null) {
         try {
           for (var entry in shortcuts) {
@@ -604,6 +623,28 @@ class Settings {
         } catch (ex) {
           var msg = ex.toString();
           showDebug('Fehler bei Settings.fromSharedJson (shortcuts): ${msg}');
+        }
+      }
+      // get watch entries if available
+      watchList.clear();
+      if (watchEntries == null || watchEntries.isEmpty) {
+        watchEntries = [
+          {'t': 'time', 's': 3, 'b': true},
+          {'t': 'nl', 's': 1},
+          {'t': 'gluc', 's': 5, 'b': true},
+          {'t': 'arrow', 's': 3},
+          {'t': 'target', 's': 1},
+          {'t': 'lasttime', 's': 1}
+        ];
+      }
+      if (watchEntries != null) {
+        try {
+          for (var entry in watchEntries) {
+            watchList.add(WatchElement.fromJson(entry));
+          }
+        } catch (ex) {
+          var msg = ex.toString();
+          showDebug('Fehler bei Settings.fromSharedJson (watchEntries): ${msg}');
         }
       }
       if (onAfterLoad != null) onAfterLoad();
@@ -619,53 +660,9 @@ class Settings {
   // retrieve the current settings as a json-encoded-string
   // String get asJsonString => '{$jsonString}';
 
-  // retrieve the current settings as a string that can be used in json
-  String get jsonString {
-    var users = '';
-    for (var i = 0; i < userList.length; i++) {
-      users = '${users},${userList[i].asJsonString}';
-    }
-    if (users.length > 1) users = users.substring(1);
-    var shortcuts = '';
-    for (var i = 0; i < shortcutList.length; i++) {
-      shortcuts = '${shortcuts},${shortcutList[i].asJsonString}';
-    }
-    if (shortcuts.length > 1) shortcuts = shortcuts.substring(1);
-    return '"version":"$version"'
-        ',"mu":"${Settings.doit('[${users}]')}"'
-        ',"sc":"${Settings.doit('[${shortcuts}]')}"'
-        ',"userIdx":"${userIdx}"'
-        ',"glucMGDL":"${glucMGDL}"'
-        ',"language":"${language.code ?? 'de_DE'}"'
-        ',"showCurrentGluc":"${showCurrentGluc ? 'yes' : 'no'}"'
-        ',"period":"${period?.toString()}"'
-        ',"pdfOrder":"${_pdfOrder}"'
-        ',"viewType":"${_viewType}"'
-        ',"timestamp":"${timestamp}"'
-        ',"tileShowImage":"${tileShowImage ? 'yes' : 'no'}"'
-        ',"showAllTileParams":"${showAllTileParams ? 'yes' : 'no'}"';
-  }
-
-  // retrieves the settings from localStorage as partial json-String
-  String get storageString => '"version":"${loadStorage('version')}"'
-      ',"userIdx":"${loadStorage('userIdx')}"'
-      ',"mu":"${loadStorage('mu')}"'
-      ',"sc":"${loadStorage('sc')}"'
-      ',"glucMGDL":"${loadStorage('glucMGDL')}"'
-      ',"language":"${loadStorage('language')}"'
-      ',"pdfCreationMaxSize":"${loadStorage('pdfCreationMaxSize')}"'
-      ',"showCurrentGluc":"${loadStorage('showCurrentGluc')}"'
-      ',"period":"${loadStorage('period')}"'
-      ',"pdfOrder":"${loadStorage('pdfOrder')}"'
-      ',"viewType":"${loadStorage('viewType')}"'
-      ',"timestamp":"${loadStorage('timestamp')}"'
-      ',"currCompIdx":"${loadStorage('currCompIdx')}"'
-      ',"tileShowImage":"${loadStorage('tileShowImage')}"'
-      ',"showAllTileParams":"${loadStorage('showAllTileParams')}"';
-
   // loads the settings that are not synchronized to google
   void loadLocalOnlySettings() {
-    canDebug = loadStorage('debug') == 'yes';
+    canDebug = loadStorage(Settings.DebugFlag) == 'yes';
     fmtDateForDisplay = DateFormat(language.dateformat);
   }
 
@@ -673,12 +670,7 @@ class Settings {
   void fromSharedString(String src) {
     try {
       dynamic json = convert.json.decode(src);
-      // 6.7.2020: can be deleted in future versions
-      if (json['version'] != null)
-        fromJson(json); // ignore: curly_braces_in_flow_control_structures
-      else
-        // 6.7.2020: end
-        fromSharedJson(json); // ignore: curly_braces_in_flow_control_structures
+      fromSharedJson(json);
     } catch (ex) {
       var msg = ex.toString();
       showDebug('Fehler bei Settings.fromSharedString: ${msg}');
@@ -688,11 +680,9 @@ class Settings {
   // loads the settings from json-encoded strings
   void fromStrings(String shared, String device) {
     try {
-/*      shared = shared.replaceAll("\"[", "[");
-      shared = shared.replaceAll("]\"", "]");
-      device = device.replaceAll("{,", "{");
-
- */
+      // shared = shared.replaceAll("\"[", "[");
+      // shared = shared.replaceAll("]\"", "]");
+      // device = device.replaceAll("{,", "{");
       fromSharedJson(convert.json.decode(shared));
       fromDeviceJson(convert.json.decode(device));
     } catch (ex) {
@@ -815,6 +805,134 @@ class Globals extends Settings {
   DomSanitizationService sanitizer;
   int currShortcutIdx = -1;
   ShortcutData currShortcut;
+  EntryData currentGlucSrc;
+  EntryData lastGlucSrc;
+  String currentGlucDiff;
+  String currentGlucTime;
+
+  String get currentGluc => currentGlucSrc == null ? 'Keine Daten' : fmtNumber(currentGlucValue, glucPrecision);
+
+  String get currentGlucOrg =>
+      currentGlucSrc == null ? 'Keine Daten' : fmtNumber(currentGlucValue / Globals.adjustFactor, glucPrecision);
+
+  double get currentGlucValue => currentGlucSrc == null ? null : currentGlucSrc.gluc / glucFactor;
+
+  double get lastGlucValue => lastGlucSrc == null ? null : lastGlucSrc.gluc / glucFactor;
+
+  int glucDir = 360;
+
+  String msgGlucTime(time) => Intl.plural(time,
+      zero: 'Gerade eben',
+      one: 'vor ${time} Minute',
+      other: 'vor ${time} Minuten',
+      args: [time],
+      name: 'msgGlucTime',
+      desc: 'display of minutes since last value received on watch');
+
+  String get currentGlucDir => glucDir < 360 ? 'translate(0,2px)rotate(${glucDir}deg)' : null;
+  Timer glucTimer;
+  bool glucRunning = false;
+
+  bool currentGlucVisible = true;
+  int currentGlucCounter = 0;
+  int targetBottom = Globals.stdLow;
+  int targetTop = Globals.stdHigh;
+
+  Future<String> getCurrentGluc({force = false, timeout = 60}) async {
+    if (glucTimer != null) {
+      glucTimer.cancel();
+      glucTimer = null;
+    }
+    // make sure the value uses the correct factor
+    user.adjustGluc = user.adjustGluc;
+
+    currentGlucCounter++;
+
+    if (glucRunning) return '';
+
+    if (!force && !showCurrentGluc) return '';
+    glucRunning = true;
+    var url = user.apiUrl(null, 'status.json');
+    if (!hasMGDL) {
+      dynamic content = await requestJson(url);
+      if (content != null) {
+        var status = StatusData.fromJson(content);
+        setGlucMGDL(status);
+        targetBottom = status.settings.bgTargetBottom;
+        targetTop = status.settings.bgTargetTop;
+      }
+    }
+    url = user.apiUrl(null, 'entries.json', params: 'count=2');
+    List<dynamic> src = await requestJson(url);
+    if (src != null) {
+      if (src.length != 2) {
+        currentGlucSrc = null;
+        lastGlucSrc = null;
+        currentGlucDiff = '';
+        glucDir = 360;
+      } else {
+        try {
+          var eNow = EntryData.fromJson(src[0]);
+          var ePrev = EntryData.fromJson(src[1]);
+          if (eNow.device != ePrev.device) {
+            url = user.apiUrl(null, 'entries.json', params: 'count=10');
+            src = await requestJson(url);
+            eNow = EntryData.fromJson(src[0]);
+            ePrev = null;
+            for (var i = 1; i < src.length && ePrev == null; i++) {
+              var check = EntryData.fromJson(src[i]);
+              if (check.device == eNow.device) {
+                ePrev = check;
+              }
+            }
+          }
+          var span = eNow.time.difference(ePrev.time).inMinutes;
+          span = math.max(span, 1);
+          glucDir = 360;
+          currentGlucDiff = '';
+          currentGlucTime = '';
+          if (span > 15) {
+            return currentGluc;
+          }
+          var time = DateTime.now().difference(eNow.time).inMinutes;
+          currentGlucTime = msgGlucTime(time);
+
+          currentGlucSrc = eNow;
+          lastGlucSrc = ePrev;
+          var diff = eNow.gluc - ePrev.gluc;
+          currentGlucDiff = '${eNow.gluc > ePrev.gluc ? '+' : ''}'
+              '${fmtNumber(diff / span / glucFactor, glucPrecision)}';
+          var limit = 10 * span;
+          if (diff > limit) {
+            glucDir = -90;
+          } else if (diff < -limit) {
+            glucDir = 90;
+          } else {
+            glucDir = 90 - ((diff + limit) / limit * 90).toInt();
+          }
+        } catch (ex) {
+          currentGlucSrc = null;
+          lastGlucSrc = null;
+          currentGlucDiff = '';
+          glucDir = 360;
+        }
+      }
+    }
+
+    if (currentGlucVisible || force) {
+      var milliseconds = timeout * 1000;
+      //  calculate the milliseconds to the next full part of the minute for the timer
+      // (e.g. now is 10:37:27 and timeout is 30, will result in 3000 milliseconds
+      // this is done for that the display of the time will match the current
+      // time when entering a new minute
+      var milliNow = DateTime.now().second * 1000 + DateTime.now().millisecond;
+      var part = milliNow ~/ milliseconds;
+      milliseconds = (part + 1) * milliseconds - milliNow;
+      glucTimer = Timer(Duration(milliseconds: milliseconds), () => getCurrentGluc(force: force, timeout: timeout));
+    }
+    glucRunning = false;
+    return currentGluc;
+  }
 
   int ppMaxInsulinEffectInMS = 3 * 60 * 60 * 1000;
 
@@ -826,6 +944,8 @@ class Globals extends Settings {
     if (!ppComparable) _ppStandardLimits = value;
   }
 
+  String get msgAdjustFactor => fmtNumber(Globals.adjustFactor, 2);
+
   bool ppCGPAlwaysStandardLimits = true;
 
   bool ppComparable = false;
@@ -835,8 +955,7 @@ class Globals extends Settings {
 
   List<int> get profileMaxCounts => [100000, 2000, 1000, 500, 250, 100];
 
-  double get glucMaxValue =>
-      glucValueFromData(glucMaxValues[ppGlucMaxIdx ?? 0]);
+  double get glucMaxValue => glucValueFromData(glucMaxValues[ppGlucMaxIdx ?? 0]);
   int ppBasalPrecisionIdx = 0;
 
   List<int> get basalPrecisionValues => [null, 0, 1, 2, 3];
@@ -880,9 +999,7 @@ class Globals extends Settings {
   void show(String text, {bool append = false, String skipStart}) {
     Future.delayed(Duration(milliseconds: 500), () {
       if (msg != null) {
-        if (skipStart != null &&
-            msg.text != null &&
-            msg.text.startsWith(skipStart)) return;
+        if (skipStart != null && msg.text != null && msg.text.startsWith(skipStart)) return;
         if (append && msg.text != null && msg.text.length < 20000) {
           msg.text += '<br />${text}';
         } else {
@@ -906,6 +1023,9 @@ class Globals extends Settings {
       ',"d9":"${ppGlucMaxIdx?.toString() ?? 0}"'
       ',"d10":"${ppBasalPrecisionIdx?.toString() ?? 0}"'
       ',"d11":"${ppFixAAPS30?.toString() ?? 0}"'
+      ',"d12":"${ppPdfSameWindow ? "true" : "false"}"'
+      ',"d13":"${ppPdfDownload ? "true" : "false"}"'
+      ',"d14":"${isWatchColor ? "true" : "false"}"'
       '}';
 
   // loads the device settings from a json-encoded string
@@ -923,6 +1043,9 @@ class Globals extends Settings {
       ppGlucMaxIdx = JsonData.toInt(json['d9']);
       ppBasalPrecisionIdx = JsonData.toInt(json['d10']);
       ppFixAAPS30 = JsonData.toBool(json['d11']);
+      ppPdfSameWindow = JsonData.toBool(json['d12']);
+      ppPdfDownload = JsonData.toBool(json['d13']);
+      isWatchColor = JsonData.toBool(json['d14']);
     } catch (ex) {
       var msg = ex.toString();
       showDebug('Fehler bei Globals.fromDeviceJson: ${msg}');
@@ -931,73 +1054,20 @@ class Globals extends Settings {
 
   void saveWebData() {
     saveStorage(
-        'webData',
-        '{"w0":"${version}","w1":"${language.code ?? "de_DE"}","w2":"${theme}",'
-            '"w3":${(_syncGoogle ?? false) ? "true" : "false"}}');
-  }
-
-  // retrieve the current settings as a string that can be used in json
-  @override
-  String get jsonString =>
-      '${super.jsonString},"ppHideNightscoutInPDF":"${ppHideNightscoutInPDF ? "true" : "false"}"'
-      ',"ppShowUrlInPDF":"${ppShowUrlInPDF ? "true" : "false"}"'
-      ',"ppHideLoopData":"${ppHideLoopData ? "true" : "false"}"'
-      ',"pdfCreationMaxSize":"${pdfCreationMaxSize}"'
-      ',"ppStandardLimits":"${_ppStandardLimits ? "true" : "false"}"'
-      ',"ppCGPAlwaysStandardLimits":"${ppCGPAlwaysStandardLimits ? "true" : "false"}"'
-      ',"ppComparable":"${ppComparable ? "true" : "false"}"'
-      ',"ppLatestFirst":"${ppLatestFirst ? "true" : "false"}"'
-      ',"ppGlucMaxIdx":"${ppGlucMaxIdx?.toString() ?? 0}"'
-      ',"ppBasalPrecisionIdx":"${ppBasalPrecisionIdx?.toString() ?? 0}"'
-      ',"ppFixAAPS30":"${ppFixAAPS30?.toString() ?? 0}"';
-
-  // retrieves the settings from a json-data-structure
-  @override
-  void fromJson(dynamic json) {
-    super.fromJson(json);
-    ppHideNightscoutInPDF = JsonData.toBool(json['ppHideNightscoutInPDF']);
-    ppShowUrlInPDF = JsonData.toBool(json['ppShowUrlInPDF']);
-    ppHideLoopData = JsonData.toBool(json['ppHideLoopData']);
-    pdfCreationMaxSize =
-        JsonData.toInt(json['pdfCreationMaxSize'], pdfCreationMaxSize);
-    ppStandardLimits = JsonData.toBool(json['ppStandardLimits']);
-    ppCGPAlwaysStandardLimits =
-        JsonData.toBool(json['ppCGPAlwaysStandardLimits']);
-    ppComparable = JsonData.toBool(json['ppComparable']);
-    ppLatestFirst = JsonData.toBool(json['ppLatestFirst']);
-    ppGlucMaxIdx = JsonData.toInt(json['ppGlucMaxIdx']);
-    ppBasalPrecisionIdx = JsonData.toInt(json['ppBasalPrecisionIdx']);
-    ppFixAAPS30 = JsonData.toBool(json['ppFixAAPS30']);
+        Settings.WebData,
+        '{"w0":"${version}"'
+        ',"w1":"${language.code ?? "de_DE"}"'
+        ',"w2":"${theme}"'
+        ',"w3":${(_syncGoogle ?? false) ? "true" : "false"}'
+        '}');
   }
 
   void restoreLiveStorage() {}
-
-  // retrieves the settings from localStorage as partial json-String
-  @override
-  String get storageString {
-    if (loadStorage('reset') == 'jawoll') restoreLiveStorage();
-    if (loadStorage('version') == '') return '';
-    return '${super.storageString}'
-        ',"ppHideNightscoutInPDF":"${loadStorage('ppHideNightscoutInPDF')}"'
-        ',"ppShowUrlInPDF":"${loadStorage('ppShowUrlInPDF')}"'
-        ',"ppHideLoopData":"${loadStorage('ppHideLoopData')}"'
-        ',"pdfCreationMaxSize":"${loadStorage('pdfCreationMaxSize')}"'
-        ',"ppStandardLimits":"${loadStorage('ppStandardLimits')}"'
-        ',"ppCGPAlwaysStandardLimits":"${loadStorage('ppCGPAlwaysStandardLimits')}"'
-        ',"ppComparable":"${loadStorage('ppComparable')}"'
-        ',"ppLatestFirst":"${loadStorage('ppLatestFirst')}"'
-        ',"ppGlucMaxIdx":"${loadStorage('ppGlucMaxIdx')}"'
-        ',"ppBasalPrecisionIdx":"${loadStorage('ppBasalPrecisionIdx')}"'
-        ',"ppProfileMaxCount":"${loadStorage('ppProfileMaxCount')}"'
-        ',"ppFixAAPS30":"${loadStorage('ppFixAAPS30')}"';
-  }
 
   // loads the settings that are not synchronized to google
   @override
   void loadLocalOnlySettings() {
     super.loadLocalOnlySettings();
-    ppPdfSameWindow = loadStorage('ppPdfSameWindow') == 'true';
-    ppPdfDownload = loadStorage('ppPdfDownload') == 'true';
     currPeriodShift = listPeriodShift[0];
   }
 
@@ -1010,9 +1080,16 @@ class Globals extends Settings {
 
   int basalPrecisionAuto = 1;
 
-  int get basalPrecision => (ppBasalPrecisionIdx ?? 0) > 0
-      ? basalPrecisionValues[ppBasalPrecisionIdx]
-      : basalPrecisionAuto;
+  int get basalPrecision =>
+      (ppBasalPrecisionIdx ?? 0) > 0 ? basalPrecisionValues[ppBasalPrecisionIdx] : basalPrecisionAuto;
+
+  /// ***********************************************
+  /// Zentraler Faktor für die Kalibrierung
+  /// der Werte anhand eines vom Laber ermittelten
+  /// HbA1C im Vergleich zu einem im gleichen
+  /// 3 Monatszeitraum berechneten HbA1C
+  /// ***********************************************
+  static double adjustFactor = 1.0;
 
   static int decimalPlaces(num value) {
     var v = value.toString();
@@ -1023,8 +1100,7 @@ class Globals extends Settings {
     return math.min(ret, 3);
   }
 
-  int timeForCalc(DateTime time) =>
-      time.hour * 3600 + time.minute * 60 + time.second;
+  int timeForCalc(DateTime time) => time.hour * 3600 + time.minute * 60 + time.second;
 
   static final Globals _globals = Globals._internal();
 
@@ -1090,38 +1166,31 @@ class Globals extends Settings {
 
   String get msgBE => _khFactor == 10 ? 'msgBE' : 'msgKE';
 
-  String get msgUrlFailurePrefix => Intl.message(
-      'Die angegebene URL ist nicht erreichbar. '
+  String get msgUrlFailurePrefix => Intl.message('Die angegebene URL ist nicht erreichbar. '
       'Wenn die URL stimmt, dann kann es an den Nightscout-Einstellungen liegen. ');
 
-  String get msgUrlFailureSuffix => Intl.message(
-      '<br><br>Wenn diese URL geschützt ist, '
+  String get msgUrlFailureSuffix => Intl.message('<br><br>Wenn diese URL geschützt ist, '
       'muss ausserdem der Zugriffsschlüssel korrekt definiert sein. Diesen erreicht man '
       'über "Administrator-Werkzeuge" auf der persönlichen Nightscout Seite.');
 
-  String get msgUrlFailureHerokuapp => Intl.message(
-      'In der Variable ENABLE muss das Wort "cors" stehen, damit externe Tools '
-      'wie dieses hier auf die Daten zugreifen dürfen.');
+  String get msgUrlFailureHerokuapp =>
+      Intl.message('In der Variable ENABLE muss das Wort "cors" stehen, damit externe Tools '
+          'wie dieses hier auf die Daten zugreifen dürfen.');
 
-  String get msgUrlFailure10be => Intl.message(
-      'Auf 10be muss beim Server in den Standardeinstellungen der Haken bei '
+  String get msgUrlFailure10be => Intl.message('Auf 10be muss beim Server in den Standardeinstellungen der Haken bei '
       '"cors" aktiviert werden, damit externe Tools wie dieses hier auf die Daten zugreifen dürfen. Wenn "cors" '
       'aktiviert wurde, muss auf dem Server eventuell noch ReDeploy gemacht werden, bevor es wirklich verfügbar ist.');
 
-  String get msgUrlNotSafe => Intl.message(
-      'Die Url zur Nightscout-API muss mit https beginnen, da Nightscout Reporter '
+  String get msgUrlNotSafe => Intl.message('Die Url zur Nightscout-API muss mit https beginnen, da Nightscout Reporter '
       'auch auf https läuft. Ein Zugriff auf unsichere http-Resourcen ist nicht möglich.');
 
   String msgUrlFailure(String url) {
-    if (url.startsWith('http:') &&
-        html.window.location.protocol.startsWith('https')) return msgUrlNotSafe;
-    if (url.contains('ns.10be'))
-      return '${msgUrlFailurePrefix}${msgUrlFailure10be}${msgUrlFailureSuffix}';
+    if (url.startsWith('http:') && html.window.location.protocol.startsWith('https')) return msgUrlNotSafe;
+    if (url.contains('ns.10be')) return '${msgUrlFailurePrefix}${msgUrlFailure10be}${msgUrlFailureSuffix}';
     return '${msgUrlFailurePrefix}${msgUrlFailureHerokuapp}${msgUrlFailureSuffix}';
   }
 
-  String get msgNoURLDefined =>
-      Intl.message('Die URL wurde noch nicht festgelegt.');
+  String get msgNoURLDefined => Intl.message('Die URL wurde noch nicht festgelegt.');
 
   String title = 'Nightscout Reporter';
 
@@ -1141,8 +1210,7 @@ class Globals extends Settings {
   String urlPlayground = "https://devubuntu.home.local/NightScoutReporter/pdfmake/playground.php";
   String googleClientId = "939975570793-i9kj0rp6kgv470t45j1pf1hg3j9fqmbh";
 
-  String infoClass(String cls) =>
-      showInfo ? '$cls infoarea showinfo' : '$cls infoarea';
+  String infoClass(String cls) => showInfo ? '$cls infoarea showinfo' : '$cls infoarea';
   bool isConfigured = false;
   bool dsgvoAccepted = false;
   int _khFactor = 12;
@@ -1157,6 +1225,8 @@ class Globals extends Settings {
 
   static final int stdLow = 70;
   static final int stdHigh = 180;
+  static final int stdVeryLow = 54;
+  static final int stdVeryHigh = 250;
 
   dynamic getGlucInfo() {
     var ret = {'step': 1, 'unit': Settings.msgUnitMGDL};
@@ -1227,16 +1297,13 @@ class Globals extends Settings {
 */
 
   Future<dynamic> requestJson(String url,
-      {String method = 'get',
-      Map<String, String> headers,
-      body,
-      bool showError = true}) async {
-    dynamic ret = await request(url,
-            method: method, headers: headers, body: body, showError: showError)
-        .then((String response) {
+      {String method = 'get', Map<String, String> headers, body, bool showError = true}) async {
+    dynamic ret =
+        await request(url, method: method, headers: headers, body: body, showError: showError).then((String response) {
       if (response == null) {
         return null;
       }
+      response = response.trim();
       if (response.startsWith('[') && response.endsWith(']')) {
         return convert.json.decode(response);
       }
@@ -1255,11 +1322,7 @@ class Globals extends Settings {
   }
 
   Future<String> request(String url,
-      {String method = 'get',
-      Map<String, String> headers,
-      body,
-      bool showError = true,
-      bool asJson = false}) async {
+      {String method = 'get', Map<String, String> headers, body, bool showError = true, bool asJson = false}) async {
     var client = http.BrowserClient();
     switch (method.toLowerCase()) {
       case 'post':
@@ -1291,16 +1354,14 @@ class Globals extends Settings {
     String ret;
     var check = checkUser.apiUrl(null, 'status');
     await request(check).then((String response) {
-      if (!response.toLowerCase().contains('status ok'))
-        ret = msgUrlFailure(check);
+      if (!response.toLowerCase().contains('status ok')) ret = msgUrlFailure(check);
     }).catchError((err) {
       ret = msgUrlFailure(check);
     });
     return ret;
   }
 
-  void changeLanguage(LangData value,
-      {bool doReload = true, bool checkConfigured = false}) async {
+  void changeLanguage(LangData value, {bool doReload = true, bool checkConfigured = false}) async {
     language = value;
     if (checkConfigured && !isConfigured) clearStorage();
     if (doReload) {
@@ -1327,20 +1388,19 @@ class Globals extends Settings {
   void reload() {
     var pos = html.window.location.href.indexOf('?');
     if (pos > 0) {
-      html.window.location.href =
-          html.window.location.href.substring(0, pos - 1);
+      html.window.location.href = html.window.location.href.substring(0, pos - 1);
     } else {
       html.window.location.reload();
     }
   }
 
   void clearStorage() {
+    if (Settings.skipStorageClear) return;
     for (var entry in html.window.localStorage.entries) {
       var doKill = false;
       doKill = entry.key.startsWith(betaPrefix);
       if (!isBeta) doKill = !doKill;
-      if (entry.key.endsWith('webData') || entry.key.endsWith('debug'))
-        doKill = false;
+      if (entry.key.endsWith(Settings.WebData) || entry.key.endsWith(Settings.DebugFlag)) doKill = false;
       if (doKill) html.window.localStorage.remove(entry.key);
     }
   }
@@ -1370,22 +1430,17 @@ class Globals extends Settings {
     var controller = StreamController<String>();
     var content = asSharedString;
     controller.add(content);
-    var media = commons.Media(
-        controller.stream.transform(convert.Utf8Encoder()), content.length,
-        contentType: 'text/json');
+    var media =
+        commons.Media(controller.stream.transform(convert.Utf8Encoder()), content.length, contentType: 'text/json');
     if (settingsFile.id == null) {
-      drive.files
-          .generateIds(count: 1, space: driveParent)
-          .then((gd.GeneratedIds ids) {
+      drive.files.generateIds(count: 1, space: driveParent).then((gd.GeneratedIds ids) {
         settingsFile.id = ids.ids[0];
         drive.files.create(settingsFile, uploadMedia: media).then((_) {});
       });
     } else {
       var file = gd.File();
       file.trashed = false;
-      drive.files
-          .update(file, settingsFile.id, uploadMedia: media)
-          .then((gd.File file) {
+      drive.files.update(file, settingsFile.id, uploadMedia: media).then((gd.File file) {
         if (doReload) reload();
 //        showDebug("Datei ${file.name} gespeichert");
       })?.catchError((error) {
@@ -1400,15 +1455,11 @@ class Globals extends Settings {
 
   void _getFromGoogle() {
     drive.files
-        .get(settingsFile.id,
-            $fields: '*',
-            downloadOptions: commons.DownloadOptions.FullMedia,
-            acknowledgeAbuse: false)
+        .get(settingsFile.id, $fields: '*', downloadOptions: commons.DownloadOptions.FullMedia, acknowledgeAbuse: false)
         .then((response) {
       var media = response as commons.Media;
       if (media?.contentType?.startsWith('text/') ?? false) {
-        var strm =
-            media.stream.transform(convert.Utf8Decoder(allowMalformed: true));
+        var strm = media.stream.transform(convert.Utf8Decoder(allowMalformed: true));
         strm.join().then((s) {
           // get settings in temporary structure to compare timestamps
           Settings set = Globals()..fromSharedString(s);
@@ -1449,9 +1500,7 @@ class Globals extends Settings {
           ..name = settingsFilename
           ..parents = [driveParent]
           ..mimeType = 'text/json';
-        drive.files
-            .generateIds(count: 1, space: driveParent)
-            .then((gd.GeneratedIds ids) {
+        drive.files.generateIds(count: 1, space: driveParent).then((gd.GeneratedIds ids) {
           settingsFile.id = ids.ids[0];
           drive.files.create(settingsFile).then((file) {
             _getFromGoogle();
@@ -1530,7 +1579,7 @@ class Globals extends Settings {
 
   void loadWebData() {
     try {
-      dynamic json = convert.json.decode(loadStorage('webData'));
+      dynamic json = convert.json.decode(loadStorage(Settings.WebData));
       var code = JsonData.toText(json['w1']);
       language = languageList.firstWhere((lang) => lang.code == code);
       theme = JsonData.toText(json['w2']);
@@ -1548,8 +1597,7 @@ class Globals extends Settings {
   void _initAfterLoad() {
     changeLanguage(language, doReload: false);
     Settings.updatePeriod(period);
-    isConfigured =
-        lastVersion != null && lastVersion.isNotEmpty && userList.isNotEmpty;
+    isConfigured = lastVersion != null && lastVersion.isNotEmpty && userList.isNotEmpty;
   }
 
   int compareDate(Date date1, Date date2) {
@@ -1564,8 +1612,7 @@ class Globals extends Settings {
 
   String fmtBasal(num value, {bool dontRound = false}) {
     var precision = basalPrecision;
-    if (dontRound)
-      precision = math.max(Globals.decimalPlaces(value), precision);
+    if (dontRound) precision = math.max(Globals.decimalPlaces(value), precision);
     return fmtNumber(value, precision, 0, 'null', dontRound);
   }
 
@@ -1574,6 +1621,96 @@ class Globals extends Settings {
       : value > max
           ? max
           : value;
+
+  String fmtDate(var date, [var def, bool withShortWeekday = false, bool withLongWeekday = false]) {
+    def ??= '';
+    if (date == null) return def;
+
+    DateTime dt;
+
+    try {
+      if (date is Date) {
+        dt = DateTime(date.year, date.month, date.day);
+      } else if (date is DateTime) {
+        dt = date;
+      } else if (date is String && date.length >= 8) {
+        var y = int.tryParse(date.substring(6, 8)) ?? 0;
+        var m = int.tryParse(date.substring(4, 6)) ?? 1;
+        var d = int.tryParse(date.substring(0, 4)) ?? 1;
+        dt = DateTime(y, m, d);
+      }
+    } catch (ex) {}
+
+    if (dt == null) return date;
+
+    var df = DateFormat(language.dateformat);
+    var ret = df.format(dt);
+    if (withShortWeekday) {
+      ret = '${DatepickerPeriod.dowShortName(Date(dt.year, dt.month, dt.day))}, $ret';
+    }
+    if (withLongWeekday) {
+      ret = '${DatepickerPeriod.dowName(Date(dt.year, dt.month, dt.day))}, $ret';
+    }
+    return ret;
+  }
+
+  String fmtDateTime(var date, [var def, bool withSeconds = false]) {
+    def ??= '';
+    if (date == null) return def;
+
+    if (date is DateTime) {
+      var ret = '${(date.day < 10 ? '0' : '')}${date.day}.${(date.month < 10 ? '0' : '')}'
+          '${date.month}.${date.year}, ${(date.hour < 10 ? '0' : '')}${date.hour}:${(date.minute < 10 ? '0' : '')}'
+          '${date.minute}';
+      if (withSeconds) {
+        ret = '${ret}:${(date.second < 10 ? '0' : '')}${date.second}';
+      }
+      return BasePrint.msgTimeOfDay24(ret);
+    }
+
+    return date;
+  }
+
+  String fmtTime(var date, {String def, bool withUnit = false, bool withMinutes = true, bool withSeconds = false}) {
+    def ??= '';
+    if (date == null) return def;
+
+    if (withSeconds) withMinutes = true;
+
+    if (date is DateTime) {
+      var hour = date.hour;
+      if (!language.is24HourFormat) hour = hour > 12 ? hour - 12 : hour;
+      var m = withMinutes ? ':${(date.minute < 10 ? '0' : '')}${date.minute}' : '';
+      if (withSeconds) {
+        m = '${m}:${(date.second < 10 ? '0' : '')}${date.second}';
+      }
+      var ret = '${(hour < 10 ? '0' : '')}${hour}$m';
+      if (withUnit) {
+        if (language.is24HourFormat) {
+          ret = BasePrint.msgTimeOfDay24(ret);
+        } else {
+          ret = date.hour > 12 ? BasePrint.msgTimeOfDayPM(ret) : BasePrint.msgTimeOfDayAM(ret);
+        }
+      }
+      return ret;
+    }
+
+    if (date is int) {
+      var m = withMinutes ? ':00' : '';
+      if (language.is24HourFormat) return '${fmtNumber(date, 0)}$m';
+
+      m = withMinutes ? ' ' : '';
+
+      if (date < 12) {
+        return '${fmtNumber(date, 0)}${m}am';
+      } else if (date == 12) {
+        return '${fmtNumber(date, 0)}${m}pm';
+      } else {
+        return '${fmtNumber(date - 12, 0)}${m}pm';
+      }
+    }
+    return date;
+  }
 
   String fmtNumber(num value,
       [num decimals = 0,
@@ -1594,8 +1731,7 @@ class Globals extends Settings {
       while (ret.endsWith('0')) {
         ret = ret.substring(0, ret.length - 1);
       }
-      if (ret.endsWith(nf.symbols.DECIMAL_SEP))
-        ret = ret.substring(0, ret.length - 1);
+      if (ret.endsWith(nf.symbols.DECIMAL_SEP)) ret = ret.substring(0, ret.length - 1);
     }
 
     if (fillfront0 > 0) {
@@ -1617,8 +1753,8 @@ class Globals extends Settings {
   // loads all settings from localStorage
   void loadFromStorage() {
     isLoading = true;
-    var shared = Settings.tiod(loadStorage('sharedData'));
-    var device = Settings.tiod(loadStorage('deviceData'));
+    var shared = Settings.tiod(loadStorage(Settings.SharedData));
+    var device = Settings.tiod(loadStorage(Settings.DeviceData));
     fromStrings(shared, device);
     loadLocalOnlySettings();
     isLoading = false;
@@ -1631,7 +1767,7 @@ class Globals extends Settings {
     bool oldGoogle;
     try {
       user.loadParamsFromForms();
-      dynamic json = convert.json.decode(loadStorage('webData'));
+      dynamic json = convert.json.decode(loadStorage(Settings.WebData));
       oldLang = JsonData.toText(json['w1']);
       oldWebTheme = JsonData.toText(json['w2']);
       oldGoogle = JsonData.toBool(json['w3']);
@@ -1642,17 +1778,16 @@ class Globals extends Settings {
 
     clearStorage();
 
-    if (canDebug) saveStorage('debug', 'yes');
+    if (canDebug) saveStorage(Settings.DebugFlag, 'yes');
 
     syncGoogle = oldGoogle;
     _theme = oldWebTheme;
 
     saveWebData();
-    saveStorage('sharedData', Settings.doit(asSharedString));
-    saveStorage('deviceData', Settings.doit(asDeviceString));
+    saveStorage(Settings.SharedData, Settings.doit(asSharedString));
+    saveStorage(Settings.DeviceData, Settings.doit(asDeviceString));
 
-    var doReload =
-        (language.code != oldLang && language.code != null) && !skipReload;
+    var doReload = (language.code != oldLang && language.code != null) && !skipReload;
     if (syncGoogle && updateSync) {
       _uploadToGoogle(doReload);
     } else if (doReload) {
@@ -1711,8 +1846,7 @@ class Globals extends Settings {
   Date parseDate(String value) {
     Date ret;
     if (value != null && value.length == 8) {
-      ret = Date(int.parse(value.substring(0, 4)),
-          int.parse(value.substring(4, 6)), int.parse(value.substring(6, 8)));
+      ret = Date(int.parse(value.substring(0, 4)), int.parse(value.substring(4, 6)), int.parse(value.substring(6, 8)));
     }
     return ret;
   }
@@ -1724,8 +1858,7 @@ class Globals extends Settings {
     var d2 = endDate.add(days: 0);
     while (d1.isOnOrBefore(d2)) {
       var url = user.urlDataFor(d1);
-      if (ret.firstWhere((entry) => entry == url, orElse: () => null) == null)
-        ret.add(url);
+      if (ret.firstWhere((entry) => entry == url, orElse: () => null) == null) ret.add(url);
       d1 = d1.add(days: 1);
     }
 
@@ -1747,6 +1880,34 @@ class Globals extends Settings {
     glucMGDLIdx = data.glucMGDLIdx;
     sortConfigs();
   }
+
+  bool get isWatch {
+    return html.window.location.href.indexOf('watch') > 0;
+  }
+
+  Future<void> setTheme(String name) async {
+    var suffix = isWatch ? '-watch' : '';
+    html.document
+        .getElementById('themestyle')
+        .setAttribute('href', 'packages/nightscout_reporter/assets/themes/${name}/index.css');
+    html.document
+        .getElementById('favicon')
+        .setAttribute('href', 'packages/nightscout_reporter/assets/themes/${name}/favicon${suffix}.png');
+    dynamic theme = await requestJson('packages/nightscout_reporter/assets/themes/${name}/colors.json');
+    // for(String key in materialColors.keys) {
+    //   print('${key}, ${materialColors[key]}');
+    // }
+    if (theme == null) return;
+    for (String key in theme.keys) {
+      String value = theme[key];
+      if (materialColors.containsKey(value)) {
+        value = materialColors[value].hexString;
+      }
+      html.document.body.style.setProperty('--$key', value);
+    }
+    theme = name;
+    saveWebData();
+  }
 }
 
 class UrlData {
@@ -1761,9 +1922,7 @@ class UrlData {
   dynamic get asJson => {
         'u': url,
         't': token,
-        'sd': startDate == null
-            ? '19700101'
-            : startDate.format(DateFormat('yyyyMMdd')),
+        'sd': startDate == null ? '19700101' : startDate.format(DateFormat('yyyyMMdd')),
         'ed': endDate == null ? null : endDate.format(DateFormat('yyyyMMdd'))
       };
 
@@ -1783,8 +1942,7 @@ class UrlData {
       ret.token = JsonData.toText(json['t']);
       var sd = JsonData.toText(json['sd']);
       ret.startDate = sd == null ? Date(1970, 1, 1) : g.parseDate(sd);
-      ret.endDate =
-          json['ed'] == null ? null : g.parseDate(JsonData.toText(json['ed']));
+      ret.endDate = json['ed'] == null ? null : g.parseDate(JsonData.toText(json['ed']));
     } catch (ex) {
       var msg = ex.toString();
       g.showDebug('Fehler bei UrlData.fromSharedJson: ${msg}');
@@ -1792,15 +1950,13 @@ class UrlData {
     return ret;
   }
 
-  String get startDateEdit =>
-      startDate == null ? null : startDate.format(g.fmtDateForDisplay);
+  String get startDateEdit => startDate == null ? null : startDate.format(g.fmtDateForDisplay);
 
   set startDateEdit(String v) {
     startDate = Date.parse(v, g.fmtDateForDisplay);
   }
 
-  String get endDateEdit =>
-      endDate == null ? null : endDate.format(g.fmtDateForDisplay);
+  String get endDateEdit => endDate == null ? null : endDate.format(g.fmtDateForDisplay);
 
   set endDateEdit(String v) {
     endDate = Date.parse(v, g.fmtDateForDisplay);
@@ -1852,6 +2008,33 @@ class UserData {
   EntryData lastEntry = null;
   TreatmentData lastTreatment = null;
 
+  bool _adjustGluc = false;
+  bool adjustTarget = false;
+
+  bool get adjustGluc => _adjustGluc;
+
+  set adjustGluc(bool value) {
+    _adjustGluc = value;
+    if (_adjustGluc) {
+      Globals.adjustFactor = hba1cAdjustFactor;
+    } else {
+      Globals.adjustFactor = 1.0;
+    }
+  }
+
+  double get hba1cAdjustFactor => (adjustLab * 28.7 - 46.7) / (adjustCalc * 28.7 - 46.7);
+
+  double adjustCalc = 5.0;
+  double adjustLab = 5.0;
+
+  // returns the adjustvalues to check them against the values that
+  // were loaded. so the saving of the data can be managed depending
+  // on changes of the values
+  String get adjustCheck => '${adjustGluc}${adjustCalc}${adjustLab}';
+
+  // the adjustCheck when the data was loaded
+  String adjustLoaded = null;
+
   UserData(this.g) {
     listApiUrl.add(UrlData(g));
   }
@@ -1887,15 +2070,19 @@ class UserData {
       urls.add(url.asJson);
     }
 
-    return '{"n":"$name",'
-        '"bd":"${birthDate ?? ''}",'
-        '"s":${convert.json.encode(urls)},'
-        '"dd":"${diaStartDate ?? ''}",'
-        '"i":"${insulin ?? ''}",'
-        '"c":${convert.json.encode(customData)},'
-        '"f":${convert.json.encode(formParams)},'
-        '"r":${isReachable ? 'true' : 'false'},'
-        '"pmi":${profileMaxIdx}'
+    return '{"n":"$name"'
+        ',"bd":"${birthDate ?? ''}"'
+        ',"s":${convert.json.encode(urls)}'
+        ',"dd":"${diaStartDate ?? ''}"'
+        ',"i":"${insulin ?? ''}"'
+        ',"c":${convert.json.encode(customData)}'
+        ',"f":${convert.json.encode(formParams)}'
+        ',"r":${isReachable ? 'true' : 'false'}'
+        ',"pmi":$profileMaxIdx'
+        ',"ag":${adjustGluc ? 'true' : 'false'}'
+        ',"ac":"${adjustCalc?.toString() ?? 5.0}"'
+        ',"al":"${adjustLab?.toString() ?? 5.0}"'
+        ',"at":${adjustTarget ? 'true' : 'false'}'
         '}';
   }
 
@@ -1915,6 +2102,11 @@ class UserData {
       ret.customData = json['c'];
       ret.isReachable = json['r'] ?? true;
       ret.profileMaxIdx = JsonData.toInt(json['pmi'], null);
+      ret.adjustGluc = JsonData.toBool(json['ag'] ?? false);
+      ret.adjustCalc = JsonData.toDouble(json['ac'], 5.0);
+      ret.adjustLab = JsonData.toDouble(json['al'], 5.0);
+      ret.adjustTarget = JsonData.toBool(json['at'] ?? false);
+      ret.adjustLoaded = ret.adjustCheck;
       ret.formParams = json['f'];
       if (ret.formParams != null && ret.formParams['analysis'] is bool) {
         ret.formParams = {};
@@ -1941,8 +2133,7 @@ class UserData {
   }
 
   // retrieves the url to the api for a data
-  String apiUrl(Date date, String cmd,
-      {String params = '', bool noApi = false}) {
+  String apiUrl(Date date, String cmd, {String params = '', bool noApi = false}) {
     if (listApiUrl.isEmpty) return null;
 
     var found = urlDataFor(date);
@@ -1954,8 +2145,7 @@ class UserData {
 
   // checks if the current url is valid
   Future<String> get isValid async {
-    if (apiUrl(null, '') == null)
-      return Intl.message('Die URL wurde noch nicht festgelegt');
+    if (apiUrl(null, '') == null) return Intl.message('Die URL wurde noch nicht festgelegt');
     String ret;
     var check = apiUrl(null, 'status');
     await g.request(check).then((String response) {
@@ -2053,6 +2243,66 @@ class ShortcutData {
     } catch (ex) {
       var msg = ex.toString();
       g.showDebug('Fehler bei ShortcutData.fromJson: ${msg}');
+    }
+    return ret;
+  }
+}
+
+class WatchElement {
+  String type;
+  int _size;
+  int _vertical = 1;
+  bool selected = false;
+  bool bold = false;
+  bool italic = false;
+
+  static int maxSize = 6;
+
+  int get size {
+    return _size;
+  }
+
+  set size(int value) {
+    if (value == null || value < 1) value = 1;
+    if (value > maxSize) value = maxSize;
+    _size = value;
+  }
+
+  int get vertical {
+    return _vertical;
+  }
+
+  set vertical(int value) {
+    if (value == null || value < 0) value = 0;
+    if (value > 2) value = 2;
+    _vertical = value;
+  }
+
+  WatchElement();
+
+  // retrieve the data as a json-encoded-string
+  String get asJsonString {
+    return '{"t":"$type"'
+        ',"s":$size'
+        ',"b":$bold'
+        ',"i":$italic'
+        ',"v":$vertical'
+        '}';
+  }
+
+  static WatchElement fromJson(dynamic json) {
+    var ret = WatchElement();
+    try {
+      ret.type = json['t'] ?? 'nl';
+      ret.size = json['s'] ?? 1;
+      ret.bold = json['b'] ?? false;
+      ret.italic = json['i'] ?? false;
+      ret.selected = json['selected'] ?? false;
+      ret.vertical = json['v'] ?? 1;
+    } catch (ex) {
+      var msg = ex.toString();
+      Globals().showDebug('Fehler bei WatchElement.fromJson: ${msg}');
+      print('Fehler bei WatchElement.fromJson: ${msg}');
     }
     return ret;
   }

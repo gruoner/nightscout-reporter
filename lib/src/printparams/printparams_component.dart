@@ -9,6 +9,7 @@ import 'package:angular_components/material_select/material_dropdown_select.dart
 import 'package:angular_components/material_select/material_select_item.dart';
 import 'package:angular_components/material_toggle/material_toggle.dart';
 import 'package:intl/intl.dart';
+import 'package:nightscout_reporter/src/controls/adjustment/gluc_adjust_component.dart';
 import 'package:nightscout_reporter/src/globals.dart' as globals;
 
 import '../globals.dart';
@@ -27,6 +28,8 @@ import '../json_data.dart';
     MaterialButtonComponent,
     MaterialIconComponent,
     MaterialToggleComponent,
+    MaterialSliderComponent,
+    GlucAdjustComponent,
     materialInputDirectives,
     NgFor,
     NgIf,
@@ -42,11 +45,14 @@ class PrintParamsComponent implements OnInit {
   final _trigger = StreamController<UIEvent>.broadcast(sync: true);
 
   String msgStandardLimits(String low, String high, String unit) {
-    return Intl.message('Standard Zielbereich verwenden ($low $unit - $high $unit)',
-        args: [low, high, unit], name: 'msgStandardLimits');
+    return Intl.message(
+        'Standard Zielbereich verwenden ($low $unit - $high $unit)',
+        args: [low, high, unit],
+        name: 'msgStandardLimits');
   }
 
-  String get msgStandardCGP => Intl.message('CGP immer mit Standard Zielbereich');
+  String get msgStandardCGP =>
+      Intl.message('CGP immer mit Standard Zielbereich');
 
   globals.PeriodShift periodShift;
   int glucMaxIdx;
@@ -60,7 +66,8 @@ class PrintParamsComponent implements OnInit {
     return '${g.fmtNumber(1, value)} ${g.getGlucInfo()['unit']}';
   }
 
-  static String get msgBasalPrecisionFromProfile => Intl.message('Aus den Profilen ermitteln');
+  static String get msgBasalPrecisionFromProfile =>
+      Intl.message('Aus den Profilen ermitteln');
 
   List<String> listGlucMaxValues = [msgAutomatic];
   List<String> listBasalPrecision = [msgBasalPrecisionFromProfile];
@@ -70,7 +77,8 @@ class PrintParamsComponent implements OnInit {
   @override
   Future<Null> ngOnInit() async {
     listPeriodShift.addAll(g.listPeriodShift.reversed);
-    periodShift = listPeriodShift.firstWhere((e) => e.months == g.currPeriodShift.months);
+    periodShift =
+        listPeriodShift.firstWhere((e) => e.months == g.currPeriodShift.months);
     var url = g.user.apiUrl(null, 'status.json');
     var content = await g.request(url);
     var status = StatusData.fromJson(json.decode(content));
@@ -83,21 +91,25 @@ class PrintParamsComponent implements OnInit {
   void fillComboBoxes() {
     listGlucMaxValues = [msgAutomatic];
     for (var i = 1; i < g.glucMaxValues.length; i++) {
-      listGlucMaxValues.add('${g.glucFromData(g.glucMaxValues[i])} ${g.getGlucInfo()['unit']}');
+      listGlucMaxValues.add(
+          '${g.glucFromData(g.glucMaxValues[i])} ${g.getGlucInfo()['unit']}');
     }
     listBasalPrecision = [msgBasalPrecisionFromProfile];
     for (var i = 1; i < g.basalPrecisionValues.length; i++) {
-      listBasalPrecision.add('${basalPrecisionText(g.basalPrecisionValues[i])}');
+      listBasalPrecision
+          .add('${basalPrecisionText(g.basalPrecisionValues[i])}');
     }
   }
 
   void changeGlucUnits(int idx) {
-    g.glucMGDLIdx=idx;
+    g.glucMGDLIdx = idx;
     fillComboBoxes();
   }
 
   void fire(String type) {
     var detail = 0;
+    // make sure the value uses the correct factor
+    g.user.adjustGluc = g.user.adjustGluc;
     switch (type) {
       case 'ok':
         g.currPeriodShift = periodShift;
