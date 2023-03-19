@@ -10,3 +10,7 @@ build/
 
 # Directory created by dartdoc
 doc/api/
+**/.sass-cache/
+**/node_modules/
+**/*.css
+/deployBC.bat

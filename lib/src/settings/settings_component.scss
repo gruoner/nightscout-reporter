@@ -7,6 +7,9 @@
 @import 'package:angular_components/material_checkbox/mixins';
 
 :host {
+  @include nr-slider-thumb-color("material-slider.nr-slider", var(--settingsHeaderBack), var(--settingsHeaderFore));
+  @include slider-track-color("material-slider.nr-slider", var(--settingsHeaderBack) !important, var(--settingsHeaderFore) !important);
+  @include material-checkbox-color(var(--settingsHeaderBack), $modifier: '.chk');
 }
 
 material-slider {
@@ -15,26 +18,6 @@ material-slider {
   margin-right: 2em;
 }
 
-// this mixin is neccessary since the original uses transparantize, which doesn't work with variables
-@mixin nr-slider-thumb-color($selector, $fore, $back) {
-  ::ng-deep #{$selector} .knob-real,
-  ::ng-deep #{$selector} .is-dragging.knob-drag-shadow {
-    background-color: $fore;
-  }
-
-  ::ng-deep #{$selector} .knob:focus,
-  ::ng-deep #{$selector} .knob:hover {
-    .knob-hover-shadow {
-      background-color: $back;
-    }
-  }
-}
-@include nr-slider-thumb-color("material-slider.maxsize", var(--settingsHeaderBack), var(--settingsHeaderFore));
-@include slider-track-color("material-slider.maxsize", var(--settingsHeaderBack) !important, var(--settingsHeaderFore) !important);
-@include material-checkbox-color(var(--settingsHeaderBack), $modifier: '');
-@include material-select-selected-item-color(var(--settingsHeaderBack));
-@include material-select-selected-color(var(--settingHeaderFore));
-
 .themeSelect {
   ::ng-deep material-list {
     background: var(--settingsBodyBack);
@@ -42,7 +25,7 @@ material-slider {
 
     material-select-item {
       display: flex;
-      flex-direction: column;
+      flex-flow: column;
       line-height: initial;
       align-items: flex-start;
       padding: 0.2em 0.5em;
@@ -121,7 +104,7 @@ material-slider {
 
 .functions {
   display: flex;
-  flex-direction: column;
+  flex-flow: column;
   align-items: flex-start;
 }
 
@@ -173,13 +156,13 @@ material-dialog.headered-dialog {
 
 .languagePanel {
   display: flex;
-  flex-direction: row;
+  flex-flow: row;
   align-items: center;
 }
 
 .subtitle {
   display: flex;
-  flex-direction: row;
+  flex-flow: row;
   color: var(--settingsHeaderBack);
   font-size: 1.5em;
   padding-bottom: 0.5em;
@@ -189,7 +172,7 @@ material-dialog.headered-dialog {
 
 div[header] {
   display: flex;
-  flex-direction: row;
+  flex-flow: row;
   color: var(--settingsHeaderFore);
   justify-content: space-between;
   align-items: center;
@@ -254,7 +237,7 @@ login {
 
 .pdfSlider {
   display: flex;
-  flex-direction: row;
+  flex-flow: row;
   width: 90%;
   justify-content: space-between;
   align-items: center;
