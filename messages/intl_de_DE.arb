@@ -1,151 +1,19 @@
 {
-  "@@last_modified": "2022-05-01T09:49:41.692333",
-  "Überprüfe Zugriff auf Nightscout ...": "Überprüfe Zugriff auf Nightscout ...",
-  "@Überprüfe Zugriff auf Nightscout ...": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "msgLoadingData": "Fehler beim Laden der Daten:\n{error}\n{stacktrace}",
-  "@msgLoadingData": {
-    "type": "text",
-    "placeholders": {
-      "error": {},
-      "stacktrace": {}
-    }
-  },
-  "Fehler beim Laden der Daten": "Fehler beim Laden der Daten",
-  "@Fehler beim Laden der Daten": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "msgLoadingDataFor": "Lade Daten für {date}...",
-  "@msgLoadingDataFor": {
-    "description": "displayed when data of a day is loading",
-    "type": "text",
-    "placeholders": {
-      "date": {}
-    }
-  },
+  "@@last_modified": "2022-09-22T07:28:05.750279",
   "Schliessen": "Schliessen",
   "@Schliessen": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Bitte einen Zeitraum wählen.": "Bitte einen Zeitraum wählen.",
-  "@Bitte einen Zeitraum wählen.": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Bereite Daten vor...": "Bereite Daten vor...",
-  "@Bereite Daten vor...": {
-    "description": "text when data was received and is being prepared to be used in the report",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Erzeuge PDF...": "Erzeuge PDF...",
-  "@Erzeuge PDF...": {
-    "description": "text when pdf is being created",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Lade die Basisdaten...": "Lade die Basisdaten...",
-  "@Lade die Basisdaten...": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Impressum": "Impressum",
-  "@Impressum": {
-    "description": "label for inprint button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Datenschutzerklärung": "Datenschutzerklärung",
-  "@Datenschutzerklärung": {
-    "description": "label for dataprotection button",
-    "type": "text",
-    "placeholders": {}
-  },
-  "ok": "ok",
-  "@ok": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "verwerfen": "verwerfen",
-  "@verwerfen": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Das PDF wurde erstellt. Wenn es nicht angezeigt wird, dann ist vermutlich ein Popup-Blocker aktiv, der die Anzeige verhindert. Diesen bitte deaktivieren.": "Das PDF wurde erstellt. Wenn es nicht angezeigt wird, dann ist vermutlich ein Popup-Blocker aktiv, der die Anzeige verhindert. Diesen bitte deaktivieren.",
-  "@Das PDF wurde erstellt. Wenn es nicht angezeigt wird, dann ist vermutlich ein Popup-Blocker aktiv, der die Anzeige verhindert. Diesen bitte deaktivieren.": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Zeitraum": "Zeitraum",
-  "@Zeitraum": {
-    "description": "title for datepicker dialog",
-    "type": "text",
-    "placeholders": {}
-  },
-  "Beim Auslesen der Profile ist ein Fehler aufgetreten. Möglicherweise sind zu viele Daten in der Profiltabelle (wird z.B. von iOS Loop verursacht). Du kannst versuchen, in den Einstellungen die Anzahl an auszulesenden Profildatensätzen zu verringern.": "Beim Auslesen der Profile ist ein Fehler aufgetreten. Möglicherweise sind zu viele Daten in der Profiltabelle (wird z.B. von iOS Loop verursacht). Du kannst versuchen, in den Einstellungen die Anzahl an auszulesenden Profildatensätzen zu verringern.",
-  "@Beim Auslesen der Profile ist ein Fehler aufgetreten. Möglicherweise sind zu viele Daten in der Profiltabelle (wird z.B. von iOS Loop verursacht). Du kannst versuchen, in den Einstellungen die Anzahl an auszulesenden Profildatensätzen zu verringern.": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Beim Erzeugen des PDF ist ein Fehler aufgetreten.": "Beim Erzeugen des PDF ist ein Fehler aufgetreten.",
-  "@Beim Erzeugen des PDF ist ein Fehler aufgetreten.": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Problem auf GitHub melden": "Problem auf GitHub melden",
-  "@Problem auf GitHub melden": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "PDF anzeigen": "PDF anzeigen",
-  "@PDF anzeigen": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Vergleich": "Vergleich",
-  "@Vergleich": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Bezeichnung": "Bezeichnung",
-  "@Bezeichnung": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "Hinzufügen": "Hinzufügen",
-  "@Hinzufügen": {
-    "type": "text",
-    "placeholders": {}
-  },
-  "msgTooMuchProfilesPrefix": "Es konnten nicht alle Profile geladen werden, da im ausgewählten Zeitraum mehr als {maxCount} gespeichert sind. ",
-  "@msgTooMuchProfilesPrefix": {
-    "type": "text",
-    "placeholders": {
-      "maxCount": {}
-    }
-  },
-  "msgTooMuchProfiles": "{count,plural, =0{}=1{Der Uploader \"{text}\" hat die Datensätze angelegt.}other{Folgende Uploader haben die Datensätze angelegt: {text}}}",
-  "@msgTooMuchProfiles": {
-    "type": "text",
-    "placeholders": {
-      "maxCount": {},
-      "count": {},
-      "text": {}
-    }
-  },
-  "Max Mustermann": "Max Mustermann",
-  "@Max Mustermann": {
-    "description": "modelname used in images on tiles",
     "type": "text",
     "placeholders": {}
   },
   "dd.MM.yyyy": "dd.MM.yyyy",
   "@dd.MM.yyyy": {
     "description": "this is the dateformat, please use dd for days, MM for months and yyyy for year. It has to be the english formatstring.",
+    "type": "text",
+    "placeholders": {}
+  },
+  "dd.MM.": "dd.MM.",
+  "@dd.MM.": {
+    "description": "this is the dateformat, please use dd for days, MM for months and no year. It has to be the english formatstring.",
     "type": "text",
     "placeholders": {}
   },
@@ -300,6 +168,14 @@
     "type": "text",
     "placeholders": {}
   },
+  "msgGlucTime": "{time,plural, =0{Gerade eben}=1{vor {time} Minute}other{vor {time} Minuten}}",
+  "@msgGlucTime": {
+    "description": "display of minutes since last value received on watch",
+    "type": "text",
+    "placeholders": {
+      "time": {}
+    }
+  },
   "Ausgewählter Zeitraum": "Ausgewählter Zeitraum",
   "@Ausgewählter Zeitraum": {
     "type": "text",
@@ -359,6 +235,170 @@
   "@Die URL wurde noch nicht festgelegt": {
     "type": "text",
     "placeholders": {}
+  },
+  "Überprüfe Zugriff auf Nightscout ...": "Überprüfe Zugriff auf Nightscout ...",
+  "@Überprüfe Zugriff auf Nightscout ...": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "msgLoadingData": "Fehler beim Laden der Daten:\n{error}\n{stacktrace}",
+  "@msgLoadingData": {
+    "type": "text",
+    "placeholders": {
+      "error": {},
+      "stacktrace": {}
+    }
+  },
+  "Fehler beim Laden der Daten": "Fehler beim Laden der Daten",
+  "@Fehler beim Laden der Daten": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "msgLoadingDataFor": "Lade Daten für {date}...",
+  "@msgLoadingDataFor": {
+    "description": "displayed when data of a day is loading",
+    "type": "text",
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "Bitte einen Zeitraum wählen.": "Bitte einen Zeitraum wählen.",
+  "@Bitte einen Zeitraum wählen.": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Bereite Daten vor...": "Bereite Daten vor...",
+  "@Bereite Daten vor...": {
+    "description": "text when data was received and is being prepared to be used in the report",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Erzeuge PDF...": "Erzeuge PDF...",
+  "@Erzeuge PDF...": {
+    "description": "text when pdf is being created",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Lade die Basisdaten...": "Lade die Basisdaten...",
+  "@Lade die Basisdaten...": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Impressum": "Impressum",
+  "@Impressum": {
+    "description": "label for inprint button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Datenschutzerklärung": "Datenschutzerklärung",
+  "@Datenschutzerklärung": {
+    "description": "label for dataprotection button",
+    "type": "text",
+    "placeholders": {}
+  },
+  "ok": "ok",
+  "@ok": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "verwerfen": "verwerfen",
+  "@verwerfen": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Das PDF wurde erstellt. Wenn es nicht angezeigt wird, dann ist vermutlich ein Popup-Blocker aktiv, der die Anzeige verhindert. Diesen bitte deaktivieren.": "Das PDF wurde erstellt. Wenn es nicht angezeigt wird, dann ist vermutlich ein Popup-Blocker aktiv, der die Anzeige verhindert. Diesen bitte deaktivieren.",
+  "@Das PDF wurde erstellt. Wenn es nicht angezeigt wird, dann ist vermutlich ein Popup-Blocker aktiv, der die Anzeige verhindert. Diesen bitte deaktivieren.": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Zeitraum": "Zeitraum",
+  "@Zeitraum": {
+    "description": "title for datepicker dialog",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Beim Auslesen der Profile ist ein Fehler aufgetreten. Möglicherweise sind zu viele Daten in der Profiltabelle (wird z.B. von iOS Loop verursacht). Du kannst versuchen, in den Einstellungen die Anzahl an auszulesenden Profildatensätzen zu verringern.": "Beim Auslesen der Profile ist ein Fehler aufgetreten. Möglicherweise sind zu viele Daten in der Profiltabelle (wird z.B. von iOS Loop verursacht). Du kannst versuchen, in den Einstellungen die Anzahl an auszulesenden Profildatensätzen zu verringern.",
+  "@Beim Auslesen der Profile ist ein Fehler aufgetreten. Möglicherweise sind zu viele Daten in der Profiltabelle (wird z.B. von iOS Loop verursacht). Du kannst versuchen, in den Einstellungen die Anzahl an auszulesenden Profildatensätzen zu verringern.": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Beim Erzeugen des PDF ist ein Fehler aufgetreten.": "Beim Erzeugen des PDF ist ein Fehler aufgetreten.",
+  "@Beim Erzeugen des PDF ist ein Fehler aufgetreten.": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Problem auf GitHub melden": "Problem auf GitHub melden",
+  "@Problem auf GitHub melden": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "PDF anzeigen": "PDF anzeigen",
+  "@PDF anzeigen": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Vergleich": "Vergleich",
+  "@Vergleich": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Bezeichnung": "Bezeichnung",
+  "@Bezeichnung": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Hinzufügen": "Hinzufügen",
+  "@Hinzufügen": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "msgTooMuchProfilesPrefix": "Es konnten nicht alle Profile geladen werden, da im ausgewählten Zeitraum mehr als {maxCount} gespeichert sind. ",
+  "@msgTooMuchProfilesPrefix": {
+    "type": "text",
+    "placeholders": {
+      "maxCount": {}
+    }
+  },
+  "msgTooMuchProfiles": "{count,plural, =0{}=1{Der Uploader \"{text}\" hat die Datensätze angelegt.}other{Folgende Uploader haben die Datensätze angelegt: {text}}}",
+  "@msgTooMuchProfiles": {
+    "type": "text",
+    "placeholders": {
+      "maxCount": {},
+      "count": {},
+      "text": {}
+    }
+  },
+  "Max Mustermann": "Max Mustermann",
+  "@Max Mustermann": {
+    "description": "modelname used in images on tiles",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Glukosewerte anpassen": "Glukosewerte anpassen",
+  "@Glukosewerte anpassen": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "_msgAdjustTarget": "Die Werte für BG_TARGET_BOTTOM und BG_TARGET_TOP wurden durch den Faktor {factor} geteilt",
+  "@_msgAdjustTarget": {
+    "type": "text",
+    "placeholders": {
+      "factor": {}
+    }
+  },
+  "_msgAdjustCalc": "Errechneter HbA1C: {value}%",
+  "@_msgAdjustCalc": {
+    "type": "text",
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "_msgAdjustLab": "Im Labor ermittelter HbA1C: {value}%",
+  "@_msgAdjustLab": {
+    "type": "text",
+    "placeholders": {
+      "value": {}
+    }
   },
   "Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember": "Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember",
   "@Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember": {
@@ -466,6 +506,13 @@
       "count": {}
     }
   },
+  "msgKW": "KW{date}",
+  "@msgKW": {
+    "type": "text",
+    "placeholders": {
+      "date": {}
+    }
+  },
   "msgValidRange": "gültig von {begDate} bis {endDate}",
   "@msgValidRange": {
     "type": "text",
@@ -531,6 +578,20 @@
   "@Glukosekurve": {
     "type": "text",
     "placeholders": {}
+  },
+  "_msgLowerGlucHint": "Alle sensorischen Glukosewerte wurden um {factor} % verringert",
+  "@_msgLowerGlucHint": {
+    "type": "text",
+    "placeholders": {
+      "factor": {}
+    }
+  },
+  "_msgRaiseGlucHint": "Alle sensorischen Glukosewerte wurden um {factor} % erhöht",
+  "@_msgRaiseGlucHint": {
+    "type": "text",
+    "placeholders": {
+      "factor": {}
+    }
   },
   "msgCarbs": "Kohlenhydrate ({value}g)",
   "@msgCarbs": {
@@ -1623,6 +1684,11 @@
     "type": "text",
     "placeholders": {}
   },
+  "Linien um Bereiche": "Linien um Bereiche",
+  "@Linien um Bereiche": {
+    "type": "text",
+    "placeholders": {}
+  },
   "CGP": "CGP",
   "@CGP": {
     "type": "text",
@@ -2471,6 +2537,62 @@
       "count": {}
     }
   },
+  "Umbruch": "Umbruch",
+  "@Umbruch": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Glukose": "Glukose",
+  "@Glukose": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Faktor": "Faktor",
+  "@Faktor": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Glukose (aus NS)": "Glukose (aus NS)",
+  "@Glukose (aus NS)": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Zeit": "Zeit",
+  "@Zeit": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Trendpfeil": "Trendpfeil",
+  "@Trendpfeil": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Benutzer": "Benutzer",
+  "@Benutzer": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Einheit": "Einheit",
+  "@Einheit": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Leer": "Leer",
+  "@Leer": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Skala": "Skala",
+  "@Skala": {
+    "type": "text",
+    "placeholders": {}
+  },
+  "Night-Watch": "Night-Watch",
+  "@Night-Watch": {
+    "description": "title of nightscout reports",
+    "type": "text",
+    "placeholders": {}
+  },
   "Menü": "Menü",
   "@Menü": {
     "description": "tab title for menu",
@@ -2942,6 +3064,90 @@
   "Einstiegsvideo": "Einstiegsvideo",
   "@Einstiegsvideo": {
     "description": "label for button to open settings on welcome screen",
+    "type": "text",
+    "placeholders": {}
+  },
+  "3.0.2 - 22.09.2022": "3.0.2 - 22.09.2022",
+  "@3.0.2 - 22.09.2022": {
+    "description": "v302",
+    "type": "text",
+    "placeholders": {}
+  },
+  "In Night-Watch gibt es nun die Möglichkeit, die Einstellungen aufzurufen, wenn man den Editor aktiviert hat.": "In Night-Watch gibt es nun die Möglichkeit, die Einstellungen aufzurufen, wenn man den Editor aktiviert hat.",
+  "@In Night-Watch gibt es nun die Möglichkeit, die Einstellungen aufzurufen, wenn man den Editor aktiviert hat.": {
+    "description": "v302a1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "In Night-Watch kann man nun einen Nachtmodus aktivieren, in dem der Hintergrund schwarz ist und die Farben des Textes den aktuellen Wert bezüglich des Zielbereichs darstellen.": "In Night-Watch kann man nun einen Nachtmodus aktivieren, in dem der Hintergrund schwarz ist und die Farben des Textes den aktuellen Wert bezüglich des Zielbereichs darstellen.",
+  "@In Night-Watch kann man nun einen Nachtmodus aktivieren, in dem der Hintergrund schwarz ist und die Farben des Textes den aktuellen Wert bezüglich des Zielbereichs darstellen.": {
+    "description": "v302a2",
+    "type": "text",
+    "placeholders": {}
+  },
+  "3.0.1 - 26.08.2022": "3.0.1 - 26.08.2022",
+  "@3.0.1 - 26.08.2022": {
+    "description": "v301",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Die Einstellung für die Anpassung von BG_TARGET_BOTTOM und BG_TARGET_TOP ist nun unabhängig von der Auswahl \"Glucosewerte anpassen\". Damit kann man die Option umschalten, ohne den Zielbereich auf dem Server neu konfigurieren zu müssen.": "Die Einstellung für die Anpassung von BG_TARGET_BOTTOM und BG_TARGET_TOP ist nun unabhängig von der Auswahl \"Glucosewerte anpassen\". Damit kann man die Option umschalten, ohne den Zielbereich auf dem Server neu konfigurieren zu müssen.",
+  "@Die Einstellung für die Anpassung von BG_TARGET_BOTTOM und BG_TARGET_TOP ist nun unabhängig von der Auswahl \"Glucosewerte anpassen\". Damit kann man die Option umschalten, ohne den Zielbereich auf dem Server neu konfigurieren zu müssen.": {
+    "description": "v301c1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Night-Watch zeigt nun auch Werte an, wenn diese von mehreren Uploadern innerhalb kurzer Zeit mehrfach in Nightscout gespeichert wurden. Das sollte man zwar möglichst vermeiden, aber nun kann Night-Watch auch damit umgehen.": "Night-Watch zeigt nun auch Werte an, wenn diese von mehreren Uploadern innerhalb kurzer Zeit mehrfach in Nightscout gespeichert wurden. Das sollte man zwar möglichst vermeiden, aber nun kann Night-Watch auch damit umgehen.",
+  "@Night-Watch zeigt nun auch Werte an, wenn diese von mehreren Uploadern innerhalb kurzer Zeit mehrfach in Nightscout gespeichert wurden. Das sollte man zwar möglichst vermeiden, aber nun kann Night-Watch auch damit umgehen.": {
+    "description": "v301f1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "3.0.0 - 21.08.2022": "3.0.0 - 21.08.2022",
+  "@3.0.0 - 21.08.2022": {
+    "description": "v300",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Die Konfiguration erfolgt direkt im Fenster von Night-Watch, indem man etwas anklickt. Dadurch wechselt die Seite in den Editiermodus und mit den Controls am unteren Rand des Fensters können die vorhandenen Elemente verändert, verschoben, gelöscht oder neue Elemente hinzugefügt werden. Mit dem Speichern-Icon in den Controls werden die Einstellungen gespeichert und der Editiermodus beendet. Er kann auch beendet werden, indem man das aktive Element anklickt, wobei dann die Änderungen aber nicht gespeichert werden. Nach dem Neuladen der Seite hat man dann die letzte Ansicht vor sich.": "Die Konfiguration erfolgt direkt im Fenster von Night-Watch, indem man etwas anklickt. Dadurch wechselt die Seite in den Editiermodus und mit den Controls am unteren Rand des Fensters können die vorhandenen Elemente verändert, verschoben, gelöscht oder neue Elemente hinzugefügt werden. Mit dem Speichern-Icon in den Controls werden die Einstellungen gespeichert und der Editiermodus beendet. Er kann auch beendet werden, indem man das aktive Element anklickt, wobei dann die Änderungen aber nicht gespeichert werden. Nach dem Neuladen der Seite hat man dann die letzte Ansicht vor sich.",
+  "@Die Konfiguration erfolgt direkt im Fenster von Night-Watch, indem man etwas anklickt. Dadurch wechselt die Seite in den Editiermodus und mit den Controls am unteren Rand des Fensters können die vorhandenen Elemente verändert, verschoben, gelöscht oder neue Elemente hinzugefügt werden. Mit dem Speichern-Icon in den Controls werden die Einstellungen gespeichert und der Editiermodus beendet. Er kann auch beendet werden, indem man das aktive Element anklickt, wobei dann die Änderungen aber nicht gespeichert werden. Nach dem Neuladen der Seite hat man dann die letzte Ansicht vor sich.": {
+    "description": "v300a1a",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Wenn Night-Watch beim Aufruf feststellt, dass noch keine Konfiguration vorgenommen wurde, dann kann man über das altbekannte Settingsfenster seine Einstellungen vornehmen. Das kommt vor, wenn man die Seite als WebApp installiert, da dort der Browserspeicher, in dem die Konfiguration gehalten wird, normalerweise noch nicht befüllt wurde.": "Wenn Night-Watch beim Aufruf feststellt, dass noch keine Konfiguration vorgenommen wurde, dann kann man über das altbekannte Settingsfenster seine Einstellungen vornehmen. Das kommt vor, wenn man die Seite als WebApp installiert, da dort der Browserspeicher, in dem die Konfiguration gehalten wird, normalerweise noch nicht befüllt wurde.",
+  "@Wenn Night-Watch beim Aufruf feststellt, dass noch keine Konfiguration vorgenommen wurde, dann kann man über das altbekannte Settingsfenster seine Einstellungen vornehmen. Das kommt vor, wenn man die Seite als WebApp installiert, da dort der Browserspeicher, in dem die Konfiguration gehalten wird, normalerweise noch nicht befüllt wurde.": {
+    "description": "v300a1b",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Die Anpassung der Glukosewerte wird nun bei den Einstellungen gespeichert. Sie kann aber weiterhin bei den Ausgabeparametern geändert werden, um ohne grosse Umwege einen Vergleich erstellen zu können.": "Die Anpassung der Glukosewerte wird nun bei den Einstellungen gespeichert. Sie kann aber weiterhin bei den Ausgabeparametern geändert werden, um ohne grosse Umwege einen Vergleich erstellen zu können.",
+  "@Die Anpassung der Glukosewerte wird nun bei den Einstellungen gespeichert. Sie kann aber weiterhin bei den Ausgabeparametern geändert werden, um ohne grosse Umwege einen Vergleich erstellen zu können.": {
+    "description": "v300c1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Die Anzeige des Faktors auf dem PDF, wenn ein Korrekturfaktor eingestellt wurde, wurde in eine Prozentangabe geändert um welche die Zuckerwerte erhöht oder verringert wurden.": "Die Anzeige des Faktors auf dem PDF, wenn ein Korrekturfaktor eingestellt wurde, wurde in eine Prozentangabe geändert um welche die Zuckerwerte erhöht oder verringert wurden.",
+  "@Die Anzeige des Faktors auf dem PDF, wenn ein Korrekturfaktor eingestellt wurde, wurde in eine Prozentangabe geändert um welche die Zuckerwerte erhöht oder verringert wurden.": {
+    "description": "v300c2",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Bei der letzten Version sind Änderungen in den Code eingeflossen, die nicht wirklich durchdacht waren. Dafür entschuldige ich mich. Ich habe diese wieder entfernt, damit Nightscout Reporter für alle Benutzer die gewohnte Funktionalität bietet.": "Bei der letzten Version sind Änderungen in den Code eingeflossen, die nicht wirklich durchdacht waren. Dafür entschuldige ich mich. Ich habe diese wieder entfernt, damit Nightscout Reporter für alle Benutzer die gewohnte Funktionalität bietet.",
+  "@Bei der letzten Version sind Änderungen in den Code eingeflossen, die nicht wirklich durchdacht waren. Dafür entschuldige ich mich. Ich habe diese wieder entfernt, damit Nightscout Reporter für alle Benutzer die gewohnte Funktionalität bietet.": {
+    "description": "v300r1",
+    "type": "text",
+    "placeholders": {}
+  },
+  "2.2.2 - 10.08.2022": "2.2.2 - 10.08.2022",
+  "@2.2.2 - 10.08.2022": {
+    "description": "v222",
+    "type": "text",
+    "placeholders": {}
+  },
+  "Die Glukosewerte können nun mit einem Faktor korrigiert werden, der sich aus dem im Labor ermittelten und errechneten HbA1C Wert ergibt. Dieser Faktor betrifft alle Sensorwerte, die in Nightscout Reporter verarbeitet werden. Der Faktor wird in den Ausgabeparametern festgelegt. Dort wird er über die Checkbox \"Glukosewerte anpassen\" aktiviert und deaktiviert. Wenn er aktiviert ist, erscheinen zwei Schieberegler. Der obere legt den errechneten HbA1C fest, der untere den im Labor ermittelten HbA1C. Wenn er aktiviert ist, wird auf jedem PDF rechts oben angegeben, mit welchem Faktor die Glukosewerte korrigiert wurden. Das hat auf jedem PDF Auswirkungen auf dem Glukosewerte verarbeitet werden.": "Die Glukosewerte können nun mit einem Faktor korrigiert werden, der sich aus dem im Labor ermittelten und errechneten HbA1C Wert ergibt. Dieser Faktor betrifft alle Sensorwerte, die in Nightscout Reporter verarbeitet werden. Der Faktor wird in den Ausgabeparametern festgelegt. Dort wird er über die Checkbox \"Glukosewerte anpassen\" aktiviert und deaktiviert. Wenn er aktiviert ist, erscheinen zwei Schieberegler. Der obere legt den errechneten HbA1C fest, der untere den im Labor ermittelten HbA1C. Wenn er aktiviert ist, wird auf jedem PDF rechts oben angegeben, mit welchem Faktor die Glukosewerte korrigiert wurden. Das hat auf jedem PDF Auswirkungen auf dem Glukosewerte verarbeitet werden.",
+  "@Die Glukosewerte können nun mit einem Faktor korrigiert werden, der sich aus dem im Labor ermittelten und errechneten HbA1C Wert ergibt. Dieser Faktor betrifft alle Sensorwerte, die in Nightscout Reporter verarbeitet werden. Der Faktor wird in den Ausgabeparametern festgelegt. Dort wird er über die Checkbox \"Glukosewerte anpassen\" aktiviert und deaktiviert. Wenn er aktiviert ist, erscheinen zwei Schieberegler. Der obere legt den errechneten HbA1C fest, der untere den im Labor ermittelten HbA1C. Wenn er aktiviert ist, wird auf jedem PDF rechts oben angegeben, mit welchem Faktor die Glukosewerte korrigiert wurden. Das hat auf jedem PDF Auswirkungen auf dem Glukosewerte verarbeitet werden.": {
+    "description": "v222a1",
     "type": "text",
     "placeholders": {}
   },
@@ -4865,8 +5071,46 @@
     "type": "text",
     "placeholders": {}
   },
-  "ViewWhatsnewComponent0__message_34": "Nachdem ich immer wieder gefragt wurde, ob man mir eine Spende zukommen lassen kann, habe ich mich jetzt dann doch dazu entschlossen, so eine Möglichkeit zur Verfügung zu stellen. Nightscout Reporter ist aber nach wie vor komplett kostenlos und wird das auch bleiben. Wer dennoch seiner Zuneigung zum Programm Ausdruck verleihen will, dem will ich mich nicht länger in den Weg stellen. Der Spenden-Button ist nicht sichtbar. Aber wer etwas in den {startTag0}Hut{endTag0} werfen will, der wird ihn finden :)",
-  "@ViewWhatsnewComponent0__message_34": {
+  "ViewWhatsnewComponent0__message_9": "Eine neue Ansicht namens {startTag0}Night-Watch{endTag0} wurde hinzugefügt. In dieser Ansicht sieht man, so wie auch in der Uhr-Anzeige auf der Nightscout-Seite, den aktuellen Glukosewert und weitere Informationen, die man sich in gewissem Rahmen so konfigurieren kann, wie sie einem gefallen. Night-Watch wird über diese URL aufgerufen: {startTag1}https://nightscout-reporter.zreptil.de/watch{endTag1} Es kann auch über das Hauptmenü unter dem Menüpunkt {startTag2}Night-Watch{endTag2} aufgerufen werden, oder indem man den aktuellen Zuckerwert in der Titelleiste von Nightscout Reporter anklickt, wenn man diesen in den Einstellungen aktiviert hat.",
+  "@ViewWhatsnewComponent0__message_9": {
+    "description": "v300a1",
+    "type": "text",
+    "placeholders": {
+      "startTag0": {
+        "example": "<i>"
+      },
+      "endTag0": {
+        "example": "</i>"
+      },
+      "startTag1": {
+        "example": "<a href=\"https://nightscout-reporter.zreptil.de/watch\" target=\"_blank\">"
+      },
+      "endTag1": {
+        "example": "</a>"
+      },
+      "startTag2": {
+        "example": "<i>"
+      },
+      "endTag2": {
+        "example": "</i>"
+      }
+    }
+  },
+  "ViewWhatsnewComponent0__message_12": "Dort, wo ein CGP erstellt werden kann, gibt es nun die Option {startTag0}Linien um Bereiche{endTag0}. Diese ist standardmässig eingeschaltet. Wenn sie ausgeschaltet wird, werden die Wertebereiche für den gesunden und den aktuellen Menschen nicht mehr mit einer Linie umrandet. Damit sieht die Grafik etwas blasser aus, aber man kann die Werte auf den Achsen genauer untersuchen, wenn man das möchte.",
+  "@ViewWhatsnewComponent0__message_12": {
+    "description": "v300a2",
+    "type": "text",
+    "placeholders": {
+      "startTag0": {
+        "example": "<i>"
+      },
+      "endTag0": {
+        "example": "</i>"
+      }
+    }
+  },
+  "ViewWhatsnewComponent0__message_50": "Nachdem ich immer wieder gefragt wurde, ob man mir eine Spende zukommen lassen kann, habe ich mich jetzt dann doch dazu entschlossen, so eine Möglichkeit zur Verfügung zu stellen. Nightscout Reporter ist aber nach wie vor komplett kostenlos und wird das auch bleiben. Wer dennoch seiner Zuneigung zum Programm Ausdruck verleihen will, dem will ich mich nicht länger in den Weg stellen. Der Spenden-Button ist nicht sichtbar. Aber wer etwas in den {startTag0}Hut{endTag0} werfen will, der wird ihn finden :)",
+  "@ViewWhatsnewComponent0__message_50": {
     "description": "v206a1",
     "type": "text",
     "placeholders": {

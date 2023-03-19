@@ -80,10 +80,10 @@ schwächerer Schrift angezeigt wird.
 
   @override
   void checkValue(ParamInfo param, dynamic value) {
-    List<int> list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    var list = <int>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     var count = 0;
     list.forEach((idx) {
-      ParamInfo p = params[idx];
+      var p = params[idx];
       if (p.boolValue) {
         count++;
         if (idx == 2) count += 2;
@@ -91,7 +91,7 @@ schwächerer Schrift angezeigt wird.
     });
 
     list.forEach((idx) {
-      ParamInfo p = params[idx];
+      var p = params[idx];
       if (count > 6) {
         if (!p.boolValue) {
           p.isDisabled = true;
@@ -169,7 +169,7 @@ schwächerer Schrift angezeigt wird.
         getContent(firstCol, 'total', 'center'));
     var text = msgDistribution;
     if (showTDD) text += '\n' + msgTDD;
-    double tdd = day.ieBasalSum(!useDailyBasalrate) + day.ieBolusSum;
+    var tdd = day.ieBasalSum(!useDailyBasalrate) + day.ieBolusSum;
     addTableRow(true, cm(f * 100), row, {
       'text': text,
       'style': 'total',

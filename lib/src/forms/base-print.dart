@@ -6,7 +6,6 @@ import 'dart:typed_data';
 
 import 'package:angular_components/angular_components.dart';
 import 'package:intl/intl.dart';
-import 'package:nightscout_reporter/src/controls/datepicker/datepicker_component.dart';
 import 'package:nightscout_reporter/src/globals.dart';
 import 'package:nightscout_reporter/src/json_data.dart';
 
@@ -20,7 +19,7 @@ class GridData {
 }
 
 class LegendData {
-  List<dynamic> columns = List<dynamic>();
+  List<dynamic> columns = <dynamic>[];
   double x;
   double y;
   double colWidth;
@@ -298,7 +297,7 @@ class Page {
   double x = 0;
   double y = 0;
 
-  List<dynamic> content = List<dynamic>();
+  List<dynamic> content = <dynamic>[];
 
   void offset(double x, double y) {
     this.x = x;
@@ -374,24 +373,26 @@ abstract class BasePrint {
   DataNeeded needed = DataNeeded();
   String help;
 
-  String get helpHtml {
-    if (help == null) return null;
-
-    var ret = help.replaceAll('\n', 'µ');
-    ret = ret.replaceAll('µµ', '<br><br>');
-    ret = ret.replaceAll('µ', ' ');
-    var list = RegExp('@([^@]*)@').allMatches(ret);
-    var links = <String>[];
-    for (var match in list) {
-      var part = match.group(1);
-      var cfg = g.listConfig.firstWhere((cfg) => cfg.idx == part, orElse: () => null);
-      if (cfg != null) {
-        links.add('</span><material-button (trigger)="g.show(\'Oleole\')">${cfg.form.title}</material-button><span>');
-      }
-    }
-    ret += links.toString();
-    return ret;
-  }
+  // String get helpHtml {
+  //   if (help == null) return null;
+  //
+  //   var ret = help.replaceAll('\n', 'µ');
+  //   ret = ret.replaceAll('µµ', '<br><br>');
+  //   ret = ret.replaceAll('µ', ' ');
+  //   var list = RegExp('@([^@]*)@').allMatches(ret);
+  //   var links = <String>[];
+  //   for (var match in list) {
+  //     var part = match.group(1);
+  //     var cfg =
+  //         g.listConfig.firstWhere((cfg) => cfg.idx == part, orElse: () => null);
+  //     if (cfg != null) {
+  //       links.add(
+  //           '</span><material-button (trigger)="g.show(\'Oleole\')">${cfg.form.title}</material-button><span>');
+  //     }
+  //   }
+  //   ret += links.toString();
+  //   return ret;
+  // }
 
   Future<void> loadUserData(UserData user) {}
 
@@ -410,17 +411,17 @@ abstract class BasePrint {
         pos = 0;
       }
       text = text.substring(1);
-      pos = text.indexOf('@');
-      if (pos >= 0) {
-        var id = text.substring(0, pos);
-        var cfg = g.listConfig.firstWhere((cfg) => cfg.idx == id, orElse: () => null);
+      var pos1 = text.indexOf('@');
+      if (pos1 >= 0) {
+        var id = text.substring(0, pos1);
+        var cfg = g.listConfig.firstWhere((cfg) => cfg.form.baseIdx == id, orElse: () => null);
         if (cfg != null) {
           ret.add(HelpItem()
             ..type = 'btn'
             ..cfg = cfg
             ..text = cfg.form.title);
         }
-        text = text.substring(pos + 1);
+        text = text.substring(pos1 + 1);
       }
       pos = text.indexOf('@');
     }
@@ -522,6 +523,7 @@ abstract class BasePrint {
     'colTrendNorm': '#98f595',
     'colCOBDaily': '#ffe090',
     'colIOBDaily': '#d0d0ff',
+    'colWarning': '#ff0000'
   };
 
   String get colText => colors['colText'];
@@ -630,6 +632,8 @@ abstract class BasePrint {
 
   String get colIOBDaily => colors['colIOBDaily'];
 
+  String get colWarning => colors['colWarning'];
+
   double xorg = 3.35;
   double yorg = 3.9;
   double xframe = 2.2;
@@ -681,6 +685,8 @@ abstract class BasePrint {
 
   dynamic msgPageCount(count, isEstimated) => isEstimated ? _msgPageCountEst(count) : _msgPageCount(count);
 
+  String msgKW(date) => Intl.message('KW${date}', args: [date], name: 'msgKW');
+
   String msgValidRange(begDate, endDate) =>
       Intl.message('gültig von $begDate bis $endDate', args: [begDate, endDate], name: 'msgValidRange');
 
@@ -708,9 +714,25 @@ abstract class BasePrint {
 
   String get msgGlucosekurve => Intl.message('Glukosekurve');
 
+  String _msgLowerGlucHint(factor) =>
+      Intl.message('Alle sensorischen Glukosewerte wurden um ${factor} % verringert',
+          args: [factor], name: '_msgLowerGlucHint');
+
+  String _msgRaiseGlucHint(factor) =>
+      Intl.message('Alle sensorischen Glukosewerte wurden um ${factor} % erhöht',
+          args: [factor], name: '_msgRaiseGlucHint');
+
+  String get msgAdjustGlucHint {
+    if (Globals.adjustFactor > 1) {
+      return _msgRaiseGlucHint(g.fmtNumber((Globals.adjustFactor - 1) * 100, 2));
+    }
+    return _msgLowerGlucHint(g.fmtNumber((1 - Globals.adjustFactor) * 100, 2));
+  }
+
   String msgCarbs(String value) => Intl.message('Kohlenhydrate (${value}g)', args: [value], name: 'msgCarbs');
 
-  String msgBolusInsulin(String value) => Intl.message('Bolus Insulin ($value)', args: [value], name: 'msgBolusInsulin');
+  String msgBolusInsulin(String value) =>
+      Intl.message('Bolus Insulin ($value)', args: [value], name: 'msgBolusInsulin');
 
   String get msgMealBolus => Intl.message('Mahlzeitenbolus', meaning: 'bolus to handle a meal');
 
@@ -728,7 +750,8 @@ abstract class BasePrint {
 
   String get msgBasalrate => Intl.message('Basalrate');
 
-  String msgBasalrateDay(String value) => Intl.message('Basalrate für den Tag ($value)', args: [value], name: 'msgBasalrateDay');
+  String msgBasalrateDay(String value) =>
+      Intl.message('Basalrate für den Tag ($value)', args: [value], name: 'msgBasalrateDay');
 
   String msgBasalrateProfile(String value) =>
       Intl.message('Basalrate aus dem Profil ($value)', args: [value], name: 'msgBasalrateProfile');
@@ -779,24 +802,29 @@ abstract class BasePrint {
           args: [howMany, fmt],
           name: 'msgReadingsInMinutes');
 
-  String msgValuesIn(low, high) => Intl.message('Werte zwischen ${low} und ${high}', args: [low, high], name: 'msgValuesIn');
+  String msgValuesIn(low, high) =>
+      Intl.message('Werte zwischen ${low} und ${high}', args: [low, high], name: 'msgValuesIn');
 
   String msgValuesBelow(low) => Intl.message('Werte unter ${low}', args: [low], name: 'msgValuesBelow');
 
   String msgValuesAbove(high) => Intl.message('Werte über ${high}', args: [high], name: 'msgValuesAbove');
 
-  String msgValuesVeryHigh(value) => Intl.message('Sehr hohe Werte ( > ${value})', args: [value], name: 'msgValuesVeryHigh');
+  String msgValuesVeryHigh(value) =>
+      Intl.message('Sehr hohe Werte ( > ${value})', args: [value], name: 'msgValuesVeryHigh');
 
   String msgValuesNormHigh(value) => Intl.message('Hohe Werte (${value})', args: [value], name: 'msgValuesNormHigh');
 
-  String msgValuesNorm(low, high) => Intl.message('Zielbereich (${low} - ${high})', args: [low, high], name: 'msgValuesNorm');
+  String msgValuesNorm(low, high) =>
+      Intl.message('Zielbereich (${low} - ${high})', args: [low, high], name: 'msgValuesNorm');
 
   String msgValuesNormLow(value) => Intl.message('Niedrige Werte (${value})', args: [value], name: 'msgValuesNormLow');
 
-  String msgValuesVeryLow(value) => Intl.message('Sehr niedrige Werte (< ${value})', args: [value], name: 'msgValuesVeryLow');
+  String msgValuesVeryLow(value) =>
+      Intl.message('Sehr niedrige Werte (< ${value})', args: [value], name: 'msgValuesVeryLow');
 
   String msgKHBE(value) =>
-      Intl.message('g KH ($value BE)', args: [value], name: 'msgKHBE', meaning: 'gram Carbohydrates displayed at analysis page');
+      Intl.message('g KH ($value BE)',
+          args: [value], name: 'msgKHBE', meaning: 'gram Carbohydrates displayed at analysis page');
 
   String msgReservoirDays(count, txt) =>
       Intl.plural(count,
@@ -986,7 +1014,8 @@ abstract class BasePrint {
 
   String msgTarget(String unit) => Intl.message('Glukose-Zielbereich\n${unit}', args: [unit], name: 'msgTarget');
 
-  String msgFactorEntry(String beg, String end) => Intl.message('${beg} - ${end}', args: [beg, end], name: 'msgFactorEntry');
+  String msgFactorEntry(String beg, String end) =>
+      Intl.message('${beg} - ${end}', args: [beg, end], name: 'msgFactorEntry');
 
   static String get msgOrientation => Intl.message('Ausrichtung');
 
@@ -1046,8 +1075,8 @@ abstract class BasePrint {
     dynamic ret = {'low': Globals.stdLow, 'high': Globals.stdHigh};
 
     if (!g.ppStandardLimits) {
-      ret['low'] = repData.status.settings.thresholds.bgTargetBottom;
-      ret['high'] = repData.status.settings.thresholds.bgTargetTop;
+      ret['low'] = repData.status.settings.bgTargetBottom;
+      ret['high'] = repData.status.settings.bgTargetTop;
     }
 
     return ret;
@@ -1234,13 +1263,14 @@ abstract class BasePrint {
         }
       ]
     });
-    if (!g.ppHideNightscoutInPDF)
+    if (!g.ppHideNightscoutInPDF) {
       stack.add({
         'relativePosition': {'x': cm(xframe), 'y': cm(2.5)},
         'text': 'nightscout reporter ${g.version}',
         'fontSize': fs(8),
         'color': colSubTitle,
       });
+    }
     double y = titleInfoSub == '' ? 2.4 : 2.0;
 
     if (g.currPeriodShift.months != 0) {
@@ -1261,7 +1291,14 @@ abstract class BasePrint {
     stack.add({
       'relativePosition': {'x': cm(xframe), 'y': cm(y)},
       'columns': [
-        {'width': cm(width - 4.4), 'text': titleInfo, 'fontSize': fs(10), 'color': colInfo, 'bold': true, 'alignment': 'right'}
+        {
+          'width': cm(width - 4.4),
+          'text': titleInfo,
+          'fontSize': fs(10),
+          'color': colInfo,
+          'bold': true,
+          'alignment': 'right'
+        }
       ]
     });
     if (titleInfoSub != '') {
@@ -1279,22 +1316,48 @@ abstract class BasePrint {
         ]
       });
     }
+    if (g.user.adjustGluc) {
+      stack.add({
+        'relativePosition': {'x': cm(width - xframe - 5.0), 'y': cm(1.0)},
+        'columns': [
+          {
+            'width': cm(5.0),
+            'text': msgAdjustGlucHint,
+            'fontSize': fs(8),
+            'color': colWarning,
+            'bold': true,
+            'alignment': 'right'
+          }
+        ]
+      });
+    }
     stack.add({
       'relativePosition': {'x': cm(xframe), 'y': cm(2.95)},
       'canvas': [
-        {'type': 'line', 'x1': cm(0), 'y1': cm(0), 'x2': cm(width - 4.4), 'y2': cm(0), 'lineWidth': cm(0.2), 'lineColor': colText}
+        {
+          'type': 'line',
+          'x1': cm(0),
+          'y1': cm(0),
+          'x2': cm(width - 4.4),
+          'y2': cm(0),
+          'lineWidth': cm(0.2),
+          'lineColor': colText
+        }
       ]
     });
     // footer
     if (skipFooter) return ret;
-    String rightText = '';
+    var rightText = '';
     if (repData.user.name.isEmpty) {
-      if (!repData.user.birthDate.isEmpty) rightText = '*${repData.user.birthDate}';
+      if (repData.user.birthDate.isNotEmpty) {
+        rightText = '*${repData.user.birthDate}';
+      }
     } else {
-      if (!repData.user.birthDate.isEmpty)
+      if (repData.user.birthDate.isNotEmpty) {
         rightText = '${repData.user.name}, *${repData.user.birthDate}';
-      else
+      } else {
         rightText = repData.user.name;
+      }
     }
 
     stack.addAll([
@@ -1315,9 +1378,16 @@ abstract class BasePrint {
       footerTextAboveLine['text'] == ''
           ? null
           : {
-        'relativePosition': {'x': cm(xframe + footerTextAboveLine['x']), 'y': cm(height - 2.0 - footerTextAboveLine['y'])},
+        'relativePosition': {
+          'x': cm(xframe + footerTextAboveLine['x']),
+          'y': cm(height - 2.0 - footerTextAboveLine['y'])
+        },
         'columns': [
-          {'width': cm(width - 2 * xframe), 'text': footerTextAboveLine['text'], 'fontSize': fs(footerTextAboveLine['fs'])}
+          {
+            'width': cm(width - 2 * xframe),
+            'text': footerTextAboveLine['text'],
+            'fontSize': fs(footerTextAboveLine['fs'])
+          }
         ]
       },
       g.ppHideNightscoutInPDF ? null : _getFooterImage('nightscout', x: xframe, y: height - 1.7, width: 0.7),
@@ -1403,7 +1473,8 @@ abstract class BasePrint {
 
   Future<String> getBase64Image(String id) async {
     // print('versuche Bild ${id} zu laden');
-    var response = await HttpRequest.request('packages/nightscout_reporter/assets/img/$id.png', responseType: 'arraybuffer');
+    var response =
+    await HttpRequest.request('packages/nightscout_reporter/assets/img/$id.png', responseType: 'arraybuffer');
     if (response.response is ByteBuffer) {
       var ret = base64.encode((response.response as ByteBuffer).asUint8List());
       return 'data:image/png;base64,${ret}';
@@ -1677,94 +1748,29 @@ abstract class BasePrint {
   double fs(double size) => size * scale;
 
   String fmtTime(var date, {String def, bool withUnit = false, bool withMinutes = true, bool withSeconds = false}) {
-    def ??= '';
-    if (date == null) return def;
-
-    if (withSeconds) withMinutes = true;
-
-    if (date is DateTime) {
-      var hour = date.hour;
-      if (!g.language.is24HourFormat) hour = hour > 12 ? hour - 12 : hour;
-      var m = withMinutes ? ':${(date.minute < 10 ? '0' : '')}${date.minute}' : '';
-      if (withSeconds) {
-        m = '${m}:${(date.second < 10 ? '0' : '')}${date.second}';
-      }
-      var ret = '${(hour < 10 ? '0' : '')}${hour}$m';
-      if (withUnit) {
-        if (g.language.is24HourFormat) {
-          ret = msgTimeOfDay24(ret);
-        } else {
-          ret = date.hour > 12 ? msgTimeOfDayPM(ret) : msgTimeOfDayAM(ret);
-        }
-      }
-      return ret;
-    }
-
-    if (date is int) {
-      var m = withMinutes ? ':00' : '';
-      if (g.language.is24HourFormat) return '${g.fmtNumber(date, 0)}$m';
-
-      m = withMinutes ? ' ' : '';
-
-      if (date < 12) {
-        return '${g.fmtNumber(date, 0)}${m}am';
-      } else if (date == 12) {
-        return '${g.fmtNumber(date, 0)}${m}pm';
-      } else {
-        return '${g.fmtNumber(date - 12, 0)}${m}pm';
-      }
-    }
-
-    return date;
+    return g.fmtTime(date, def: def, withUnit: withUnit, withMinutes: withMinutes, withSeconds: withSeconds);
   }
 
   String fmtDateTime(var date, [var def, bool withSeconds = false]) {
-    def ??= '';
-    if (date == null) return def;
-
-    if (date is DateTime) {
-      var ret = '${(date.day < 10 ? '0' : '')}${date.day}.${(date.month < 10 ? '0' : '')}'
-          '${date.month}.${date.year}, ${(date.hour < 10 ? '0' : '')}${date.hour}:${(date.minute < 10 ? '0' : '')}'
-          '${date.minute}';
-      if (withSeconds) {
-        ret = '${ret}:${(date.second < 10 ? '0' : '')}${date.second}';
-      }
-      return msgTimeOfDay24(ret);
-    }
-
-    return date;
+    return g.fmtDateTime(date, def, withSeconds);
   }
 
   String fmtDate(var date, [var def, bool withShortWeekday = false, bool withLongWeekday = false]) {
-    def ??= '';
-    if (date == null) return def;
+    return g.fmtDate(date, def, withShortWeekday, withLongWeekday);
+  }
 
-    DateTime dt;
-
-    try {
-      if (date is Date) {
-        dt = DateTime(date.year, date.month, date.day);
-      } else if (date is DateTime) {
-        dt = date;
-      } else if (date is String && date.length >= 8) {
-        var y = int.tryParse(date.substring(6, 8)) ?? 0;
-        var m = int.tryParse(date.substring(4, 6)) ?? 1;
-        var d = int.tryParse(date.substring(0, 4)) ?? 1;
-        dt = DateTime(y, m, d);
-      }
-    } catch (ex) {}
-
-    if (dt == null) return date;
-
-    var df = DateFormat(g.language.dateformat);
-    var ret = df.format(dt);
-    if (withShortWeekday) {
-      ret = '${DatepickerPeriod.dowShortName(Date(dt.year, dt.month, dt.day))}, $ret';
+  String fmtDateShort(Date date, String format) {
+    var dt = DateTime(date.year, date.month, date.day);
+    switch (format.toLowerCase()) {
+      case 'day':
+        return DateFormat(g.language.dateShortFormat).format(dt);
+      case 'week':
+        var temp = ((int.parse(DateFormat('D').format(dt)) - dt.weekday + 10) / 7).floor().toString().padLeft(2, '0');
+        return msgKW(temp);
+      case 'month':
+        return DateFormat('MMMM').format(dt);
     }
-    if (withLongWeekday) {
-      ret = '${DatepickerPeriod.dowName(Date(dt.year, dt.month, dt.day))}, $ret';
-    }
-    return ret;
+    return "";
   }
 
   String blendColor(String from, String to, num factor) {
@@ -1826,8 +1832,8 @@ abstract class BasePrint {
   ///
   /// it uses [horzfs] as the fontsize of the horizontal scale and [vertfs] as the fontsize for the vertical
   /// scale.
-  GridData drawGraphicGrid(double glucMax, double graphHeight, double graphWidth, List vertCvs, List horzCvs, List horzStack,
-      List vertStack,
+  GridData drawGraphicGrid(double glucMax, double graphHeight, double graphWidth, List vertCvs, List horzCvs,
+      List horzStack, List vertStack,
       {double glucScale: 0.0, double graphBottom: 0.0, double horzfs: null, double vertfs: null}) {
     if (horzfs == null) horzfs = fs(8);
     if (vertfs == null) vertfs = fs(8);
@@ -1918,18 +1924,18 @@ abstract class BasePrint {
     return ret;
   }
 
-  Page getCGPPage(var dayList) {
-    PrintCGP cgpPage = PrintCGP();
+  Page getCGPPage(var dayList, bool showAreaLines) {
+    var cgpPage = PrintCGP();
     cgpPage.repData = repData;
     cgpPage.scale = scale;
     title = cgpPage.title;
     subtitle = cgpPage.subtitle;
-    var cgpSrc = cgpPage.calcCGP(dayList, 1.0, 0, 0.3);
+    var cgpSrc = cgpPage.calcCGP(dayList, 1.0, 0, 0.3, showAreaLines);
     PentagonData cgp = cgpSrc['cgp'];
     footerTextAboveLine = cgpPage.footerTextAboveLine;
     footerTextAboveLine['y'] = 0.9;
-    double x = xorg + 2 * cgp.axisLength / cgp.scale + 1.2;
-    double y = yorg + 2.0;
+    var x = xorg + 2 * cgp.axisLength / cgp.scale + 1.2;
+    var y = yorg + 2.0;
     var ret = [
       headerFooter(),
       {
@@ -2009,7 +2015,13 @@ abstract class BasePrint {
               'widths': [cm(0.6)],
               'body': [
                 [
-                  {'text': graphText, 'color': colGraphText, 'fontSize': fs(6), 'alignment': 'center', 'fillColor': color}
+                  {
+                    'text': graphText,
+                    'color': colGraphText,
+                    'fontSize': fs(6),
+                    'alignment': 'center',
+                    'fillColor': color
+                  }
                 ]
               ]
             }
@@ -2023,7 +2035,15 @@ abstract class BasePrint {
           {
             'width': cm(0.8),
             'canvas': [
-              {'type': 'rect', 'x': cm(0), 'y': cm(0.1), 'w': cm(0.5), 'h': cm(0.3), 'color': color, 'fillOpacity': 0.3},
+              {
+                'type': 'rect',
+                'x': cm(0),
+                'y': cm(0.1),
+                'w': cm(0.5),
+                'h': cm(0.3),
+                'color': color,
+                'fillOpacity': 0.3
+              },
               {'type': 'rect', 'x': 0, 'y': 0, 'w': 0, 'h': 0, 'color': colGraphText, 'fillOpacity': 1},
               {
                 'type': 'line',
@@ -2077,8 +2097,8 @@ abstract class BasePrint {
 
   S(double min, double step) => StepData(min, step);
 
-  drawScaleIE(double xo, double yo, double graphHeight, double top, double min, double max, double colWidth, dynamic horzCvs,
-      dynamic vertStack, List<StepData> steps, Function display) {
+  drawScaleIE(double xo, double yo, double graphHeight, double top, double min, double max, double colWidth,
+      dynamic horzCvs, dynamic vertStack, List<StepData> steps, Function display) {
     double step = 0.1;
     for (StepData entry in steps) {
       if (max - min > entry.min) {
@@ -2121,7 +2141,8 @@ abstract class BasePrint {
     return (gridLines - 1) * lineHeight;
   }
 
-  dynamic getIobCob(double xo, double yo, double graphWidth, double graphHeight, dynamic horzCvs, dynamic vertStack, DayData day,
+  dynamic getIobCob(double xo, double yo, double graphWidth, double graphHeight, dynamic horzCvs, dynamic vertStack,
+      DayData day,
       [double upperIob = 0, double upperCob = 0]) {
     var colWidth = graphWidth / 24;
     // graphic for iob and cob
@@ -2142,11 +2163,13 @@ abstract class BasePrint {
     var maxTime = 1440;
     if (day.date.year == Date
         .today()
-        .year && day.date.month == Date
-        .today()
-        .month && day.date.day == Date
-        .today()
-        .day) {
+        .year &&
+        day.date.month == Date
+            .today()
+            .month &&
+        day.date.day == Date
+            .today()
+            .day) {
       maxTime = DateTime
           .now()
           .hour * 60 + DateTime
@@ -2247,8 +2270,14 @@ abstract class BasePrint {
       ptsCob.add({'x': cm(lastX), 'y': cm(cobHeight)});
     }
 
-    return {'iob': ptsIob, 'cob': ptsCob, 'iobHeight': iobHeight, 'cobHeight': cobHeight, 'iobTop': iobHeight / maxIob * minIob,
-      'maxCob': maxCob};
+    return {
+      'iob': ptsIob,
+      'cob': ptsCob,
+      'iobHeight': iobHeight,
+      'cobHeight': cobHeight,
+      'iobTop': iobHeight / maxIob * minIob,
+      'maxCob': maxCob
+    };
   }
 
   void checkValue(ParamInfo param, dynamic value) {}
