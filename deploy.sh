@@ -1,6 +1,6 @@
 #!/bin/bash
 
-typeset PUB=/usr/lib/dart/bin/pub
+typeset DART=/usr/lib/dart/bin/dart
 export https_proxy="http://10.230.1.1:8080"
 export no_proxy="127.0.0.1,localhost"
 typeset TARGETHOST
@@ -14,8 +14,8 @@ then
   echo "======================"
   echo "refreshing build stack"
   echo "======================"
-  $PUB get
-  $PUB global activate webdev 2.7.2
+  $DART pub get
+  $DART pub global activate webdev 2.7.2
 fi
 
 if [[ "$1" =~ "all" || "$1" =~ "build" ]]
@@ -33,7 +33,7 @@ then
   echo "======================"
   echo "running build"
   echo "======================"
-  $PUB global run webdev build --output=web:build
+  $DART pub global run webdev build --output=web:build
 fi
 
 typeset INSTALLDIR=/tmp/NightScoutReporter.$$
