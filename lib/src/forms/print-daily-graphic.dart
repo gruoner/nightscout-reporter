@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:intl/intl.dart';
+import 'package:nightscout_reporter/src/forms/print-cgp.dart';
 import 'package:nightscout_reporter/src/globals.dart';
 import 'package:nightscout_reporter/src/json_data.dart';
 
@@ -38,7 +39,8 @@ class CollectInfo {
 
 class PrintDailyGraphic extends BaseDaily {
   @override
-  String help = Intl.message('''Dieses Formular zeigt den Verlauf der Glukosekurve für einen Tag. Pro Tag im ausgewählten
+  String help =
+      Intl.message('''Dieses Formular zeigt den Verlauf der Glukosekurve für einen Tag. Pro Tag im ausgewählten
 Zeitraum wird eine Seite erzeugt. Es gibt sehr viele Optionen, mit denen dieses Formular angepasst werden kann.
 Die Optionen, die auf einen Loop hinweisen sind andersfarbig markiert, um sie schneller identifizieren zu 
 können. Die Optionen COB und IOB verlangsamen die Ausgabe teilweise erheblich, weshalb man diese nur dann
@@ -82,7 +84,8 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
       roundToProfile,
       spareBool1,
       showTargetValue,
-      showTempOverrides;
+      showTempOverrides,
+      showCGPAreaLines;
 
   double carbMax;
 
@@ -95,20 +98,28 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
         boolValue: true, isLoopValue: true, subParams: [ParamInfo(0, msgParam20, boolValue: false, isLoopValue: true)]),
     ParamInfo(8, msgParam5, boolValue: true),
     ParamInfo(9, msgParam6, boolValue: false, isDeprecated: true),
-    ParamInfo(12, BasePrint.msgGraphsPerPage,
-        list: [Intl.message('Eine'), Intl.message('Zwei'), Intl.message('Vier'), Intl.message('Acht'), Intl.message('Sechzehn')]),
+    ParamInfo(12, BasePrint.msgGraphsPerPage, list: [
+      Intl.message('Eine'),
+      Intl.message('Zwei'),
+      Intl.message('Vier'),
+      Intl.message('Acht'),
+      Intl.message('Sechzehn')
+    ]),
     ParamInfo(9, msgParam8, boolValue: true),
     ParamInfo(10, msgParam9,
-        boolValue: true, subParams: [ParamInfo(0, msgParam13, boolValue: false), ParamInfo(1, msgParam21, boolValue: false)]),
+        boolValue: true,
+        subParams: [ParamInfo(0, msgParam13, boolValue: false), ParamInfo(1, msgParam21, boolValue: false)]),
     ParamInfo(11, '', boolValue: false, isDeprecated: true),
     ParamInfo(13, msgParam11, boolValue: true),
     ParamInfo(14, msgParam14, boolValue: true),
     ParamInfo(3, BaseDaily.msgDaily1,
-        boolValue: true, subParams: [ParamInfo(0, BaseDaily.msgDaily2, boolValue: true, isLoopValue: true)], isLoopValue: true),
+        boolValue: true,
+        subParams: [ParamInfo(0, BaseDaily.msgDaily2, boolValue: true, isLoopValue: true)],
+        isLoopValue: true),
     ParamInfo(15, msgParam16, boolValue: false),
     ParamInfo(16, msgParam17, boolValue: false),
     ParamInfo(5, msgParam18, boolValue: false),
-    ParamInfo(18, msgParam19, boolValue: false),
+    ParamInfo(18, msgParam19, boolValue: false, subParams: [ParamInfo(0, PrintCGP.msgParamAreaLines, boolValue: true)]),
     ParamInfo(19, msgParam22, boolValue: false),
     ParamInfo(2, msgParam23, boolValue: true),
     ParamInfo(20, msgParam24, boolValue: false),
@@ -140,6 +151,7 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
     showExercises = params[14].boolValue;
     showCarbIE = params[15].boolValue;
     showCGP = params[16].boolValue;
+    showCGPAreaLines = params[16].subParams[0].boolValue;
     showZeroBasal = params[17].boolValue;
     roundToProfile = params[18].boolValue;
     showCOB = params[19].boolValue;
@@ -317,11 +329,11 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
       if (g.period.isDowActive(day.date.weekday - 1)) {
         if (day.entries.isNotEmpty || day.treatments.isNotEmpty) {
           pages.add(getPage(day));
-          if (showCGP || repData.isForThumbs) pages.add(getCGPPage(day));
+          if (showCGP || repData.isForThumbs) pages.add(getCGPPage(day, showCGPAreaLines));
           if (g.showBothUnits) {
             g.glucMGDLIdx = 1;
             pages.add(getPage(day));
-            if (showCGP) pages.add(getCGPPage(day));
+            if (showCGP) pages.add(getCGPPage(day, showCGPAreaLines));
             g.glucMGDLIdx = 2;
           }
         } else {
@@ -347,7 +359,8 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
     var graphHeightSave = graphHeight;
     var basalTopSave = basalTop;
     hasExercises = day.treatments.firstWhere((t) => t.isExercise, orElse: () => null) != null;
-    hasExercises = hasExercises || day.activityList.lastWhere((ac) => ac.type == 'steps-total', orElse: () => null) != null;
+    hasExercises =
+        hasExercises || day.activityList.lastWhere((ac) => ac.type == 'steps-total', orElse: () => null) != null;
 
     if (showExercises && hasExercises) {
       graphHeight -= glucExerciseHeight;
@@ -508,8 +521,8 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
     var vertStack = vertLegend['stack'];
     List graphGlucCvs = graphGluc['canvas'];
 
-    var grid =
-        drawGraphicGrid(glucMax, graphHeight, graphWidth, vertCvs, horzCvs, horzStack, vertStack, graphBottom: graphBottom);
+    var grid = drawGraphicGrid(glucMax, graphHeight, graphWidth, vertCvs, horzCvs, horzStack, vertStack,
+        graphBottom: graphBottom);
     if (grid.lineHeight == 0) {
       return Page(isPortrait, [
         headerFooter(date: day.date),
@@ -771,7 +784,13 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
         (pictures['stack'] as List).add({
           'relativePosition': {'x': cm(x + 0.0), 'y': cm(y + 0.34)},
           'columns': [
-            {'width': cm(0.6), 'text': '${fmtTime(t.createdAt)}', 'fontSize': fs(5), 'color': 'white', 'alignment': 'center'}
+            {
+              'width': cm(0.6),
+              'text': '${fmtTime(t.createdAt)}',
+              'fontSize': fs(5),
+              'color': 'white',
+              'alignment': 'center'
+            }
           ]
         });
         hasSensorChange = true;
@@ -817,8 +836,14 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
       if (t.isExercise && showExercises) {
         var x = glucX(t.createdAt);
         var wid = glucX(DateTime(0, 0, 0, 0, 0, t.duration));
-        (exerciseCvs['canvas'] as List).add(
-            {'type': 'rect', 'x': cm(x), 'y': cm(0.1), 'w': cm(wid), 'h': cm(glucExerciseHeight - 0.25), 'color': colExercises});
+        (exerciseCvs['canvas'] as List).add({
+          'type': 'rect',
+          'x': cm(x),
+          'y': cm(0.1),
+          'w': cm(wid),
+          'h': cm(glucExerciseHeight - 0.25),
+          'color': colExercises
+        });
         if ((t.notes ?? '').isNotEmpty) {
           (graphLegend['stack'] as List).add({
             'relativePosition': {'x': cm(x + 0.05), 'y': cm(glucExerciseTop + glucExerciseHeight / 2 - 0.14)},
@@ -1069,8 +1094,13 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
     };
 
     if (showTargetValue) {
-      (limitLines['canvas'] as List).add(
-          {'type': 'polyline', 'lineWidth': cm(lw * 2), 'closePath': false, 'lineColor': colTargetValue, 'points': targetValues});
+      (limitLines['canvas'] as List).add({
+        'type': 'polyline',
+        'lineWidth': cm(lw * 2),
+        'closePath': false,
+        'lineColor': colTargetValue,
+        'points': targetValues
+      });
     }
 
     var y = yo + grid.lineHeight * grid.gridLines;
@@ -1106,8 +1136,8 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
         var sum = day.ieCorrectionSum;
         if (!showSMB) sum += day.ieSMBSum;
         if (sum > 0.0) {
-          addLegendEntry(
-              legend, colBolus, msgCorrectBolusInsulin('${g.fmtBasal(sum, dontRound: !roundToProfile)} ${msgInsulinUnit}'),
+          addLegendEntry(legend, colBolus,
+              msgCorrectBolusInsulin('${g.fmtBasal(sum, dontRound: !roundToProfile)} ${msgInsulinUnit}'),
               isArea: false, lineWidth: 0.1);
         }
         if (hasCarbBolus) {
@@ -1116,8 +1146,8 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
               isArea: false, lineWidth: 0.1);
         }
         if (showSMB && day.ieSMBSum > 0.0) {
-          addLegendEntry(
-              legend, colBolus, msgSMBInsulin('${g.fmtBasal(day.ieSMBSum, dontRound: !roundToProfile)} ${msgInsulinUnit}'),
+          addLegendEntry(legend, colBolus,
+              msgSMBInsulin('${g.fmtBasal(day.ieSMBSum, dontRound: !roundToProfile)} ${msgInsulinUnit}'),
               points: [
                 {'x': 0.1, 'y': 0.1},
                 {'x': 0.5, 'y': 0.1},
@@ -1127,8 +1157,8 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
               lineWidth: 0.1);
         }
       } else if (hasBolus) {
-        addLegendEntry(
-            legend, colBolus, msgBolusInsulin('${g.fmtBasal(day.ieBolusSum, dontRound: !roundToProfile)} ${msgInsulinUnit}'),
+        addLegendEntry(legend, colBolus,
+            msgBolusInsulin('${g.fmtBasal(day.ieBolusSum, dontRound: !roundToProfile)} ${msgInsulinUnit}'),
             isArea: false, lineWidth: 0.1);
       }
       if (hasBolusExt) {
@@ -1154,8 +1184,11 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
       var v2 = g.glucFromData(targets(repData)['high'].toDouble());
       addLegendEntry(legend, colTargetArea, msgTargetArea(v1, v2, g.getGlucInfo()['unit']));
       if (showTargetValue) {
-        addLegendEntry(legend, colTargetValue,
-            msgTargetValue('${g.glucFromData((profile.targetHigh + profile.targetLow) / 2)} ${g.getGlucInfo()['unit']}'),
+        addLegendEntry(
+            legend,
+            colTargetValue,
+            msgTargetValue(
+                '${g.glucFromData((profile.targetHigh + profile.targetLow) / 2)} ${g.getGlucInfo()['unit']}'),
             isArea: false);
       }
       if (hasCollectedValues) {
@@ -1290,8 +1323,14 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
       ]);
     }
 
-    dynamic graphArea(dynamic points, String colLine, String colFill) =>
-        {'type': 'polyline', 'lineWidth': cm(lw), 'closePath': true, 'color': colFill, 'lineColor': colLine, 'points': points};
+    dynamic graphArea(dynamic points, String colLine, String colFill) => {
+          'type': 'polyline',
+          'lineWidth': cm(lw),
+          'closePath': true,
+          'color': colFill,
+          'lineColor': colLine,
+          'points': points
+        };
 //    double cobHeight = 0;
     dynamic graphIob = {};
     dynamic graphIAct = {};
@@ -1367,7 +1406,8 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
     return ret;
   }
 
-  void showProfileSwitch(ReportData src, ProfileData p, ProfileData last, List stack, double xo, double yo, [double x]) {
+  void showProfileSwitch(ReportData src, ProfileData p, ProfileData last, List stack, double xo, double yo,
+      [double x]) {
     if (last != null && p.storeHash == last.storeHash) return;
     x ??= glucX(p.startDate);
     var y = graphHeight + basalTop + basalHeight;

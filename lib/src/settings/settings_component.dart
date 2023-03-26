@@ -11,6 +11,7 @@ import 'package:angular_components/material_select/material_dropdown_select.dart
 import 'package:angular_components/material_select/material_select_item.dart';
 import 'package:angular_components/material_slider/material_slider.dart';
 import 'package:intl/intl.dart';
+import 'package:nightscout_reporter/src/controls/adjustment/gluc_adjust_component.dart';
 import 'package:nightscout_reporter/src/controls/signin/signin_component.dart';
 import 'package:nightscout_reporter/src/globals.dart' as globals;
 
@@ -47,6 +48,7 @@ class MaterialInputShowPasswordDirective {
     MaterialSliderComponent,
     MaterialInputShowPasswordDirective,
     SigninComponent,
+    GlucAdjustComponent,
     NgFor,
     NgIf,
   ],
@@ -188,7 +190,7 @@ class SettingsComponent implements OnInit {
   }
 
   void export() {
-    exportData = convert.base64Encode(convert.utf8.encode(Settings.doit(g.asSharedString)));
+    exportData = convert.base64Encode(convert.utf8.encode(g.asSharedString));
 
     Future.delayed(Duration(milliseconds: 100), () {
       (html.querySelector('#exportForm') as html.FormElement).submit();

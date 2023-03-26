@@ -9,6 +9,97 @@
     </material-button>
   </div>
   <div class="root">
+    <h2><span @i18n="version">Version</span><span @i18n="v302">3.0.2 - 22.09.2022</span></h2>
+    <ul>
+      <li @i18n="v302a1" class="added">
+        In Night-Watch gibt es nun die Möglichkeit, die Einstellungen aufzurufen, wenn man den
+        Editor aktiviert hat.
+      </li>
+      <li @i18n="v302a2" class="added">
+        In Night-Watch kann man nun einen Nachtmodus aktivieren, in dem der Hintergrund schwarz
+        ist und die Farben des Textes den aktuellen Wert bezüglich des Zielbereichs darstellen.
+      </li>
+    </ul>
+    <h2><span @i18n="version">Version</span><span @i18n="v301">3.0.1 - 26.08.2022</span></h2>
+    <ul>
+      <li class="changed"  @i18n="v301c1">
+        Die Einstellung für die Anpassung von BG_TARGET_BOTTOM und BG_TARGET_TOP ist nun unabhängig
+        von der Auswahl "Glucosewerte anpassen". Damit kann man die Option umschalten, ohne den
+        Zielbereich auf dem Server neu konfigurieren zu müssen.
+      </li>
+      <li class="fixed"  @i18n="v301f1">
+        Night-Watch zeigt nun auch Werte an, wenn diese von mehreren Uploadern innerhalb kurzer
+        Zeit mehrfach in Nightscout gespeichert wurden. Das sollte man zwar möglichst vermeiden,
+        aber nun kann Night-Watch auch damit umgehen.
+      </li>
+    </ul>
+    <h2><span @i18n="version">Version</span><span @i18n="v300">3.0.0 - 21.08.2022</span></h2>
+    <ul>
+      <li class="added">
+        <ng-container @i18n="v300a1">
+          Eine neue Ansicht namens <i>Night-Watch</i> wurde hinzugefügt. In dieser Ansicht sieht man, so
+          wie auch in der Uhr-Anzeige auf der Nightscout-Seite, den aktuellen Glukosewert und weitere
+          Informationen, die man sich in gewissem Rahmen so konfigurieren kann, wie sie einem gefallen.
+          Night-Watch wird über diese URL aufgerufen:
+          <a href="https://nightscout-reporter.zreptil.de/watch" target="_blank">
+            https://nightscout-reporter.zreptil.de/watch
+          </a>
+          Es kann auch über das Hauptmenü unter dem Menüpunkt <i>Night-Watch</i> aufgerufen werden, oder
+          indem man den aktuellen Zuckerwert in der Titelleiste von Nightscout Reporter anklickt,
+          wenn man diesen in den Einstellungen aktiviert hat.
+        </ng-container>
+        <div class="newline"></div>
+        <ng-container @i18n="v300a1a">
+          Die Konfiguration erfolgt direkt im Fenster von Night-Watch, indem man etwas anklickt.
+          Dadurch wechselt die Seite in den Editiermodus und mit den Controls am unteren Rand des
+          Fensters können die vorhandenen Elemente verändert, verschoben, gelöscht oder neue Elemente
+          hinzugefügt werden. Mit dem Speichern-Icon in den Controls werden die Einstellungen gespeichert
+          und der Editiermodus beendet. Er kann auch beendet werden, indem man das aktive Element
+          anklickt, wobei dann die Änderungen aber nicht gespeichert werden. Nach dem Neuladen der
+          Seite hat man dann die letzte Ansicht vor sich.
+        </ng-container>
+        <div class="newline"></div>
+        <ng-container @i18n="v300a1b">
+          Wenn Night-Watch beim Aufruf feststellt, dass noch keine Konfiguration vorgenommen wurde,
+          dann kann man über das altbekannte Settingsfenster seine Einstellungen vornehmen. Das kommt
+          vor, wenn man die Seite als WebApp installiert, da dort der Browserspeicher, in dem die
+          Konfiguration gehalten wird, normalerweise noch nicht befüllt wurde.
+        </ng-container>
+      </li>
+      <li class="added" @i18n="v300a2">
+        Dort, wo ein CGP erstellt werden kann, gibt es nun die Option <i>Linien um Bereiche</i>. Diese
+        ist standardmässig eingeschaltet. Wenn sie ausgeschaltet wird, werden die Wertebereiche
+        für den gesunden und den aktuellen Menschen nicht mehr mit einer Linie umrandet. Damit
+        sieht die Grafik etwas blasser aus, aber man kann die Werte auf den Achsen genauer
+        untersuchen, wenn man das möchte.
+      </li>
+      <li class="changed" @i18n="v300c1">
+        Die Anpassung der Glukosewerte wird nun bei den Einstellungen gespeichert. Sie kann aber
+        weiterhin bei den Ausgabeparametern geändert werden, um ohne grosse Umwege einen Vergleich
+        erstellen zu können.
+      </li>
+      <li class="changed" @i18n="v300c2">
+        Die Anzeige des Faktors auf dem PDF, wenn ein Korrekturfaktor eingestellt wurde, wurde in
+        eine Prozentangabe geändert um welche die Zuckerwerte erhöht oder verringert wurden.
+      </li>
+      <li class="removed" @i18n="v300r1">
+        Bei der letzten Version sind Änderungen in den Code eingeflossen, die nicht wirklich durchdacht
+        waren. Dafür entschuldige ich mich. Ich habe diese wieder entfernt, damit Nightscout Reporter
+        für alle Benutzer die gewohnte Funktionalität bietet.
+      </li>
+    </ul>
+    <h2><span @i18n="version">Version</span><span @i18n="v222">2.2.2 - 10.08.2022</span></h2>
+    <ul>
+      <li class="added" @i18n="v222a1">
+        Die Glukosewerte können nun mit einem Faktor korrigiert werden, der sich aus dem im Labor ermittelten
+        und errechneten HbA1C Wert ergibt. Dieser Faktor betrifft alle Sensorwerte, die in Nightscout Reporter
+        verarbeitet werden. Der Faktor wird in den Ausgabeparametern festgelegt. Dort wird er über die Checkbox
+        "Glukosewerte anpassen" aktiviert und deaktiviert. Wenn er aktiviert ist, erscheinen zwei Schieberegler.
+        Der obere legt den errechneten HbA1C fest, der untere den im Labor ermittelten HbA1C. Wenn er aktiviert
+        ist, wird auf jedem PDF rechts oben angegeben, mit welchem Faktor die Glukosewerte korrigiert wurden.
+        Das hat auf jedem PDF Auswirkungen auf dem Glukosewerte verarbeitet werden.
+      </li>
+    </ul>
     <h2><span @i18n="version">Version</span><span @i18n="v221">2.2.1 - 01.05.2022</span></h2>
     <ul>
       <li class="fixed" @i18n="v221f1">

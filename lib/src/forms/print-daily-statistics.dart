@@ -90,10 +90,10 @@ schwächerer Schrift angezeigt wird.
 
   @override
   void checkValue(ParamInfo param, dynamic value) {
-    List<int> list = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    var list = <int>[0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     var count = 0;
     list.forEach((idx) {
-      ParamInfo p = params[idx];
+      var p = params[idx];
       if (p.boolValue) {
         count++;
         if (idx == 2) count += 2;
@@ -101,8 +101,10 @@ schwächerer Schrift angezeigt wird.
     });
 
     list.forEach((idx) {
-      ParamInfo p = params[idx];
-      if (count > 7) {
+//      ParamInfo p = params[idx];
+//      if (count > 7) {
+      var p = params[idx];
+      if (count > 6) {
         if (!p.boolValue) {
           p.isDisabled = true;
         }
@@ -193,8 +195,8 @@ schwächerer Schrift angezeigt wird.
         {'type': 'rect', 'color': colHigh, 'x': cm((day.lowPrz(g) + day.bottomPrz(g) + day.normPrz(g) + day.topPrz(g)) * f), 'y': cm(0), 'w': cm(day.highPrz(g) * f), 'h': cm(showTDD ? 0.25 : 0.5)}
       ]
     });
-    addTableRow(showTDD, cm(f * 100), row, {
-      'text': msgTDD,
+    addTableRow(true, cm(f * 100), row, {
+      'text': text,
       'style': 'total',
       'alignment': 'center'
     }, {
@@ -248,7 +250,7 @@ schwächerer Schrift angezeigt wird.
             : {},
       ]
     });
-
+// Da passt was nicht mit oben
     addTableRow(true, 'auto', row, {
       'text': msgVeryLow(targets(repData)['verylow']),
       'style': 'total',

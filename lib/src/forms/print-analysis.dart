@@ -190,20 +190,20 @@ erkennbar ist.''',
     var glucWarnColor = colNorm;
     var glucWarnText = '';
 //    if (hba1c > 7)glucWarnColor = blendColor("ffffff", "ff0000", (hba1c - 7) / 2);
-    if (avgGluc >= repData.status.settings.thresholds.bgTargetTop &&
-        avgGluc < repData.status.settings.thresholds.bgTargetTop) {
+    if (avgGluc >= repData.status.settings.bgTargetTop &&
+        avgGluc < repData.status.settings.bgTargetTop) {
       glucWarnColor = blendColor(
           glucWarnColor,
           colHigh,
-          (avgGluc - repData.status.settings.thresholds.bgTargetTop) /
-              (180 - repData.status.settings.thresholds.bgTargetTop));
-    } else if (avgGluc < repData.status.settings.thresholds.bgTargetBottom) {
+          (avgGluc - repData.status.settings.bgTargetTop) /
+              (180 - repData.status.settings.bgTargetTop));
+    } else if (avgGluc < repData.status.settings.bgTargetBottom) {
       glucWarnColor = blendColor(
           glucWarnColor,
           colHigh,
-          (repData.status.settings.thresholds.bgTargetBottom - avgGluc) /
-              (repData.status.settings.thresholds.bgTargetBottom));
-    } else if (avgGluc > repData.status.settings.thresholds.bgTargetTop)
+          (repData.status.settings.bgTargetBottom - avgGluc) /
+              (repData.status.settings.bgTargetBottom));
+    } else if (avgGluc > repData.status.settings.bgTargetTop)
       glucWarnColor = colHigh;
 /*
     var pumpList = [];
@@ -328,15 +328,15 @@ erkennbar ist.''',
 
     var cvsLeft = -0.5;
     var cvsWidth = 0.8;
-    if ((repData.status.settings.thresholds.bgTargetBottom != 70 ||
-            repData.status.settings.thresholds.bgTargetTop != 180) &&
+    if ((repData.status.settings.bgTargetBottom != 70 ||
+            repData.status.settings.bgTargetTop != 180) &&
         !g.ppComparable) {
       addBodyArea(tableBody, msgOwnLimits, [
         [
           {'text': '', 'style': 'infotitle'},
           {
             'text': msgValuesAbove(
-                '${g.glucFromData(repData.status.settings.thresholds.bgTargetTop)} ${g.getGlucInfo()['unit']}'),
+                '${g.glucFromData(repData.status.settings.bgTargetTop)} ${g.getGlucInfo()['unit']}'),
             'style': 'infotitle'
           },
           {
@@ -384,8 +384,8 @@ erkennbar ist.''',
           {'text': '', 'style': 'infotitle'},
           {
             'text': msgValuesIn(
-                '${g.glucFromData(repData.status.settings.thresholds.bgTargetBottom)} ${g.getGlucInfo()['unit']}',
-                '${g.glucFromData(repData.status.settings.thresholds.bgTargetTop)} ${g.getGlucInfo()['unit']}'),
+                '${g.glucFromData(repData.status.settings.bgTargetBottom)} ${g.getGlucInfo()['unit']}',
+                '${g.glucFromData(repData.status.settings.bgTargetTop)} ${g.getGlucInfo()['unit']}'),
             'style': 'infotitle'
           },
           {
@@ -405,7 +405,7 @@ erkennbar ist.''',
           {'text': '', 'style': 'infotitle'},
           {
             'text': msgValuesBelow(
-                '${g.glucFromData(repData.status.settings.thresholds.bgTargetBottom)} ${g.getGlucInfo()['unit']}'),
+                '${g.glucFromData(repData.status.settings.bgTargetBottom)} ${g.getGlucInfo()['unit']}'),
             'style': 'infotitle'
           },
           {
@@ -879,6 +879,7 @@ erkennbar ist.''',
           {'text': '', 'style': 'infounit'},
         ]);
     }
+
     addBodyArea(tableBody, msgTreatments, treatmentsBody);
 
     var ret = [
@@ -931,40 +932,40 @@ erkennbar ist.''',
     return Page(isPortrait, ret);
   }
 
-  List<Object> getInfoPage(ReportData src) {
-    titleInfo = null;
-    subtitle = 'Erklärungen';
-    var ret = [
-      headerFooter(),
-      {
-        'margin': [cm(0), cm(yorg), cm(0), cm(0)],
-        'columns': [
-          {
-            'width': cm(width),
-            'text': 'Hinweise',
-            'fontSize': fs(20),
-            'alignment': 'center'
-          }
-        ]
-      },
-      {
-        'margin': [cm(2.2), cm(0.5), cm(2.2), cm(0)],
-        'text': 'Der DVI ist ein Wert, der einem Wert gleicht, der ein Wert sein soll, der hoffentlich zu einem'
-            ' Zeilenumbruch führt, was aber nicht klar ist. Nun ist es klar und wir sind sowas von froh, dass es'
-            ' funktioniert. Einfach Toll :)',
-        'fontSize': fs(12),
-        'alignment': 'justify'
-      },
-      {
-        'margin': [cm(2.2), cm(0.2), cm(2.2), cm(0)],
-        'text': 'Der DVI ist ein Wert, der einem Wert gleicht, der ein Wert sein soll, der hoffentlich zu einem'
-            ' Zeilenumbruch führt, was aber nicht klar ist. Nun ist es klar und wir sind sowas von froh, dass es'
-            ' funktioniert. Einfach Toll :)',
-        'fontSize': fs(12),
-        'alignment': 'justify',
-        'color': 'red'
-      },
-    ];
-    return ret;
-  }
+  // List<Object> getInfoPage(ReportData src) {
+  //   titleInfo = null;
+  //   subtitle = 'Erklärungen';
+  //   var ret = [
+  //     headerFooter(),
+  //     {
+  //       'margin': [cm(0), cm(yorg), cm(0), cm(0)],
+  //       'columns': [
+  //         {
+  //           'width': cm(width),
+  //           'text': 'Hinweise',
+  //           'fontSize': fs(20),
+  //           'alignment': 'center'
+  //         }
+  //       ]
+  //     },
+  //     {
+  //       'margin': [cm(2.2), cm(0.5), cm(2.2), cm(0)],
+  //       'text': 'Der DVI ist ein Wert, der einem Wert gleicht, der ein Wert sein soll, der hoffentlich zu einem'
+  //           ' Zeilenumbruch führt, was aber nicht klar ist. Nun ist es klar und wir sind sowas von froh, dass es'
+  //           ' funktioniert. Einfach Toll :)',
+  //       'fontSize': fs(12),
+  //       'alignment': 'justify'
+  //     },
+  //     {
+  //       'margin': [cm(2.2), cm(0.2), cm(2.2), cm(0)],
+  //       'text': 'Der DVI ist ein Wert, der einem Wert gleicht, der ein Wert sein soll, der hoffentlich zu einem'
+  //           ' Zeilenumbruch führt, was aber nicht klar ist. Nun ist es klar und wir sind sowas von froh, dass es'
+  //           ' funktioniert. Einfach Toll :)',
+  //       'fontSize': fs(12),
+  //       'alignment': 'justify',
+  //       'color': 'red'
+  //     },
+  //   ];
+  //   return ret;
+  // }
 }

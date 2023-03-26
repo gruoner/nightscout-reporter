@@ -8,12 +8,10 @@ import 'package:angular_components/angular_components.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:nightscout_reporter/src/globals.dart';
 import 'package:timezone/browser.dart' as tz;
-
 // The uploaders that can be checked when neccessary
 enum Uploader { Unknown, XDrip, Tidepool, Minimed600, OpenAPS, AndroidAPS, Spike }
 
 class JsonData {
-
   static int hourDiff = 0;
 
   JsonData();
@@ -148,6 +146,19 @@ class SettingsData extends JsonData {
   String baseURL;
   String authDefaultRoles;
   ThresholdData thresholds;
+
+  int get bgTargetTop {
+    if (thresholds == null) return null;
+    var factor = Globals().user.adjustTarget ? Globals().user.hba1cAdjustFactor : 1.0;
+    return (factor * thresholds.bgTargetTop).floor();
+  }
+
+  int get bgTargetBottom {
+    if (thresholds == null) return null;
+    var factor = Globals().user.adjustTarget ? Globals().user.hba1cAdjustFactor : 1.0;
+    return (factor * thresholds.bgTargetBottom).floor();
+  }
+
   List<String> defaultFeatures = <String>[];
   List<String> alarmTypes = <String>[];
   List<String> enable = <String>[];
@@ -338,17 +349,8 @@ class ProfileTimezone {
   ProfileTimezone(this.name, [bool isInitializing = false]) {
     location = tz.getLocation(name);
     if (location != null) {
-      var d = tz.TZDateTime(
-          location,
-          0,
-          1,
-          1,
-          0,
-          0,
-          0);
-      localDiff = d
-          .difference(DateTime(0))
-          .inHours + JsonData.hourDiff;
+      var d = tz.TZDateTime(location, 0, 1, 1, 0, 0, 0);
+      localDiff = d.difference(DateTime(0)).inHours + JsonData.hourDiff;
     }
   }
 }
@@ -364,7 +366,8 @@ class ProfileEntryData extends JsonData {
 
   set absoluteRate(double value) => _absoluteRate = value;
 
-  double get tempAdjusted => _absoluteRate != null ? 0 : (orgValue == null || orgValue == 0 ? 0 : (value - orgValue) / orgValue);
+  double get tempAdjusted =>
+      _absoluteRate != null ? 0 : (orgValue == null || orgValue == 0 ? 0 : (value - orgValue) / orgValue);
   int duration = 3600; // duration in seconds
   double orgValue;
   int timeAsSeconds;
@@ -407,19 +410,18 @@ class ProfileEntryData extends JsonData {
       _time.microsecond); */
   }
 
-  ProfileEntryData get copy =>
-      ProfileEntryData(null)
-        ..value = value
-        ..duration = duration
-        ..timeAsSeconds = timeAsSeconds
-        .._absoluteRate = _absoluteRate
-        .._timezone = _timezone
-        .._percentAdjust = _percentAdjust
-        .._time = _time
-        ..forceText = forceText
-        ..orgValue = orgValue
-        .._timezone = _timezone
-        ..from = from;
+  ProfileEntryData get copy => ProfileEntryData(null)
+    ..value = value
+    ..duration = duration
+    ..timeAsSeconds = timeAsSeconds
+    .._absoluteRate = _absoluteRate
+    .._timezone = _timezone
+    .._percentAdjust = _percentAdjust
+    .._time = _time
+    ..forceText = forceText
+    ..orgValue = orgValue
+    .._timezone = _timezone
+    ..from = from;
 
   ProfileEntryData clone(DateTime time) {
     var ret = copy;
@@ -458,9 +460,9 @@ class ProfileEntryData extends JsonData {
 
     ret.from = src.from;
     if ((src.from == Uploader.Minimed600 ||
-        src.from == Uploader.Tidepool ||
-        src.from == Uploader.Spike ||
-        src.from == Uploader.Unknown) &&
+            src.from == Uploader.Tidepool ||
+            src.from == Uploader.Spike ||
+            src.from == Uploader.Unknown) &&
         src._absolute != null) ret.absoluteRate = src._absolute;
     ret.duration = src.duration;
 
@@ -608,8 +610,8 @@ class ProfileStoreData extends JsonData {
     }
   }
 
-  factory ProfileStoreData.fromJson(String name, Map<String, dynamic> json, double percentage, int timeshift,
-      DateTime startDate) {
+  factory ProfileStoreData.fromJson(
+      String name, Map<String, dynamic> json, double percentage, int timeshift, DateTime startDate) {
     var ret = ProfileStoreData(name);
     if (json == null) return ret;
     ret.dia = JsonData.toDouble(json['dia']);
@@ -619,7 +621,9 @@ class ProfileStoreData extends JsonData {
       ret.timezone = ProfileTimezone(JsonData.toText(json['timezone']));
     } catch (ex) {
       ret.timezone = ProfileTimezone(Globals.refTimezone);
+      print('fehler bei timezone');
     }
+    // print('${JsonData.toText(json['timezone'])} ${name} ${ret.timezone.name}');
     if (startDate.year != 1970 || startDate.day != 1 || startDate.month != 1) {
       ret.startDate = startDate;
     } else {
@@ -660,12 +664,8 @@ class ProfileStoreData extends JsonData {
     if (listSrc.isEmpty) return;
     listDst = listDst.where((p) => p.time(date).isBefore(time)).toList();
     if (listDst.isEmpty) listDst.add(listSrc.last.copy);
-    listDst.last.duration = time
-        .difference(listDst.last.time(date))
-        .inSeconds;
-    listSrc.first.duration = time
-        .difference(listSrc.first._time)
-        .inSeconds;
+    listDst.last.duration = time.difference(listDst.last.time(date)).inSeconds;
+    listSrc.first.duration = time.difference(listSrc.first._time).inSeconds;
     listSrc.first._time = time;
     listDst.addAll(listSrc);
   }
@@ -694,8 +694,9 @@ class ProfileStoreData extends JsonData {
       var check = list[i].timeForCalc;
       if (check >= time && (duration == 0 || check < time + duration)) {
         if (i > 0) {
-          list[i - 1].duration =
-          duration == 0 ? 24 * 60 * 60 - list[i - 1].timeForCalc : duration + list[i].timeForCalc - list[i - 1].timeForCalc;
+          list[i - 1].duration = duration == 0
+              ? 24 * 60 * 60 - list[i - 1].timeForCalc
+              : duration + list[i].timeForCalc - list[i - 1].timeForCalc;
         }
         list.removeAt(i);
         i--;
@@ -714,7 +715,8 @@ class ProfileStoreData extends JsonData {
   }
 
   void _addFrom(List<ProfileEntryData> list, ProfileData srcProfile, List<ProfileEntryData> srcList) {
-    var timeOfProfile = srcProfile.startDate.hour * 3600 + srcProfile.startDate.minute * 60 + srcProfile.startDate.second;
+    var timeOfProfile =
+        srcProfile.startDate.hour * 3600 + srcProfile.startDate.minute * 60 + srcProfile.startDate.second;
     for (var i = 0; i < srcList.length; i++) {
       var src = srcList[i].copy;
       var check = src.timeForCalc;
@@ -973,38 +975,37 @@ class BoluscalcData extends JsonData {
 
   BoluscalcData();
 
-  BoluscalcData get copy =>
-      BoluscalcData()
-        ..profile = profile
-        ..notes = notes
-        ..eventTime = eventTime
-        ..targetBGLow = targetBGLow
-        ..targetBGHigh = targetBGHigh
-        ..isf = isf
-        ..ic = ic
-        ..iob = iob
-        ..bolusIob = bolusIob
-        ..basalIob = basalIob
-        ..bolusIobUsed = bolusIobUsed
-        ..basalIobUsed = basalIobUsed
-        ..bg = bg
-        ..insulinBg = insulinBg
-        ..insulinBgUsed = insulinBgUsed
-        ..bgDiff = bgDiff
-        ..insulinCarbs = insulinCarbs
-        ..carbs = carbs
-        ..cob = cob
-        ..cobUsed = cobUsed
-        ..insulinCob = insulinCob
-        ..otherCorrection = otherCorrection
-        ..insulinSuperBolus = insulinSuperBolus
-        ..insulinTrend = insulinTrend
-        ..insulin = insulin
-        ..superBolusUsed = superBolusUsed
-        ..trendUsed = trendUsed
-        ..trend = trend
-        ..ttUsed = ttUsed
-        ..NSClientId = NSClientId;
+  BoluscalcData get copy => BoluscalcData()
+    ..profile = profile
+    ..notes = notes
+    ..eventTime = eventTime
+    ..targetBGLow = targetBGLow
+    ..targetBGHigh = targetBGHigh
+    ..isf = isf
+    ..ic = ic
+    ..iob = iob
+    ..bolusIob = bolusIob
+    ..basalIob = basalIob
+    ..bolusIobUsed = bolusIobUsed
+    ..basalIobUsed = basalIobUsed
+    ..bg = bg
+    ..insulinBg = insulinBg
+    ..insulinBgUsed = insulinBgUsed
+    ..bgDiff = bgDiff
+    ..insulinCarbs = insulinCarbs
+    ..carbs = carbs
+    ..cob = cob
+    ..cobUsed = cobUsed
+    ..insulinCob = insulinCob
+    ..otherCorrection = otherCorrection
+    ..insulinSuperBolus = insulinSuperBolus
+    ..insulinTrend = insulinTrend
+    ..insulin = insulin
+    ..superBolusUsed = superBolusUsed
+    ..trendUsed = trendUsed
+    ..trend = trend
+    ..ttUsed = ttUsed
+    ..NSClientId = NSClientId;
 
   factory BoluscalcData.fromJson(Map<String, dynamic> json) {
     // ignore: omit_local_variable_types
@@ -1070,10 +1071,9 @@ class InsulinInjectionData extends JsonData {
 
   InsulinInjectionData();
 
-  InsulinInjectionData get copy =>
-      InsulinInjectionData()
-        ..insulin = insulin
-        ..units = units;
+  InsulinInjectionData get copy => InsulinInjectionData()
+    ..insulin = insulin
+    ..units = units;
 
   factory InsulinInjectionData.fromJson(Globals g, Map<String, dynamic> json) {
     var ret = InsulinInjectionData();
@@ -1385,7 +1385,9 @@ class TreatmentData extends JsonData {
     ret.isSMB = JsonData.toBool(json['isSMB']);
     ret.pumpId = JsonData.toText(json['pumpId']);
     ret.glucoseType = JsonData.toText(json['glucoseType']);
-    if (json['boluscalc'] != null) ret.boluscalc = BoluscalcData.fromJson(json['boluscalc']);
+    if (json['boluscalc'] != null) {
+      ret.boluscalc = BoluscalcData.fromJson(json['boluscalc']);
+    }
     ret.notes = JsonData.toText(json['notes']);
     ret.reason = JsonData.toText(json['reason']);
     ret.targetTop = JsonData.toDouble(json['targetTop']);
@@ -1413,7 +1415,8 @@ class TreatmentData extends JsonData {
 
     ret.glucose = JsonData.toDouble(json['glucose']);
     if (json['units'] != null) {
-      if (json['units'].toLowerCase() == Settings.msgUnitMGDL.toLowerCase() && g.getGlucInfo()['unit'] == Settings.msgUnitMMOL) {
+      if (json['units'].toLowerCase() == Settings.msgUnitMGDL.toLowerCase() &&
+          g.getGlucInfo()['unit'] == Settings.msgUnitMMOL) {
         ret.glucose = ret.glucose / 18.02;
       } else if (json['units'].toLowerCase() == Settings.msgUnitMMOL.toLowerCase() &&
           g.getGlucInfo()['unit'] == Settings.msgUnitMGDL) {
@@ -1471,9 +1474,7 @@ class TreatmentData extends JsonData {
 
     if (profile != null) {
       dia = profile.store?.dia ?? dia;
-      sens = profile.store?.listSens
-          ?.lastWhere((e) => e.timeForCalc <= check, orElse: () => null)
-          ?.value ?? sens;
+      sens = profile.store?.listSens?.lastWhere((e) => e.timeForCalc <= check, orElse: () => null)?.value ?? sens;
     }
 
     var scaleFactor = 3.0 / dia;
@@ -1547,7 +1548,8 @@ class TreatmentData extends JsonData {
         initialCarbs = carbs + minutesleft * carbs_min;
       }
       var startDecay = carbTime.add(Duration(minutes: delay));
-      if (time.millisecondsSinceEpoch < lastDecayedBy || time.millisecondsSinceEpoch > startDecay.millisecondsSinceEpoch) {
+      if (time.millisecondsSinceEpoch < lastDecayedBy ||
+          time.millisecondsSinceEpoch > startDecay.millisecondsSinceEpoch) {
         isDecaying = true;
       } else {
         isDecaying = false;
@@ -1561,12 +1563,9 @@ class TreatmentData extends JsonData {
   void calcTotalCOB(ReportData data, DayData yesterday, dynamic ret, ProfileGlucData profile, DateTime time, var iob) {
     // TODO: figure out the liverSensRatio that gives the most accurate purple line predictions
     var liverSensRatio = 8.0;
-    var sens = profile.store.listSens
-        .lastWhere((e) => e.timeForCalc <= timeForCalc, orElse: () => null)
-        ?.value ?? 0.0;
-    var carbRatio = profile.store.listCarbratio
-        .lastWhere((e) => e.timeForCalc <= timeForCalc, orElse: () => null)
-        ?.value ?? 0.0;
+    var sens = profile.store.listSens.lastWhere((e) => e.timeForCalc <= timeForCalc, orElse: () => null)?.value ?? 0.0;
+    var carbRatio =
+        profile.store.listCarbratio.lastWhere((e) => e.timeForCalc <= timeForCalc, orElse: () => null)?.value ?? 0.0;
     var cCalc = calcCOB(profile, time, ret['lastDecayedBy']?.millisecondsSinceEpoch ?? 0);
     if (cCalc != null) {
       double decaysin_hr = (cCalc['decayedBy'].millisecondsSinceEpoch - time.millisecondsSinceEpoch) / 1000 / 60 / 60;
@@ -1625,7 +1624,7 @@ class EntryData extends JsonData {
   bool get isGlucInvalid => gluc == null || gluc <= 0;
 
   double get gluc {
-    return isGap ? -1 : (type == 'sgv' ? sgv : rawbg) ?? 0;
+    return isGap ? -1 : Globals.adjustFactor * (type == 'sgv' ? sgv : rawbg) ?? 0;
   }
 
   double get bloodGluc {
@@ -1638,22 +1637,21 @@ class EntryData extends JsonData {
 
   EntryData();
 
-  EntryData get copy =>
-      EntryData()
-        ..id = id
-        ..time = time
-        ..rssi = rssi
-        ..device = device
-        ..direction = direction
-        ..rawbg = rawbg
-        ..sgv = sgv
-        ..mbg = mbg
-        ..type = type
-        ..isGap = isGap
-        ..isCopy = true
-        ..slope = slope
-        ..intercept = intercept
-        ..scale = scale;
+  EntryData get copy => EntryData()
+    ..id = id
+    ..time = time
+    ..rssi = rssi
+    ..device = device
+    ..direction = direction
+    ..rawbg = rawbg
+    ..sgv = sgv
+    ..mbg = mbg
+    ..type = type
+    ..isGap = isGap
+    ..isCopy = true
+    ..slope = slope
+    ..intercept = intercept
+    ..scale = scale;
 
   factory EntryData.fromJson(Map<String, dynamic> json) {
     var ret = EntryData();
@@ -1697,12 +1695,11 @@ class PumpStatusData extends JsonData {
   bool suspended;
   DateTime timestamp;
 
-  PumpStatusData get copy =>
-      PumpStatusData()
-        ..status = status
-        ..bolusing = bolusing
-        ..suspended = suspended
-        ..timestamp = timestamp.add(Duration(days: 0));
+  PumpStatusData get copy => PumpStatusData()
+    ..status = status
+    ..bolusing = bolusing
+    ..suspended = suspended
+    ..timestamp = timestamp.add(Duration(days: 0));
 
   PumpStatusData();
 
@@ -1721,10 +1718,9 @@ class PumpBatteryData extends JsonData {
   String status;
   double voltage;
 
-  PumpBatteryData get copy =>
-      PumpBatteryData()
-        ..status = status
-        ..voltage = voltage;
+  PumpBatteryData get copy => PumpBatteryData()
+    ..status = status
+    ..voltage = voltage;
 
   PumpBatteryData();
 
@@ -1743,12 +1739,11 @@ class PumpData extends JsonData {
   double reservoir;
   PumpStatusData pumpStatus;
 
-  PumpData get copy =>
-      PumpData()
-        ..clock = clock.add(Duration(days: 0))
-        ..pumpBattery = pumpBattery.copy
-        ..reservoir = reservoir
-        ..pumpStatus = pumpStatus.copy;
+  PumpData get copy => PumpData()
+    ..clock = clock.add(Duration(days: 0))
+    ..pumpBattery = pumpBattery.copy
+    ..reservoir = reservoir
+    ..pumpStatus = pumpStatus.copy;
 
   PumpData();
 
@@ -1767,10 +1762,9 @@ class UploaderData extends JsonData {
   double batteryVoltage;
   double batteryPercentageRemaining;
 
-  UploaderData get copy =>
-      UploaderData()
-        ..batteryVoltage = batteryVoltage
-        ..batteryPercentageRemaining = batteryPercentageRemaining;
+  UploaderData get copy => UploaderData()
+    ..batteryVoltage = batteryVoltage
+    ..batteryPercentageRemaining = batteryPercentageRemaining;
 
   UploaderData();
 
@@ -1810,33 +1804,32 @@ class XDripJSData extends JsonData {
   double temperature;
   double resistance;
 
-  XDripJSData get copy =>
-      XDripJSData()
-        ..state = state
-        ..stateString = stateString
-        ..stateStringShort = stateStringShort
-        ..txId = txId
-        ..txStatus = txStatus
-        ..txStatusString = txStatusString
-        ..txStatusStringShort = txStatusStringShort
-        ..txActivation = txActivation.add(Duration(days: 0))
-        ..mode = mode
-        ..timestamp = timestamp.add(Duration(days: 0))
-        ..rssi = rssi
-        ..unfiltered = unfiltered
-        ..filtered = filtered
-        ..noise = noise
-        ..noiseString = noiseString
-        ..slope = slope
-        ..intercept = intercept
-        ..calType = calType
-        ..lastCalibrationDate = lastCalibrationDate.add(Duration(days: 0))
-        ..sessionStart = sessionStart.add(Duration(days: 0))
-        ..batteryTimestamp = batteryTimestamp.add(Duration(days: 0))
-        ..voltageA = voltageA
-        ..voltageB = voltageB
-        ..temperature = temperature
-        ..resistance = resistance;
+  XDripJSData get copy => XDripJSData()
+    ..state = state
+    ..stateString = stateString
+    ..stateStringShort = stateStringShort
+    ..txId = txId
+    ..txStatus = txStatus
+    ..txStatusString = txStatusString
+    ..txStatusStringShort = txStatusStringShort
+    ..txActivation = txActivation.add(Duration(days: 0))
+    ..mode = mode
+    ..timestamp = timestamp.add(Duration(days: 0))
+    ..rssi = rssi
+    ..unfiltered = unfiltered
+    ..filtered = filtered
+    ..noise = noise
+    ..noiseString = noiseString
+    ..slope = slope
+    ..intercept = intercept
+    ..calType = calType
+    ..lastCalibrationDate = lastCalibrationDate.add(Duration(days: 0))
+    ..sessionStart = sessionStart.add(Duration(days: 0))
+    ..batteryTimestamp = batteryTimestamp.add(Duration(days: 0))
+    ..voltageA = voltageA
+    ..voltageB = voltageB
+    ..temperature = temperature
+    ..resistance = resistance;
 
   XDripJSData();
 
@@ -1878,12 +1871,11 @@ class IOBData extends JsonData {
   double activity;
   DateTime time;
 
-  IOBData get copy =>
-      IOBData()
-        ..iob = iob
-        ..basalIob = basalIob
-        ..activity = activity
-        ..time = time.add(Duration(days: 0));
+  IOBData get copy => IOBData()
+    ..iob = iob
+    ..basalIob = basalIob
+    ..activity = activity
+    ..time = time.add(Duration(days: 0));
 
   IOBData();
 
@@ -1902,9 +1894,7 @@ class IOBData extends JsonData {
 class LoopData extends JsonData {
   IOBData iob;
 
-  LoopData get copy =>
-      LoopData()
-        ..iob = iob;
+  LoopData get copy => LoopData()..iob = iob;
 
   LoopData();
 
@@ -2021,7 +2011,9 @@ class DayData {
       }
       lastTime = DateTime(entry.createdAt.year, entry.createdAt.month, entry.createdAt.day, 23, 59, 59);
       if (entry.insulin > 0) {
-        dbgDay['${entry.createdAt.hour}:${entry.createdAt.minute}:${entry.createdAt.second}'] = {'insulin': entry.insulin};
+        dbgDay['${entry.createdAt.hour}:${entry.createdAt.minute}:${entry.createdAt.second}'] = {
+          'insulin': entry.insulin
+        };
         ret += entry.insulin;
         count++;
       }
@@ -2058,6 +2050,7 @@ class DayData {
   double normPrz(Globals g) => entryCountValid == 0 ? 0 : (g.ppStandardLimits ? stdNormCount : normCount) / entryCountValid * 100;
   double highPrz(Globals g) => entryCountValid == 0 ? 0 : (g.ppStandardLimits ? stdHighCount : highCount) / entryCountValid * 100;
   double topPrz(Globals g) => entryCountValid == 0 ? 0 : (g.ppStandardLimits ? stdTopCount : topCount) / entryCountValid * 100;
+
   double get avgCarbs => carbCount > 0 ? carbs / carbCount : 0;
   bool isSameDay(DateTime time)
   {
@@ -2168,9 +2161,7 @@ class DayData {
       temp.orgValue = entry.value;
       _profile.add(temp);
     }
-    if (_profile.first
-        .time(date, false)
-        .hour > 0) {
+    if (_profile.first.time(date, false).hour > 0) {
       var clone = _profile.first.clone(DateTime(date.year, date.month, date.day, 0, 0));
       _profile.insert(0, clone);
     }
@@ -2218,9 +2209,7 @@ class DayData {
           if (endTime.isBefore(_profile[i + 1].time(date))) {
             // entry ends before next entry starts
             var temp = ProfileEntryData(basalData.store.timezone, endTime);
-            if (i < _profile.length - 2) temp.duration = _profile[i + 2]._time
-                .difference(endTime)
-                .inSeconds;
+            if (i < _profile.length - 2) temp.duration = _profile[i + 2]._time.difference(endTime).inSeconds;
             temp.value = last.orgValue;
             temp.orgValue = last.orgValue;
             _profile.insert(i + 1, temp);
@@ -2241,9 +2230,7 @@ class DayData {
           // if the last value was calculated check if the duration is still running
           var endTime = lastTime.add(Duration(seconds: last.duration));
           if (endTime.isAfter(entry.time(date))) {
-            var duration = endTime
-                .difference(entry.time(date))
-                .inSeconds;
+            var duration = endTime.difference(entry.time(date)).inSeconds;
             var clone = entry.clone(entry.time(date).add(Duration(seconds: duration)));
             // transfer the calculationdata from the last entry
             entry.transferCalcValues(last);
@@ -2251,10 +2238,7 @@ class DayData {
             entry.value = entry.adjustedValue(entry.orgValue);
             var currDuration = entry.duration;
             if (i < _profile.length - 1) {
-              currDuration = _profile[i + 1]
-                  .time(date)
-                  .difference(entry.time(date))
-                  .inSeconds;
+              currDuration = _profile[i + 1].time(date).difference(entry.time(date)).inSeconds;
             }
             if (duration < currDuration) {
               clone.duration = currDuration - duration;
@@ -2271,10 +2255,7 @@ class DayData {
 
     // finalize the entries by recalculating their duration
     for (var i = 1; i < _profile.length; i++) {
-      _profile[i - 1].duration = _profile[i]
-          .time(date)
-          .difference(_profile[i - 1].time(date))
-          .inSeconds;
+      _profile[i - 1].duration = _profile[i].time(date).difference(_profile[i - 1].time(date)).inSeconds;
     }
     _profile.last.duration = 86399 - _profile.last.timeForCalc;
 
@@ -2375,10 +2356,7 @@ class DayData {
       if (entry.gluc <= 0) continue;
       var time = DateTime(check.year, check.month, check.day, entry.time.hour, entry.time.minute);
       if (time == check) return entry;
-      var diff = time
-          .difference(check)
-          .inSeconds
-          .abs();
+      var diff = time.difference(check).inSeconds.abs();
 
       if (diff < retDiff && diff <= maxMinuteDiff * 60) {
         ret = entry;
@@ -2389,10 +2367,7 @@ class DayData {
     for (var treat in list) {
       var time = DateTime(check.year, check.month, check.day, treat.createdAt.hour, treat.createdAt.minute);
       if (time == check) return treat;
-      var diff = time
-          .difference(check)
-          .inSeconds
-          .abs();
+      var diff = time.difference(check).inSeconds.abs();
 
       if (diff < retDiff && diff <= maxMinuteDiff * 60) {
         ret = treat;
@@ -2472,7 +2447,8 @@ class DayData {
 
     var list = <TreatmentData>[];
     if (yesterday != null) {
-      var prev = yesterday.cob(data, DateTime(yesterday.date.year, yesterday.date.month, yesterday.date.day, 23, 59, 59), null);
+      var prev = yesterday.cob(
+          data, DateTime(yesterday.date.year, yesterday.date.month, yesterday.date.day, 23, 59, 59), null);
       lastCarbs = prev.lastCarbs;
       var t = TreatmentData();
       t._carbs = prev.cob;
@@ -2503,12 +2479,9 @@ class DayData {
     isDecaying = temp['isDecaying'];
     lastDecayedBy = temp['lastDecayedBy'];
 
-    var sens = profile.store.listSens
-        .lastWhere((e) => e.timeForCalc <= check, orElse: () => null)
-        ?.value ?? 0.0;
-    var carbRatio = profile.store.listCarbratio
-        .lastWhere((e) => e.timeForCalc <= check, orElse: () => null)
-        ?.value ?? 0.0;
+    var sens = profile.store.listSens.lastWhere((e) => e.timeForCalc <= check, orElse: () => null)?.value ?? 0.0;
+    var carbRatio =
+        profile.store.listCarbratio.lastWhere((e) => e.timeForCalc <= check, orElse: () => null)?.value ?? 0.0;
     var rawCarbImpact = (isDecaying ? 1 : 0) * sens / carbRatio * profile.store.carbRatioPerHour / 60;
 
     return CalcCOBData(lastDecayedBy, isDecaying, profile.store.carbRatioPerHour, rawCarbImpact, totalCOB, 0, lastCarbs);
@@ -2537,40 +2510,29 @@ class StatisticData {
 }
 
 class ListData {
-  List<DayData> days = <DayData>[];
+  List<DayData> days;
   List<EntryData> entries = <EntryData>[];
   List<EntryData> bloody = <EntryData>[];
   List<EntryData> remaining = <EntryData>[];
   List<TreatmentData> treatments = <TreatmentData>[];
   List<DeviceStatusData> devicestatusList = <DeviceStatusData>[];
   List<ActivityData> activityList = <ActivityData>[];
-  int catheterCount = 0;
-  int ampulleCount = 0;
-  int sensorCount = 0;
-  double khCount = 0.0;
-  double khAdjust = 0.0;
-  int khAdjustCount = 0;
-  Map<String, StatisticData> stat = {
-    'low': StatisticData(0, 0),
-    'norm': StatisticData(0, 0),
-    'high': StatisticData(0, 0),
-    'stdLow': StatisticData(1, 70),
-    'stdNorm': StatisticData(70, 180),
-    'stdHigh': StatisticData(180, 9999),
-    'stdVeryHigh': StatisticData(250, 9999),
-    'stdNormHigh': StatisticData(180, 250),
-    'stdNormLow': StatisticData(54, 70),
-    'stdVeryLow': StatisticData(0, 54),
-  };
-  double ieBolusSum = 0.0;
-  double ieBasalSumDaily = 0.0;
-  double ieBasalSumStore = 0.0;
-  double ieMicroBolusSum = 0.0;
-  double gvi = 0.0;
-  double gviIdeal = 0.0;
-  double gviTotal = 0.0;
-  double rms = 0.0;
-  double pgs = 0.0;
+  int catheterCount;
+  int ampulleCount;
+  int sensorCount;
+  double khCount;
+  double khAdjust;
+  int khAdjustCount;
+  double ieBolusSum;
+  double ieBasalSumDaily;
+  double ieBasalSumStore;
+  double ieMicroBolusSum;
+  double gvi;
+  double gviIdeal;
+  double gviTotal;
+  double rms;
+  double pgs;
+  Map<String, StatisticData> stat;
 
   double ieBasalSum(bool fromStore) => fromStore ? ieBasalSumStore : ieBasalSumDaily;
 
@@ -2582,15 +2544,23 @@ class ListData {
 
   double ieMicroBolusPrz(bool fromStore) => TDD(fromStore) > 0 ? ieMicroBolusSum / TDD(fromStore) * 100 : 0.0;
 
-  int get countValid =>
-      entries
-          .where((entry) => !entry.isGlucInvalid)
-          .length;
+  int get countValid => entries.where((entry) => !entry.isGlucInvalid).length;
 
-  int get countInvalid =>
-      entries
-          .where((entry) => entry.isGlucInvalid)
-          .length;
+  int get countInvalid => entries.where((entry) => entry.isGlucInvalid).length;
+
+  double get medianGluc {
+    var list = [];
+    for (var entry in entries) {
+      if (!entry.isGlucInvalid) {
+        list.add(entry.gluc);
+      }
+    }
+    if (list.length % 2 == 0) {
+      return (list[list.length ~/ 2] + list[list.length ~/ 2 + 1]) / 2;
+    } else {
+      return list[(list.length + 1) ~/ 2];
+    }
+  }
 
   double get avgGluc {
     var ret = 0.0;
@@ -2601,52 +2571,44 @@ class ListData {
         count++;
       }
     }
-    return count > 0 ? ret / count : 0.0;
+    return (count > 0 ? ret / count : 0.0);
   }
 
   double min;
   double max;
   int validCount;
+
   List<TreatmentData> addList = <TreatmentData>[];
 
-  void extractData(ReportData data, TreatmentData lastTempBasal) {
-    stat['norm'].values.clear();
-    stat['high'].values.clear();
-    stat['low'].values.clear();
+  void calcStatistics(ReportData data) {
+    stat = {
+      'low': StatisticData(0, 0),
+      'norm': StatisticData(0, 0),
+      'high': StatisticData(0, 0),
+      'stdLow': StatisticData(1, Globals.stdLow as double),
+      'stdNorm': StatisticData(Globals.stdLow as double, Globals.stdHigh as double),
+      'stdHigh': StatisticData(Globals.stdHigh as double, 9999),
+      'stdVeryHigh': StatisticData(Globals.stdVeryHigh as double, 9999),
+      'stdNormHigh': StatisticData(Globals.stdHigh as double, Globals.stdVeryHigh as double),
+      'stdNormLow': StatisticData(Globals.stdVeryLow as double, Globals.stdLow as double),
+      'stdVeryLow': StatisticData(0, Globals.stdVeryLow as double),
+    };
     min = 999999.0;
     max = -1.0;
-    var lastDay;
-    var allEntries = <EntryData>[];
-    allEntries.addAll(entries);
-    allEntries.addAll(bloody);
-    allEntries.addAll(remaining);
-
-    allEntries.sort((a, b) => a.time.compareTo(b.time));
-/*
-    allEntries.removeWhere((e)
-    => e.isGap);
-// */
     var last;
     // calculation of gvi and rms based on
     // https://github.com/nightscout/cgm-remote-monitor/blob/master/lib/report_plugins/glucosedistribution.js#L150
+    gvi = 0.0;
+    gviIdeal = 0.0;
+    gviTotal = 0.0;
     var glucTotal = 0.0;
     var rmsTotal = 0.0;
     var firstGluc;
     var lastGluc;
     var usedRecords = 0;
-//    double deltaTotal = 0.0;
-//    double total = 0.0;
-//    double t1 = 6;
-//    double t2 = 11;
-//    int t1Count = 0;
-//    int t2Count = 0;
     validCount = 0;
-    if (allEntries.isEmpty) return;
 
-    for (var entry in allEntries) {
-      if (entry.isInvalidOrGluc0) continue;
-
-      var glucData = data.profile(entry.time);
+/*      var glucData = data.profile(entry.time);
       stat['low'].max = glucData.targetLow; // - 0.0001;
       stat['norm'].min = glucData.targetLow;
       stat['norm'].max = glucData.targetHigh; // + 0.0001;
@@ -2659,31 +2621,36 @@ class ListData {
       if (entry.type == 'mbg') {
         days.last.bloody.add(entry);
       } else {
-        days.last.entries.add(entry);
+        days.last.entries.add(entry);*/
+    for (var day in days) {
+      for (var entry in day.entries) {
+        var glucData = data.profile(entry.time);
+        stat['low'].max = glucData.targetLow; // - 0.0001;
+        stat['norm'].min = glucData.targetLow;
+        stat['norm'].max = glucData.targetHigh; // + 0.0001;
+        stat['high'].min = glucData.targetHigh;
+        stat['high'].max = 9999.9999;
         if (glucData != null) {
           var gluc = entry.gluc;
-          // first day must be ignored for statistics
-          if (gluc > 0 && days.length > 1) {
+          if (gluc > 0) {
+            validCount++;
             for (var key in stat.keys) {
               // if (gluc >= stat[key].min && gluc < stat[key].max)
-              if (JsonData.isNorm(gluc, stat[key].min, stat[key].max)) stat[key].add(entry, gluc);
+              if (JsonData.isNorm(gluc, stat[key].min, stat[key].max)) {
+                stat[key].add(entry, gluc);
+              }
             }
-            validCount++;
             if (gluc < min) min = entry.gluc;
             if (gluc > max) max = entry.gluc;
           }
         }
-      }
 
-      if (data.isInPeriod(entry.time)) {
         firstGluc ??= entry.gluc;
         lastGluc = entry.gluc;
         if (last == null) {
           glucTotal += entry.gluc;
         } else {
-          var timeDelta = entry.time
-              .difference(last.time)
-              .inMilliseconds;
+          var timeDelta = entry.time.difference(last.time).inMilliseconds;
 
           if (timeDelta <= 6 * 60000 && entry.gluc > 0 && last.gluc > 0) {
             usedRecords++;
@@ -2694,18 +2661,17 @@ class ListData {
 //          if (delta >= t2)t2Count++;
             gviTotal += math.sqrt(25 + math.pow(delta, 2));
             glucTotal += entry.gluc;
-            if (entry.gluc < glucData.targetLow) rmsTotal += math.pow(glucData.targetLow - entry.gluc, 2);
-            if (entry.gluc > glucData.targetHigh) rmsTotal += math.pow(entry.gluc - glucData.targetHigh, 2);
+            if (entry.gluc < glucData.targetLow) {
+              rmsTotal += math.pow(glucData.targetLow - entry.gluc, 2);
+            }
+            if (entry.gluc > glucData.targetHigh) {
+              rmsTotal += math.pow(entry.gluc - glucData.targetHigh, 2);
+            }
           }
         }
+        last = entry;
       }
-      last = entry;
     }
-
-    var check = DateTime(days.first.date.year, days.first.date.month, days.first.date.day + 1);
-    entries.removeWhere((e) => e.time.isBefore(check));
-    bloody.removeWhere((e) => e.time.isBefore(check));
-    remaining.removeWhere((e) => e.time.isBefore(check));
 
     double gviDelta = lastGluc - firstGluc;
     gviIdeal = math.sqrt(math.pow(usedRecords * 5, 2) + math.pow(gviDelta, 2));
@@ -2721,6 +2687,45 @@ class ListData {
       }
       stat[key].varianz /= stat[key].values.length;
     }
+  }
+
+  void extractData(ReportData data) {
+    catheterCount = 0;
+    ampulleCount = 0;
+    sensorCount = 0;
+    khCount = 0.0;
+    khAdjust = 0.0;
+    khAdjustCount = 0;
+    ieBolusSum = 0.0;
+    ieMicroBolusSum = 0.0;
+    var allEntries = <EntryData>[];
+    allEntries.addAll(entries);
+    allEntries.addAll(bloody);
+    allEntries.addAll(remaining);
+    allEntries.sort((a, b) => a.time.compareTo(b.time));
+    if (allEntries.isEmpty) return;
+
+    var lastDay;
+    days = <DayData>[];
+    for (var entry in allEntries) {
+      if (entry.isInvalidOrGluc0) continue;
+
+      var glucData = data.profile(entry.time);
+      if (lastDay == null || entry.time.day != lastDay.day) {
+        days.add(DayData(entry.time, glucData));
+        lastDay = entry.time;
+      }
+      if (entry.type == 'mbg') {
+        days.last.bloody.add(entry);
+      } else {
+        days.last.entries.add(entry);
+      }
+    }
+
+    var check = DateTime(days.first.date.year, days.first.date.month, days.first.date.day + 1);
+    entries.removeWhere((e) => e.time.isBefore(check));
+    bloody.removeWhere((e) => e.time.isBefore(check));
+    remaining.removeWhere((e) => e.time.isBefore(check));
 
     khCount = 0.0;
     ieBolusSum = 0.0;
@@ -2737,13 +2742,11 @@ class ListData {
       for (var i = 0; i < treatments.length; i++) {
         var t1 = treatments[i];
         if (!t1.isTempBasal) continue;
-        var t = lastIdx == -1 ? lastTempBasal : treatments[lastIdx];
+        var t = lastIdx == -1 ? data.lastTempBasal : treatments[lastIdx];
         if (t == null) continue;
         lastIdx = i;
 
-        var duration = t1.createdAt
-            .difference(t.createdAt)
-            .inSeconds;
+        var duration = t1.createdAt.difference(t.createdAt).inSeconds;
         // if duration of current treatment is longer than the difference between
         // next treatment and current treatment then cut the duration of current
         // treatment to the difference
@@ -2822,12 +2825,25 @@ class ListData {
       day.activityList.clear();
       day.activityList.addAll(activityList.where((ac) => day.isSameDay(JsonData.toLocal(ac.createdAt))));
     }
-    // the last day before the period was added at the beginning. Now it has to be removed.
-    if (days.isNotEmpty && days[0].date.isBefore(data.begDate)) days.removeAt(0);
+    // the last day before the period was added at the beginning.
+    // Now it has to be removed.
+    if (days.isNotEmpty && days[0].date.isBefore(data.begDate)) {
+      days.removeAt(0);
+    }
+
+    // injectionList = InsulinInjectionList();
+    // for (var day in days) {
+    //   for (var t in day.treatments) {
+    //     if (t.multipleInsulin != null) {
+    //       injectionList = injectionList.add2List(t.multipleInsulin);
+    //     }
+    //   }
+    // }
+    calcStatistics(data);
   }
 }
 
-class ReportData {
+class ReportData{
   Error error;
   Date begDate;
   Date endDate;
@@ -2837,11 +2853,11 @@ class ReportData {
   ListData ns = ListData();
   ListData calc = ListData();
   List<InsulinData> insulinProfiles = null;
+  TreatmentData lastTempBasal;
 
-  ListData get data =>
-      globals == null
-          ? calc
-          : globals.isDataSmoothing
+  ListData get data => globals == null
+      ? calc
+      : globals.isDataSmoothing
           ? calc
           : ns;
   StatusData status;
@@ -2871,8 +2887,8 @@ class ReportData {
       ret.basal = ret.find(date, time, ret.store.listBasal);
       ret.carbRatio = ret.find(date, time, ret.store.listCarbratio);
       ret.sens = ret.find(date, time, ret.store.listSens);
-      ret.targetHigh = status.settings.thresholds.bgTargetTop.toDouble();
-      ret.targetLow = status.settings.thresholds.bgTargetBottom.toDouble();
+      ret.targetHigh = status.settings.bgTargetTop.toDouble();
+      ret.targetLow = status.settings.bgTargetBottom.toDouble();
       // for (var data in profile.values) {
       //   data.adjustDurations();
       // }
@@ -2885,12 +2901,11 @@ class ReportData {
 //    DateTime check = DateTime(time.year, time.month, time.day);
     var ret = ProfileGlucData(ProfileStoreData('${time.toIso8601String()}'));
     ProfileData profile;
+
     var idx = -1;
     // find last profile that starts before the given time
     for (var i = 0; i < profiles.length; i++) {
-      if (profiles[i].startDate
-          .difference(time)
-          .inSeconds <= 0) idx = i;
+      if (profiles[i].startDate.difference(time).inSeconds <= 0) idx = i;
     }
 
     if (idx >= 0) {
@@ -2921,8 +2936,8 @@ class ReportData {
       ret.basal = ret.find(date, time, ret.store.listBasal);
       ret.carbRatio = ret.find(date, time, ret.store.listCarbratio);
       ret.sens = ret.find(date, time, ret.store.listSens);
-      ret.targetHigh = status.settings.thresholds.bgTargetTop.toDouble();
-      ret.targetLow = status.settings.thresholds.bgTargetBottom.toDouble();
+      ret.targetHigh = status.settings.bgTargetTop.toDouble();
+      ret.targetLow = status.settings.bgTargetBottom.toDouble();
       for (var data in profile.store.values) {
         data.adjustDurations();
       }
@@ -2938,9 +2953,7 @@ class ReportData {
     if (profile.store.listTargetHigh.isNotEmpty) {
       for (var i = profile.store.listTargetHigh.length - 1; i >= 0; i--) {
         var tgt = profile.store.listTargetHigh[i];
-        if (tgt
-            .time(date)
-            .millisecondsSinceEpoch < time.millisecondsSinceEpoch) {
+        if (tgt.time(date).millisecondsSinceEpoch < time.millisecondsSinceEpoch) {
           high = tgt.value;
           break;
         }
@@ -2950,9 +2963,7 @@ class ReportData {
     if (profile.store.listTargetLow.isNotEmpty) {
       for (var i = profile.store.listTargetLow.length - 1; i >= 0; i--) {
         var tgt = profile.store.listTargetLow[i];
-        if (tgt
-            .time(date)
-            .millisecondsSinceEpoch < time.millisecondsSinceEpoch) {
+        if (tgt.time(date).millisecondsSinceEpoch < time.millisecondsSinceEpoch) {
           low = tgt.value;
           break;
         }

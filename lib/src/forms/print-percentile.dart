@@ -373,6 +373,60 @@ Basalrate, die zu Beginn des ausgewählten Zeitraums aktiv war.''',
         true, "auto", row, {"text": msg90, "style": "total", "alignment": "center", "fontSize": f},
         {"text": "${g.glucFromData(perc.percentile(90), 1)}", "style": style, "alignment": "right", "fontSize": f});
 // */
+    if (showColMax) {
+      addTableRow(true, cm(w), row, {
+        'text': msgMax,
+        'style': 'total',
+        'alignment': 'center',
+        'fontSize': f
+      }, {
+        'text': '${g.glucFromData(day.maxText, 1)}',
+        'style': style,
+        'alignment': 'right',
+        'fontSize': f
+      });
+    }
+    if (showColStdAbw) {
+      addTableRow(true, cm(w), row, {
+        'text': msgDeviation,
+        'style': 'total',
+        'alignment': 'center',
+        'fontSize': f
+      }, {
+        'text': '${g.fmtNumber(day.stdAbw(g.glucMGDL), 1)}',
+        'style': style,
+        'alignment': 'right',
+        'fontSize': f
+      });
+    }
+    if (showColKH) {
+      dynamic value = day.avgCarbsPerDay;
+      addTableRow(true, cm(w), row, {
+        'text': msgCarbShort,
+        'style': 'total',
+        'alignment': 'center',
+        'fontSize': f
+      }, {
+        'text': value['value'] >= 0.1 ? g.fmtNumber(value['value'], 1) : '',
+        'style': style,
+        'alignment': 'right',
+        'fontSize': f
+      });
+    }
+    if (showColIE) {
+      dynamic value = day.avgInsulinPerDay;
+      addTableRow(true, cm(w), row, {
+        'text': msgGluc,
+        'style': 'total',
+        'alignment': 'center',
+        'fontSize': f
+      }, {
+        'text': value['value'] >= 0.1 ? g.fmtNumber(value['value'], 1) : '',
+        'style': style,
+        'alignment': 'right',
+        'fontSize': f
+      });
+    }
     tableHeadFilled = true;
   }
 
