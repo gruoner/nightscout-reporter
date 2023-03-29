@@ -1,6 +1,7 @@
 library diamant.json_data;
 
 import 'dart:convert' as convert;
+import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:angular_components/angular_components.dart';
@@ -1083,6 +1084,42 @@ class InsulinInjectionData extends JsonData {
   }
 }
 
+class InsulinInjectionList {
+  Map<String, double> injections = Map();
+
+  InsulinInjectionList get copy =>
+      InsulinInjectionList()
+        ..injections = new Map.from(injections);
+
+  fromJsonString(String json) {
+    injections = Map();
+    List<dynamic> decoded = JsonCodec().decode(json);
+    double sum = 0;
+    for (dynamic inj in decoded) {
+      double u = JsonData.toDouble(inj["units"]);
+      sum += u;
+      injections.update(JsonData.toText(inj["insulin"]), (double v) => v + u,
+          ifAbsent: () => u);
+    }
+    injections.update("sum", (double v) => v + sum, ifAbsent: () => sum);
+  }
+
+  fromSumValue(double sum) {
+    injections = Map();
+    injections.update("sum", (double v) => v + sum, ifAbsent: () => sum);
+  }
+
+  InsulinInjectionList add2List(InsulinInjectionList l) {
+    InsulinInjectionList ret = this.copy;
+    for (String insulin in l.injections.keys) {
+      double sum = l.injections[insulin];
+      ret.injections.update(
+          insulin, (double v) => v + sum, ifAbsent: () => sum);
+    }
+    return ret;
+  }
+}
+
 class ActivityData extends JsonData {
   dynamic raw;
   DateTime createdAt;
@@ -1144,7 +1181,9 @@ class TreatmentData extends JsonData {
   double _carbs;
   double insulin;
   double microbolus;
-  List<InsulinInjectionData> insulinInjections = <InsulinInjectionData>[];
+  List<InsulinInjectionData> insulinInjections = List<InsulinInjectionData>();
+  InsulinInjectionList multipleInsulin;
+  List<InsulinData> insulinProfiles;
 
   int splitExt;
   int splitNow;
@@ -1276,6 +1315,7 @@ class TreatmentData extends JsonData {
       ..NSClientId = NSClientId
       .._carbs = _carbs
       ..insulin = insulin
+      ..multipleInsulin = multipleInsulin.copy
       ..splitExt = splitExt
       ..splitNow = splitNow
       ..microbolus = microbolus
@@ -1296,6 +1336,7 @@ class TreatmentData extends JsonData {
     for (var entry in insulinInjections) {
       ret.insulinInjections.add(entry.copy);
     }
+    ret.insulinProfiles = insulinProfiles;
     return ret;
   }
 
@@ -1310,7 +1351,7 @@ class TreatmentData extends JsonData {
     // */
   }
 
-  factory TreatmentData.fromJson(Globals g, Map<String, dynamic> json) {
+  factory TreatmentData.fromJson(Globals g, Map<String, dynamic> json, List<InsulinData> insulinProfiles) {
     var ret = TreatmentData();
     if (json == null) return ret;
     ret.raw = json;
@@ -1333,9 +1374,12 @@ class TreatmentData extends JsonData {
     ret.NSClientId = JsonData.toText(json['NSCLIENT_ID']);
     ret._carbs = JsonData.toDouble(json['carbs']);
     ret.insulin = JsonData.toDouble(json['insulin']);
-    if (ret.insulin == 0.0) {
-      ret.insulin = JsonData.toDouble(json['enteredinsulin']);
-    }
+    ret.multipleInsulin = InsulinInjectionList();
+    if (json.containsKey('insulinInjections'))
+    ret.multipleInsulin.fromJsonString(json['insulinInjections']);
+    else ret.multipleInsulin.fromSumValue(ret.insulin);   // falls wir an dem Tag keine insulinInjections haben
+    ret.insulinProfiles = insulinProfiles;
+    if (ret.insulin == 0.0) ret.insulin = JsonData.toDouble(json['enteredinsulin']);
     ret.splitExt = JsonData.toInt(json['splitExt']);
     ret.splitNow = JsonData.toInt(json['splitNow']);
     ret.isSMB = JsonData.toBool(json['isSMB']);
@@ -1406,6 +1450,23 @@ class TreatmentData extends JsonData {
     if (boluscalc != null) boluscalc.slice(src.boluscalc, dst.boluscalc, f);
   }
 
+  double calcIOB1Min(InsulinData insulin, double time)
+  {
+    if (time < 0) {
+      return 1;
+    }
+    var index = time.toInt();
+    var remaining = time - index;
+    if (index+1 >= insulin.IOB1Min.length) {
+      return insulin.IOB1Min[insulin.IOB1Min.length-1];
+    }
+    var valueIndex = insulin.IOB1Min[index];
+    var valueNextIndex = insulin.IOB1Min[index + 1];
+    var ret = valueIndex;
+    ret += (valueNextIndex - valueIndex) * remaining;
+    return ret;
+  }
+
   CalcIOBData calcIOB(ProfileGlucData profile, DateTime time) {
     var dia = 3.0;
     var sens = 0.0;
@@ -1424,15 +1485,42 @@ class TreatmentData extends JsonData {
       var bolusTime = createdAt.millisecondsSinceEpoch;
       var minAgo = scaleFactor * (time.millisecondsSinceEpoch - bolusTime) / 1000 / 60;
 
-      if (minAgo < peak) {
-        var x1 = minAgo / 5 + 1;
-        ret.iob = insulin * (1 - 0.001852 * x1 * x1 + 0.001852 * x1);
-        // units: BG (mg/dl)  = (BG/U) *    U insulin     * scalar
-        ret.activity = sens * insulin * (2 / dia / 60 / peak) * minAgo;
-      } else if (minAgo < 180) {
-        var x2 = (minAgo - peak) / 5;
-        ret.iob = insulin * (0.001323 * x2 * x2 - 0.054233 * x2 + 0.55556);
-        ret.activity = sens * insulin * (2 / dia / 60 - (minAgo - peak) * 2 / dia / 60 / (60 * 3 - peak));
+      if (insulinProfiles != null)
+      {
+        for (String injected in multipleInsulin.injections.keys) {
+          if (injected.toLowerCase() != 'sum') {
+            InsulinData insulin = null;
+            for (var entry in insulinProfiles) {
+              if (entry.name.toLowerCase() == injected.toLowerCase()) {
+                insulin = entry;
+              }
+            }
+            if (insulin == null) {
+              throw Exception(
+                  "kann Insulin mit Name " + injected + " nicht finden!");
+            }
+            ret.iob += multipleInsulin.injections[injected] *
+                calcIOB1Min(insulin, minAgo);
+            var iob1 = multipleInsulin.injections[injected] *
+                calcIOB1Min(insulin, minAgo - 1);
+            var iob2 = multipleInsulin.injections[injected] *
+                calcIOB1Min(insulin, minAgo + 1);
+            if (iob1 > iob2)
+              ret.activity += sens * (iob1 - iob2) / 2.0;
+          }
+        }
+      } else {
+        if (minAgo < peak) {
+          var x1 = minAgo / 5 + 1;
+          ret.iob = insulin * (1 - 0.001852 * x1 * x1 + 0.001852 * x1);
+          // units: BG (mg/dl)  = (BG/U) *    U insulin     * scalar
+          ret.activity = sens * insulin * (2 / dia / 60 / peak) * minAgo;
+        } else if (minAgo < 180) {
+          var x2 = (minAgo - peak) / 5;
+          ret.iob = insulin * (0.001323 * x2 * x2 - 0.054233 * x2 + 0.55556);
+          ret.activity = sens * insulin *
+              (2 / dia / 60 - (minAgo - peak) * 2 / dia / 60 / (60 * 3 - peak));
+        }
       }
     }
 
@@ -1855,25 +1943,30 @@ class CalcCOBData {
   bool isDecaying;
   int carbs_hr;
   double rawCarbImpact;
-  double cob;
+  double cob, cActivity;
   TreatmentData lastCarbs;
 
-  CalcCOBData(
-      this.decayedBy, this.isDecaying, this.carbs_hr, this.rawCarbImpact, this.cob, this.lastCarbs);
+  CalcCOBData(this.decayedBy, this.isDecaying, this.carbs_hr, this.rawCarbImpact, this.cob, this.cActivity, this.lastCarbs);
 }
 
 class DayData {
   var prevDay;
   Date date;
   ProfileGlucData basalData;
+  StatusData statusData;
   int lowCount = 0;
   int normCount = 0;
   int highCount = 0;
   int stdLowCount = 0;
+  int stdBottomCount = 0;
   int stdNormCount = 0;
   int stdHighCount = 0;
   int entryCountValid = 0;
   int entryCountInvalid = 0;
+  int stdTopCount = 0;
+  int topCount = 0;
+  int bottomCount = 0;
+//  int entryCount = 0;
   int carbCount = 0;
   double carbs = 0;
   double min;
@@ -1952,21 +2045,17 @@ class DayData {
   }
 
   double get varK => (mid ?? 0) != 0 ? stdAbw(true) / mid * 100 : 0;
-
-  double lowPrz(Globals g) =>
-      entryCountValid == 0 ? 0 : (g.ppStandardLimits ? stdLowCount : lowCount) / entryCountValid * 100;
-
-  double normPrz(Globals g) =>
-      entryCountValid == 0 ? 0 : (g.ppStandardLimits ? stdNormCount : normCount) / entryCountValid * 100;
-
-  double highPrz(Globals g) =>
-      entryCountValid == 0 ? 0 : (g.ppStandardLimits ? stdHighCount : highCount) / entryCountValid * 100;
+  double lowPrz(Globals g) => entryCountValid == 0 ? 0 : (g.ppStandardLimits ? stdLowCount : lowCount) / entryCountValid * 100;
+  double bottomPrz(Globals g) => entryCountValid == 0 ? 0 : (g.ppStandardLimits ? stdBottomCount : bottomCount) / entryCountValid * 100;
+  double normPrz(Globals g) => entryCountValid == 0 ? 0 : (g.ppStandardLimits ? stdNormCount : normCount) / entryCountValid * 100;
+  double highPrz(Globals g) => entryCountValid == 0 ? 0 : (g.ppStandardLimits ? stdHighCount : highCount) / entryCountValid * 100;
+  double topPrz(Globals g) => entryCountValid == 0 ? 0 : (g.ppStandardLimits ? stdTopCount : topCount) / entryCountValid * 100;
 
   double get avgCarbs => carbCount > 0 ? carbs / carbCount : 0;
-
-  bool isSameDay(DateTime time) {
-    if (date.year != time.year) return false;
-    if (date.month != time.month) return false;
+  bool isSameDay(DateTime time)
+  {
+    if (date.year != time.year)return false;
+    if (date.month != time.month)return false;
     return date.day == time.day;
   }
 
@@ -2037,10 +2126,10 @@ class DayData {
     return ret;
   }
 
-  DayData(date, this.basalData) {
-    if (date == null) {
+  DayData(date, this.basalData, this.statusData) {
+    if (date == null)
       this.date = Date(0);
-    } else {
+    else {
       this.date = Date(date.year, date.month, date.day);
     }
 
@@ -2198,6 +2287,8 @@ class DayData {
     entryCountInvalid = 0;
     normCount = 0;
     highCount = 0;
+    topCount = 0;
+    bottomCount = 0;
     lowCount = 0;
     stdNormCount = 0;
     stdHighCount = 0;
@@ -2207,13 +2298,16 @@ class DayData {
     for (var entry in entries) {
       if (!entry.isGlucInvalid) {
         entryCountValid++;
-        if (JsonData.isLow(entry.gluc, basalData.targetLow)) {
+        if (entry.gluc < statusData.settings.thresholds.bgLow)
           lowCount++;
-        } else if (JsonData.isHigh(entry.gluc, basalData.targetHigh)) {
+        else if (entry.gluc < statusData.settings.thresholds.bgTargetBottom)
+          bottomCount++;
+        else if (entry.gluc >= statusData.settings.thresholds.bgHigh)
           highCount++;
-        } else {
+        else if (entry.gluc >= statusData.settings.thresholds.bgTargetTop)
+          topCount++;
+        else
           normCount++;
-        }
 
         if (JsonData.isLow(entry.gluc, Globals.stdLow as double)) {
           stdLowCount++;
@@ -2390,8 +2484,7 @@ class DayData {
         profile.store.listCarbratio.lastWhere((e) => e.timeForCalc <= check, orElse: () => null)?.value ?? 0.0;
     var rawCarbImpact = (isDecaying ? 1 : 0) * sens / carbRatio * profile.store.carbRatioPerHour / 60;
 
-    return CalcCOBData(
-        lastDecayedBy, isDecaying, profile.store.carbRatioPerHour, rawCarbImpact, totalCOB, lastCarbs);
+    return CalcCOBData(lastDecayedBy, isDecaying, profile.store.carbRatioPerHour, rawCarbImpact, totalCOB, 0, lastCarbs);
   }
 }
 
@@ -2515,6 +2608,20 @@ class ListData {
     var usedRecords = 0;
     validCount = 0;
 
+/*      var glucData = data.profile(entry.time);
+      stat['low'].max = glucData.targetLow; // - 0.0001;
+      stat['norm'].min = glucData.targetLow;
+      stat['norm'].max = glucData.targetHigh; // + 0.0001;
+      stat['high'].min = glucData.targetHigh;
+      stat['high'].max = 9999.9999;
+      if (lastDay == null || entry.time.day != lastDay.day) {
+        days.add(DayData(entry.time, glucData, data.status));
+        lastDay = entry.time;
+      }
+      if (entry.type == 'mbg') {
+        days.last.bloody.add(entry);
+      } else {
+        days.last.entries.add(entry);*/
     for (var day in days) {
       for (var entry in day.entries) {
         var glucData = data.profile(entry.time);
@@ -2745,6 +2852,7 @@ class ReportData{
   UserData user;
   ListData ns = ListData();
   ListData calc = ListData();
+  List<InsulinData> insulinProfiles = null;
   TreatmentData lastTempBasal;
 
   ListData get data => globals == null
@@ -2865,4 +2973,37 @@ class ReportData{
   }
 
   ReportData(this.globals, this.begDate, this.endDate);
+}
+
+class InsulinData extends JsonData {
+  dynamic raw;
+  String _id;
+  String displayName;
+  String name;
+  List<String> pharmacyProductNumber;
+  bool enabled;
+  String type;
+  List<double> IOB1Min;
+
+  InsulinData();
+
+  factory InsulinData.fromJson(Map<String, dynamic> json) {
+    var ret = InsulinData();
+    ret.raw = json;
+    if (json == null) return ret;
+    ret._id = JsonData.toText(json['_id']);
+    ret.name = JsonData.toText(json['name']);
+    ret.displayName = JsonData.toText(json['displayName']);
+    ret.enabled = (JsonData.toText(json['enabled']) == "true" ? true : false);
+    ret.type = JsonData.toText(json['type']);
+    ret.pharmacyProductNumber = List<String>();
+    for (dynamic entry in json['pharmacyProductNumber']) {
+      ret.pharmacyProductNumber.add(JsonData.toText(entry));
+    }
+    ret.IOB1Min = List<double>();
+    for (dynamic entry in json['IOB1Min']) {
+      ret.IOB1Min.add(JsonData.toDouble(entry));
+    }
+    return ret;
+  }
 }

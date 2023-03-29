@@ -656,7 +656,7 @@ Diese Grafik kann auch bei @05@ und @08@ ausgegeben werden.
         limitValues: false);
 
     var data = repData.data;
-    var totalDay = DayData(null, ProfileGlucData(ProfileStoreData('Intern')));
+    var totalDay = DayData(null, ProfileGlucData(ProfileStoreData("Intern")), repData.status);
     totalDay.entries.addAll(data.entries);
     totalDay.init();
     var avgGluc = 0.0;

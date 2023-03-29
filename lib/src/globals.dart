@@ -106,6 +106,10 @@ class LangData {
       desc: 'this is the dateformat, please use dd for days, ' +
           'MM for months and yyyy for year. ' +
           'It has to be the english formatstring.');
+  String get dateShortFormat => Intl.message('dd.MM.',
+      desc: 'this is the dateformat, please use dd for days, ' +
+          'MM for months and no year. ' +
+          'It has to be the english formatstring.');
 
   String get dateShortFormat => Intl.message('dd.MM.',
       desc: 'this is the dateformat, please use dd for days, ' +
@@ -1223,10 +1227,11 @@ class Globals extends Settings {
 
   bool get isKHBE => _khFactor == 12;
 
+  static final int stdVeryLow = 54;
   static final int stdLow = 70;
   static final int stdHigh = 180;
-  static final int stdVeryLow = 54;
   static final int stdVeryHigh = 250;
+
 
   dynamic getGlucInfo() {
     var ret = {'step': 1, 'unit': Settings.msgUnitMGDL};

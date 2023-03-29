@@ -183,7 +183,7 @@ von 0 Uhr und zeigt an, wo ein neuer Tag beginnt.''',
     ProfileGlucData prevProfile;
     var lineCount = 0;
     var page = [];
-    var totalDay = DayData(null, ProfileGlucData(ProfileStoreData('Intern')));
+    var totalDay = DayData(null, ProfileGlucData(ProfileStoreData("Intern")), repData.status);
     totalDay.basalData.targetHigh = 0;
     totalDay.basalData.targetLow = 1000;
     // ignore: unused_local_variable
