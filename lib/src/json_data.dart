@@ -1104,6 +1104,10 @@ class InsulinInjectionList {
     injections.update("sum", (double v) => v + sum, ifAbsent: () => sum);
   }
 
+  double getSum() {
+    return injections["sum"];
+  }
+
   fromSumValue(double sum) {
     injections = Map();
     injections.update("sum", (double v) => v + sum, ifAbsent: () => sum);
@@ -2712,7 +2716,7 @@ class ListData {
 
       var glucData = data.profile(entry.time);
       if (lastDay == null || entry.time.day != lastDay.day) {
-        days.add(DayData(entry.time, glucData));
+        days.add(DayData(entry.time, glucData, data.status));
         lastDay = entry.time;
       }
       if (entry.type == 'mbg') {

@@ -1247,7 +1247,7 @@ class StartComponent implements OnInit {
           if (src != null) {
             var list = <TreatmentData>[];
             for (dynamic treatment in src) {
-              list.add(TreatmentData.fromJson(g, treatment));
+              list.add(TreatmentData.fromJson(g, treatment, data.insulinProfiles));
             }
             list.sort((a, b) => a.createdAt.compareTo(b.createdAt));
             if (list.isNotEmpty) data.lastTempBasal = list.last;
@@ -1263,7 +1263,7 @@ class StartComponent implements OnInit {
           displayLink('t${begDate.format(g.fmtDateForDisplay)} (${src.length})', url, type: 'debug');
           for (dynamic treatment in src) {
             hasData = true;
-            var t = TreatmentData.fromJson(g, treatment);
+            var t = TreatmentData.fromJson(g, treatment, data.insulinProfiles);
             // Treatments entered by sync are ignored
             if (t.enteredBy == 'sync') {
             } else if (data.ns.treatments.isNotEmpty && t.equals(data.ns.treatments.last)) {

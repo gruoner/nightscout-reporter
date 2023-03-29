@@ -1041,7 +1041,9 @@ abstract class BasePrint {
 
   String get msgDate => Intl.message('Datum');
 
-  String get msgDistribution => Intl.message('Verteilung');
+  String get msgDistribution => Intl.message('Verteilung der Glukosewerte');
+  
+  String get msgDistributionIE => Intl.message('Verteilung der Insuline');
 
   String get msgValues => Intl.message('Mess-\nwerte');
 
@@ -1767,20 +1769,6 @@ abstract class BasePrint {
 
   String fmtDate(var date, [var def, bool withShortWeekday = false, bool withLongWeekday = false]) {
     return g.fmtDate(date, def, withShortWeekday, withLongWeekday);
-  }
-
-  String fmtDateShort(Date date, String format) {
-    var dt = DateTime(date.year, date.month, date.day);
-    switch (format.toLowerCase()) {
-      case 'day':
-        return DateFormat(g.language.dateShortFormat).format(dt);
-      case 'week':
-        var temp = ((int.parse(DateFormat('D').format(dt)) - dt.weekday + 10) / 7).floor().toString().padLeft(2, '0');
-        return msgKW(temp);
-      case 'month':
-        return DateFormat('MMMM').format(dt);
-    }
-    return "";
   }
 
   String fmtDateShort(Date date, String format)

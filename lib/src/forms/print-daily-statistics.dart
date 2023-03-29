@@ -104,7 +104,7 @@ schwächerer Schrift angezeigt wird.
 //      ParamInfo p = params[idx];
 //      if (count > 7) {
       var p = params[idx];
-      if (count > 6) {
+      if (count > 5) {
         if (!p.boolValue) {
           p.isDisabled = true;
         }
@@ -112,10 +112,10 @@ schwächerer Schrift angezeigt wird.
         p.isDisabled = false;
       }
     });
-    if (count > 5 && !params[2].boolValue) {
+    if (count > 4 && !params[2].boolValue) {
       params[2].isDisabled = true;
     }
-    params[11].title = msgColumns(7 - count);
+    params[11].title = msgColumns(6 - count);
   }
 
   @override
@@ -173,14 +173,9 @@ schwächerer Schrift angezeigt wird.
     init(suffix);
   }
 
-  void fillRow(
-      dynamic row, double f, List<String> firstCol, DayData day, String style,
-      {double countForAverage = 1.0}) {
-    addTableRow(
-        true,
-        cm(2.9),
-        row,
-        {'text': msgDate, 'style': 'total', 'alignment': 'center'},
+  void fillRow(idx, dynamic row, double f, List<String> firstCol, DayData day, String style, {double countForAverage = 1.0})
+  {
+    addTableRow(true, cm(2.9), row, {'text': msgDate, 'style': 'total', 'alignment': 'center'},
         getContent(firstCol, 'total', 'center'));
     var text = msgDistribution;
     if (showTDD) text += '\n' + msgTDD;
@@ -195,62 +190,31 @@ schwächerer Schrift angezeigt wird.
         {'type': 'rect', 'color': colHigh, 'x': cm((day.lowPrz(g) + day.bottomPrz(g) + day.normPrz(g) + day.topPrz(g)) * f), 'y': cm(0), 'w': cm(day.highPrz(g) * f), 'h': cm(showTDD ? 0.25 : 0.5)}
       ]
     });
-    addTableRow(true, cm(f * 100), row, {
-      'text': text,
-      'style': 'total',
-      'alignment': 'center'
-    }, {
-      'style': style,
-      'canvas': [
-        {
-          'type': 'rect',
-          'color': colBasalDay,
-          'x': cm(0),
-          'y': cm(0),
-          'w': cm(day.ieBasalSum(!useDailyBasalrate) * f * 100 / _maxTDD),
-          'h': cm(0.5)
-        },
-        {
-          'type': 'rect',
-          'color': colBolus,
-          'x': cm(day.ieBasalSum(!useDailyBasalrate) * f * 100 / _maxTDD),
-          'y': cm(0),
-          'w': cm(day.ieBolusSum * f * 100 / _maxTDD),
-          'h': cm(0.5)
-        },
-        showTDD
-            ? {
-                'type': 'rect',
-                'color': colBasalDay,
-                'x': cm(0),
-                'y': cm(0.3),
-                'w': cm((style == 'total'
-                        ? _basalSum
-                        : day.ieBasalSum(!useDailyBasalrate)) *
-                    f *
-                    100 /
-                    tdd),
-                'h': cm(0.25)
-              }
-            : {},
-        showTDD
-            ? {
-                'type': 'rect',
-                'color': colBolus,
-                'x': cm((style == 'total'
-                        ? _basalSum
-                        : day.ieBasalSum(!useDailyBasalrate)) *
-                    f *
-                    100 /
-                    tdd),
-                'y': cm(0.3),
-                'w': cm(day.ieBolusSum * f * 100 / tdd),
-                'h': cm(0.25)
-              }
-            : {},
-      ]
-    });
-// Da passt was nicht mit oben
+    if (showExtendedInsulinStatictics)
+    {
+      double x1 = valuesDailyWOSum[0][idx] * f * 100 / dailyMax;
+      double x2 = x1 + valuesDailyWOSum[1][idx] * f * 100 / dailyMax;
+      addTableRow(true, cm(f * 100), row, {'text': msgDistributionIE, 'style': 'total', 'alignment': 'center'}, {
+        'style': style,
+        'canvas': [
+          { 'type': 'rect', 'color': valueColorWOSum[0], 'x': cm(0), 'y': cm(0), 'w': cm(valuesDailyWOSum[0][idx] * f * 100 / dailyMax), 'h': cm(0.5)},
+          { 'type': 'rect', 'color': valueColorWOSum[1], 'x': cm(x1), 'y': cm(0), 'w': cm(valuesDailyWOSum[1][idx] * f * 100 / dailyMax), 'h': cm(0.5)},
+          { 'type': 'rect', 'color': valueColorWOSum[2], 'x': cm(x2), 'y': cm(0), 'w': cm(valuesDailyWOSum[2][idx] * f * 100 / dailyMax), 'h': cm(0.5)},
+        ]
+      });
+    } else
+    {
+      addTableRow(true, cm(f * 100), row, {'text': text, 'style': 'total', 'alignment': 'center'}, {
+        'style': style,
+        'canvas': [
+          { 'type': 'rect', 'color': colBasalDay, 'x': cm(0), 'y': cm(0), 'w': cm(day.ieBasalSum(!useDailyBasalrate) * f * 100 / _maxTDD), 'h': cm(0.5)},
+          { 'type': 'rect', 'color': colBolus, 'x': cm(day.ieBasalSum(!useDailyBasalrate) * f * 100 / _maxTDD), 'y': cm(0), 'w': cm(day.ieBolusSum * f * 100 / _maxTDD), 'h': cm(0.5)},
+          showTDD ? { 'type': 'rect', 'color': colBasalDay, 'x': cm(0), 'y': cm(0.3), 'w': cm((style == 'total' ? _basalSum : day.ieBasalSum(!useDailyBasalrate)) * f * 100 / tdd), 'h': cm(0.25)} : {},
+          showTDD ? { 'type': 'rect', 'color': colBolus, 'x': cm((style == 'total' ? _basalSum : day.ieBasalSum(!useDailyBasalrate)) * f * 100 / tdd), 'y': cm(0.3), 'w': cm(day.ieBolusSum * f * 100 / tdd), 'h': cm(0.25)} : {},
+        ]
+      });
+    }
+
     addTableRow(true, 'auto', row, {
       'text': msgVeryLow(targets(repData)['verylow']),
       'style': 'total',
@@ -515,6 +479,8 @@ schwächerer Schrift angezeigt wird.
 // */
     f /= 100;
 
+    if (showExtendedInsulinStatictics)
+      calcIEstatisticsFromProfiles(repData);
     ProfileGlucData prevProfile;
     var lineCount = 0;
     var page = [];
@@ -552,7 +518,7 @@ schwächerer Schrift angezeigt wird.
       totalDay.basalData.targetLow =
           min(totalDay.basalData.targetLow, day.basalData.targetLow);
       var row = [];
-      fillRow(row, f, [fmtDate(day.date, null, true)], day, 'row');
+      fillRow(i, row, f, [fmtDate(day.date, null, true)], day, 'row');
       var profile = repData
           .profile(DateTime(day.date.year, day.date.month, day.date.day));
       if (prevProfile == null ||
@@ -577,14 +543,7 @@ schwächerer Schrift angezeigt wird.
     }
     var row = [];
     totalDay.init(nextDay: null, keepProfile: true);
-    fillRow(
-        row,
-        f,
-        ['${msgDaySum(totalDays)}', msgDayAverage],
-        totalDay,
-        'tot'
-        'al',
-        countForAverage: totalDays as double);
+    fillRow(repData.data.days.length, row, f, ['${msgDaySum(totalDays)}', msgDayAverage], totalDay, 'tot' 'al', countForAverage: totalDays as double);
     body.add(row);
 
     if (prevProfile != null) {
@@ -597,23 +556,23 @@ schwächerer Schrift angezeigt wird.
     }
     if (repData.isForThumbs && pages.length - oldLength > 1) pages.removeRange(oldLength + 1, pages.length);
     if (showExtendedInsulinStatictics)
-      pages.add(getInsulinPage(repData));
+      pages.add(getInsulinPage());
   }
 
-  Page getInsulinPage(ReportData src)
+  List<String> xValuesDaily = null;
+  List<String> xValuesWeekly = null;
+  List<String> xValuesMonthly = null;
+  List<List<double>> valuesDaily = [];
+  List<List<double>> valuesDailyWOSum = [];
+  List<List<double>> valuesWeekly = [];
+  List<List<double>> valuesMonthly = [];
+  List<String> valueColor = [];
+  List<String> valueColorWOSum = [];
+  List<String> valueLegend = [];
+  double dailyMax = 0;
+
+  calcIEstatisticsFromProfiles(ReportData src)
   {
-    String t = _titleGraphic;
-    _titleGraphic = Intl.message("Insulinstatistik");
-
-    List<String> xValuesDaily = null;
-    List<String> xValuesWeekly = null;
-    List<String> xValuesMonthly = null;
-    List<List<double>> valuesDaily = [];
-    List<List<double>> valuesWeekly = [];
-    List<List<double>> valuesMonthly = [];
-    List<String> valueColor = [];
-    List<String> valueLegend = [];
-
     Map<String, InsulinInjectionList> dV = new Map();
     Map<String, InsulinInjectionList> wV = new Map();
     Map<String, int> wC = new Map();
@@ -633,6 +592,7 @@ schwächerer Schrift angezeigt wird.
       mV.update(monthStr, (InsulinInjectionList v) => v.add2List(sum), ifAbsent: () => sum.copy);
       mC.update(monthStr, (int v) => v + 1, ifAbsent: () => 1);
       insulinProfiles.addAll(sum.injections.keys);
+      dailyMax = max(dailyMax, sum.getSum());
     }
     if (xValuesDaily == null)
       xValuesDaily = dV.keys.toList();
@@ -648,14 +608,21 @@ schwächerer Schrift angezeigt wird.
       } else
       {
         valueLegend.add(insulin + Intl.message(" pro Tag"));
-        if (insulin.toLowerCase() == "novorapid")
+        if (insulin.toLowerCase() == "novorapid") {
           valueColor.add("#FF0000");
-        else if (insulin.toLowerCase() == "actrapid")
+          valueColorWOSum.add("#FF0000");
+        }
+        else if (insulin.toLowerCase() == "actrapid") {
           valueColor.add("#00FF00");
-        else if (insulin.toLowerCase() == "insulatard")
+          valueColorWOSum.add("#00FF00");
+        }
+        else if (insulin.toLowerCase() == "insulatard") {
           valueColor.add("#0000FF");
+          valueColorWOSum.add("#0000FF");
+        }
       }
       List<double> daily = [];
+      List<double> dailyWOSum = [];
       List<double> weekly = [];
       List<double> monthly = [];
       for (String s in xValuesDaily) {
@@ -678,7 +645,25 @@ schwächerer Schrift angezeigt wird.
       valuesDaily.add(daily);
       valuesWeekly.add(weekly);
       valuesMonthly.add(monthly);
+      if (insulin != "sum") {
+        double sum = 0;
+        for (String s in xValuesDaily) {
+          if (dV[s].injections.containsKey(insulin)) {
+            dailyWOSum.add(dV[s].injections[insulin]);
+            sum += dV[s].injections[insulin];
+          } else
+            dailyWOSum.add(0);
+        }
+        dailyWOSum.add(sum / xValuesDaily.length);
+        valuesDailyWOSum.add(dailyWOSum);
+      }
     }
+  }
+
+  Page getInsulinPage()
+  {
+    String t = _titleGraphic;
+    _titleGraphic = Intl.message("Insulinstatistik");
 
     double contentWidth = new Page(false, null).width - 1.5*xorg; // 23.25 --> 29.7
     double contentHeight = new Page(false, null).height - 1.5*yorg; // 13 --> 21

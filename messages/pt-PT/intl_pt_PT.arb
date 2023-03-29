@@ -1247,7 +1247,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "Verteilung": "Distribuição",
+  "Verteilung Glukosewerte": "Distribuição",
   "@Verteilung": {
     "type": "text",
     "placeholders": {}

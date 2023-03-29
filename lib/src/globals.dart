@@ -111,11 +111,6 @@ class LangData {
           'MM for months and no year. ' +
           'It has to be the english formatstring.');
 
-  String get dateShortFormat => Intl.message('dd.MM.',
-      desc: 'this is the dateformat, please use dd for days, ' +
-          'MM for months and no year. ' +
-          'It has to be the english formatstring.');
-
   String get imgPath => 'packages/nightscout_reporter/assets/img/lang-${img}.png';
 
   LangData(this.code, this.name, this.img);

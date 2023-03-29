@@ -324,7 +324,9 @@ Basalrate, die zu Beginn des ausgewählten Zeitraums aktiv war.''',
  */
     double f = fs(showCol1090 ? 9 : 10);
     double wid = 3.0 / 100.0;
-//    double w = (width - 4.0 - 2.0 - wid * 100) / 8 - 0.45;
+    var colcount = showCol1090 ? 10 : 8;
+    var w = (width - 4.0 - 2.0 - wid * 100) / colcount - 0.45;
+    //    double w = (width - 4.0 - 2.0 - wid * 100) / 8 - 0.45;
     addTableRow(true, "auto", row, {"text": msgTime, "style": "total", "alignment": "center", "fontSize": f},
         {"text": firstCol, "style": "total", "alignment": "center", "fontSize": f});
     var canvas = [
@@ -347,21 +349,26 @@ Basalrate, die zu Beginn des ausgewählten Zeitraums aktiv war.''',
         {"text": "${g.fmtNumber(day.topPrz(g), 0)} %", "style": style, "alignment": "right", "fillColor": style == "total" ? colNormHigh : null, "fontSize": f});
     addTableRow(true, "auto", row, {"text": msgVeryHigh(_settings.thresholds.bgHigh), "style": "total", "alignment": "center", "fillColor": colHigh, "fontSize": f},
         {"text": "${g.fmtNumber(day.highPrz(g), 0)} %", "style": style, "alignment": "right", "fillColor": style == "total" ? colHigh : null, "fontSize": f});
-    addTableRow(true, "auto", row, {"text": msgValues, "style": "total", "alignment": "center", "fontSize": f},
+    if (showColCount)
+      addTableRow(true, "auto", row, {"text": msgValues, "style": "total", "alignment": "center", "fontSize": f},
         {"text": "${g.fmtNumber(day.entryCountValid, 0)}", "style": style, "alignment": "right", "fontSize": f});
-    addTableRow(true, "auto", row, {"text": msgMin, "style": "total", "alignment": "center", "fontSize": f},
+    if (showColMin)
+      addTableRow(true, "auto", row, {"text": msgMin, "style": "total", "alignment": "center", "fontSize": f},
         {"text": "${g.glucFromData(day.min, 1)}", "style": style, "alignment": "right", "fontSize": f});
-    addTableRow(true, "auto", row, {"text": msgMax, "style": "total", "alignment": "center", "fontSize": f},
-        {"text": "${g.glucFromData(day.max, 1)}", "style": style, "alignment": "right", "fontSize": f});
-    addTableRow(true, "auto", row, {"text": msgAverage, "style": "total", "alignment": "center", "fontSize": f},
+    if (showColMax)
+      addTableRow(true, "auto", row, {"text": msgMax, "style": "total", "alignment": "center", "fontSize": f},
+          {"text": "${g.glucFromData(day.max, 1)}", "style": style, "alignment": "right", "fontSize": f});
+    if (showColAverage)
+      addTableRow(true, "auto", row, {"text": msgAverage, "style": "total", "alignment": "center", "fontSize": f},
         {"text": "${g.glucFromData(day.avgGluc, 1)}", "style": style, "alignment": "right", "fontSize": f});
-    addTableRow(true, "auto", row, {"text": msgDeviation, "style": "total", "alignment": "center", "fontSize": f},
-        {"text": "${g.fmtNumber(day.stdAbw(g.glucMGDL), 1)}", "style": style, "alignment": "right", "fontSize": f});
+    if (showColStdAbw)
+      addTableRow(true, "auto", row, {"text": msgDeviation, "style": "total", "alignment": "center", "fontSize": f},
+          {"text": "${g.fmtNumber(day.stdAbw(g.glucMGDL), 1)}", "style": style, "alignment": "right", "fontSize": f});
     addTableRow(true, "auto", row, {"text": msgVarK, "style": "total", "alignment": "center", "fontSize": f},
         {"text": "${g.fmtNumber(day.varK, 1)}", "style": style, "alignment": "right", "fontSize": f});
 //*
-    if (showCol1090)addTableRow(
-        true, "auto", row, {"text": msg10, "style": "total", "alignment": "center", "fontSize": f},
+    if (showCol1090)
+      addTableRow(true, "auto", row, {"text": msg10, "style": "total", "alignment": "center", "fontSize": f},
         {"text": "${g.glucFromData(perc.percentile(10), 1)}", "style": style, "alignment": "right", "fontSize": f});
     addTableRow(true, "auto", row, {"text": msg25, "style": "total", "alignment": "center", "fontSize": f},
         {"text": "${g.glucFromData(perc.percentile(25), 1)}", "style": style, "alignment": "right", "fontSize": f});
@@ -373,59 +380,15 @@ Basalrate, die zu Beginn des ausgewählten Zeitraums aktiv war.''',
         true, "auto", row, {"text": msg90, "style": "total", "alignment": "center", "fontSize": f},
         {"text": "${g.glucFromData(perc.percentile(90), 1)}", "style": style, "alignment": "right", "fontSize": f});
 // */
-    if (showColMax) {
-      addTableRow(true, cm(w), row, {
-        'text': msgMax,
-        'style': 'total',
-        'alignment': 'center',
-        'fontSize': f
-      }, {
-        'text': '${g.glucFromData(day.maxText, 1)}',
-        'style': style,
-        'alignment': 'right',
-        'fontSize': f
-      });
-    }
-    if (showColStdAbw) {
-      addTableRow(true, cm(w), row, {
-        'text': msgDeviation,
-        'style': 'total',
-        'alignment': 'center',
-        'fontSize': f
-      }, {
-        'text': '${g.fmtNumber(day.stdAbw(g.glucMGDL), 1)}',
-        'style': style,
-        'alignment': 'right',
-        'fontSize': f
-      });
-    }
     if (showColKH) {
       dynamic value = day.avgCarbsPerDay;
-      addTableRow(true, cm(w), row, {
-        'text': msgCarbShort,
-        'style': 'total',
-        'alignment': 'center',
-        'fontSize': f
-      }, {
-        'text': value['value'] >= 0.1 ? g.fmtNumber(value['value'], 1) : '',
-        'style': style,
-        'alignment': 'right',
-        'fontSize': f
-      });
+      addTableRow(true, "auto", row, {"text": msgCarbShort, "style": "total", "alignment": "center", "fontSize": f},
+          {"text": value['value'] >= 0.1 ? g.fmtNumber(value['value'], 1) : '', "style": style, "alignment": "right", "fontSize": f});
     }
     if (showColIE) {
       dynamic value = day.avgInsulinPerDay;
-      addTableRow(true, cm(w), row, {
-        'text': msgGluc,
-        'style': 'total',
-        'alignment': 'center',
-        'fontSize': f
-      }, {
-        'text': value['value'] >= 0.1 ? g.fmtNumber(value['value'], 1) : '',
-        'style': style,
-        'alignment': 'right',
-        'fontSize': f
-      });
+      addTableRow(true, "auto", row, {"text": msgGluc, "style": "total", "alignment": "center", "fontSize": f},
+          {"text": value['value'] >= 0.1 ? g.fmtNumber(value['value'], 1) : '', "style": style, "alignment": "right", "fontSize": f});
     }
     tableHeadFilled = true;
   }
