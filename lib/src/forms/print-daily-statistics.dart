@@ -573,6 +573,18 @@ schwächerer Schrift angezeigt wird.
 
   calcIEstatisticsFromProfiles(ReportData src)
   {
+    xValuesDaily = null;
+    xValuesWeekly = null;
+    xValuesMonthly = null;
+    valuesDaily = [];
+    valuesDailyWOSum = [];
+    valuesWeekly = [];
+    valuesMonthly = [];
+    valueColor = [];
+    valueColorWOSum = [];
+    valueLegend = [];
+    dailyMax = 0;
+
     Map<String, InsulinInjectionList> dV = new Map();
     Map<String, InsulinInjectionList> wV = new Map();
     Map<String, int> wC = new Map();

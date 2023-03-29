@@ -187,6 +187,8 @@ class StartComponent implements OnInit {
 
   String get msgCancel => Intl.message('verwerfen');
 
+  String get msgInsulinError => Intl.message('Beim Auslesen der Insulin Profile ist ein Fehler aufgetreten.');
+
   String get msgPDFCreated => Intl.message('Das PDF wurde erstellt. Wenn es nicht angezeigt wird, '
       'dann ist vermutlich ein Popup-Blocker aktiv, der die Anzeige verhindert. Diesen bitte deaktivieren.');
 
@@ -1046,6 +1048,35 @@ class StartComponent implements OnInit {
           }
           ]);
 // */
+      }
+
+      url = urlData.fullUrl('insulin');
+      displayLink('insulin', url, type: 'debug');
+      content = await g.request(url);
+      try {
+        List<dynamic> src = json.decode(content);
+        data.insulinProfiles = new List<InsulinData>();
+        for (dynamic entry in src) {
+          // don't add profiles that cannot be read
+          try {
+            var insulin = InsulinData.fromJson(entry);
+            data.insulinProfiles.add(insulin);
+            var maxEffect = insulin.IOB1Min.length * 60 * 1000;
+            data.globals.ppMaxInsulinEffectInMS = math.max(data.globals.ppMaxInsulinEffectInMS, maxEffect);
+          } catch (ex) {
+            data.insulinProfiles = null;
+          }
+        }
+      } catch (ex) {
+        if (g.isDebug) {
+          if (ex is Error) {
+            display('${ex.toString()}\n${ex.stackTrace}');
+          } else {
+            display(ex.toString());
+          }
+        } else {
+          display(msgInsulinError);
+        }
       }
 
       var params = 'find[created_at][\$gte]=${begDate.year - 1}-01-01T00:00:00.000Z&find[eventType]=Profile Switch';
