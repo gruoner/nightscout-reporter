@@ -4,9 +4,9 @@ typeset DART=/usr/lib/dart/bin/dart
 export https_proxy="http://10.230.1.1:8080"
 export no_proxy="127.0.0.1,localhost"
 typeset TARGETHOST
-typeset FILES2STAGE="lib/app_component.dart lib/src/globals.dart settings.json"
+typeset FILES2STAGE="lib/src/globals.dart settings.json"
 shopt -s nocasematch
-[[ "$2" =~ "dev" ]] && TARGETHOST=devubuntu.home.local
+[[ "$2" =~ "dev" ]] && TARGETHOST=nightscout-dev.home.local
 [[ "$2" =~ "ref" ]] && TARGETHOST=nightscout-stage.home.local
 [[ "$2" =~ "prod" ]] && TARGETHOST=nightscout.home.local
 if [[ "$1" =~ "all" ]]
