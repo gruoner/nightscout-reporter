@@ -394,7 +394,7 @@ aber für einen Überblick über den Verlauf ist das ganz nützlich.''', desc: '
 
   Page _getPage(DayData day, ReportData src) {
     title = _titleGraphic;
-    var collMinutes = sumNarrowValues ? 60 : -1;
+    var collMinutes = sumNarrowValues ? 115 : -1;
     var xo = xorg;
     var yo = yorg;
     titleInfo = fmtDate(day.date, null, false, true);
