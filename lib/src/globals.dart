@@ -1205,9 +1205,9 @@ class Globals extends Settings {
     saveWebData();
   }
 
-  String urlPdf = "https://nightscout-dev.home.local/NightScoutReporter/pdfmake/pdfmake.php";
-  String urlPlayground = "https://nightscout-dev.home.local/NightScoutReporter/pdfmake/playground.php";
-  String googleClientId = "939975570793-i9kj0rp6kgv470t45j1pf1hg3j9fqmbh";
+  String urlPdf = 'https://nightscout-dev.home.local/NightScoutReporter/pdfmake/pdfmake.php';
+  String urlPlayground = 'https://nightscout-dev.home.local/NightScoutReporter/pdfmake/playground.php';
+  String googleClientId = '939975570793-i9kj0rp6kgv470t45j1pf1hg3j9fqmbh';
 
   String infoClass(String cls) => showInfo ? '$cls infoarea showinfo' : '$cls infoarea';
   bool isConfigured = false;
