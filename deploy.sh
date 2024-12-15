@@ -14,8 +14,8 @@ then
   echo "======================"
   echo "refreshing build stack"
   echo "======================"
-  $DART pub get
-  $DART pub global activate webdev 2.7.2
+#  $DART pub get
+#  $DART pub global activate webdev 2.7.2
 fi
 
 if [[ "$1" =~ "all" || "$1" =~ "build" ]]

@@ -5,8 +5,8 @@ export https_proxy="http://10.230.1.1:8080"
 echo "======================"
 echo "refreshing build stack"
 echo "======================"
-$DART pub get
-$DART pub global activate webdev 2.7.2
+#$DART pub get
+#$DART pub global activate webdev 2.7.2
 echo 
 echo "======================"
 echo "running debug"
